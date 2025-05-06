@@ -178,4 +178,60 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - Inspired by [GitHub's MCP Server](https://github.com/github/github-mcp-server) for AI agent integration
-- Built to enhance AI understanding of code structure 
+- Built to enhance AI understanding of code structure
+
+## MCP SDK Server (Working Implementation)
+
+This project now includes a fully working Model Context Protocol (MCP) server using the official Python SDK. The server exposes all required tools for dependency analysis and is compatible with Cursor and other MCP clients.
+
+### How to Build and Run
+
+1. **Build the Docker image:**
+   ```bash
+   docker build -t mcp/sdk-minimal -f archive/Dockerfile.sdk_minimal .
+   ```
+2. **Run the server (for testing):**
+   ```bash
+   echo '{"jsonrpc":"2.0","id":"test","method":"initialize"}' | docker run -i --rm mcp/sdk-minimal
+   ```
+3. **Configure Cursor:**
+   In your `~/.cursor/mcp.json`:
+   ```json
+   {
+     "mcpServers": {
+       "dependencyAnalyzer": {
+         "command": "docker",
+         "args": [
+           "run",
+           "-i",
+           "--rm",
+           "mcp/sdk-minimal"
+         ]
+       }
+     }
+   }
+   ```
+
+### Exposed Tools
+- `list_projects`
+- `add_project`
+- `analyze_dependencies`
+- `get_dependency_graph`
+- `find_orphaned_files`
+- `check_circular_dependencies`
+
+All tools are implemented in `sdk_minimal_server.py` and return mock data by default. You can extend them to provide real analysis logic as needed.
+
+---
+
+## Next Steps
+
+- **Replace mock logic** in each tool with real dependency analysis code.
+- **Persist project and analysis data** (currently in-memory only).
+- **Add error handling and validation** for tool arguments.
+- **Expand test coverage** for all MCP tools.
+- **Document API and tool usage** for other developers.
+- **Integrate with CI/CD** to run dependency analysis automatically.
+- **Contribute improvements** back to the MCP SDK or this repo as needed.
+
+For questions or contributions, please open an issue or pull request. 

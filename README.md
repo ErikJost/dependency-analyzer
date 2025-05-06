@@ -113,4 +113,34 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Publishing to GitHub
+
+If you want to publish this tool to your own GitHub repository, follow these steps:
+
+1. Create a new repository on GitHub without initializing it (no README, .gitignore, or license)
+2. Copy the URL of your new repository
+3. Update the remote origin in your local repository:
+
+```bash
+git remote add origin https://github.com/your-username/dependency-analyzer.git
+```
+
+4. Update the package.json file with your repository details:
+   - Edit the `repository.url` field
+   - Edit the `bugs.url` field
+   - Edit the `homepage` field
+
+5. Push the code to GitHub:
+
+```bash
+git push -u origin main
+```
+
+6. (Optional) To publish to npm:
+
+```bash
+npm login
+npm publish
+``` 

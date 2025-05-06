@@ -3,7 +3,7 @@
 ## Current State
 - The project now includes a fully working MCP server using the official Python SDK (`sdk_minimal_server.py`).
 - All required tools are exposed and compatible with Cursor and other MCP clients.
-- Docker workflow is streamlined with `archive/Dockerfile.sdk_minimal`.
+- Docker workflow is streamlined with Dockerfile.sdk_minimal (located in the project root).
 
 ## Immediate Next Steps
 

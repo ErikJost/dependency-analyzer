@@ -47,7 +47,8 @@ The MCP server provides AI agents with powerful capabilities:
 
 2. Build and start the Docker container:
    ```bash
-   docker-compose up -d
+   docker build --no-cache -t mcp/sdk-minimal -f Dockerfile.sdk_minimal .
+   docker run -d --name DependencyMCP -v /Users/erikjost/data:/data mcp/sdk-minimal
    ```
 
 3. Access the MCP server at http://localhost:8000

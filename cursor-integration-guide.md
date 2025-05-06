@@ -128,8 +128,10 @@ The server implements the following tools:
 
 ### 1. Build the Docker Image
 
+To build the MCP server Docker image:
+
 ```bash
-docker build -t mcp/sdk-dependmap -f Dockerfile.sdk .
+docker build --no-cache -t mcp/sdk-minimal -f Dockerfile.sdk_minimal .
 ```
 
 ### 2. Cursor Configuration
@@ -144,7 +146,7 @@ Create or update `~/.cursor/mcp.json` with:
         "run",
         "-i",
         "--rm",
-        "mcp/sdk-dependmap"
+        "mcp/sdk-minimal"
       ],
       "env": {}
     }
@@ -155,15 +157,9 @@ Create or update `~/.cursor/mcp.json` with:
 ### 3. Testing the Server
 
 For testing independently, use:
+
 ```bash
-# Test initialization
-echo '{"jsonrpc":"2.0","id":"test","method":"initialize"}' | docker run -i --rm mcp/sdk-dependmap
-
-# Test function call
-echo '{"jsonrpc":"2.0","id":"test-func","method":"mcp/invokeFunction","params":{"function":"list_projects","parameters":{}}}' | docker run -i --rm mcp/sdk-dependmap
-
-# Test analyze_dependencies
-echo '{"jsonrpc":"2.0","id":"test-analyze","method":"mcp/invokeFunction","params":{"function":"analyze_dependencies","parameters":{"project_id":"project1"}}}' | docker run -i --rm mcp/sdk-dependmap
+echo '{"jsonrpc":"2.0","id":"test","method":"initialize"}' | docker run -i --rm mcp/sdk-minimal
 ```
 
 ## Error Handling
@@ -191,7 +187,7 @@ If Cursor doesn't display the tools:
 
 1. Check Docker container is running properly
 2. Verify the server is sending correct JSON-RPC 2.0 responses
-3. Look for errors in stderr output: `docker logs $(docker ps -q --filter ancestor=mcp/sdk-dependmap)`
+3. Look for errors in stderr output: `docker logs $(docker ps -q --filter ancestor=mcp/sdk-minimal)`
 4. Ensure the Docker image has the correct permissions
 5. Make sure the server is responding properly to the initialize request
 

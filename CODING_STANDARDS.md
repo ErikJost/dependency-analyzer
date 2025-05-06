@@ -361,4 +361,6 @@ Types:
 
 These standards are meant to ensure code quality, consistency, and maintainability. They should be followed for all new code and applied to existing code during refactoring.
 
-For questions or suggestions regarding these standards, please open an issue on GitHub. 
+For questions or suggestions regarding these standards, please open an issue on GitHub.
+
+- Example: Only Dockerfile.sdk_minimal is supported for building the MCP server image. Do not use docker-compose or other Dockerfiles. 

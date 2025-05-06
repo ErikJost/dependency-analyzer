@@ -1,0 +1,38 @@
+{
+  "name": "dependency-analyzer",
+  "version": "1.0.0",
+  "description": "A tool for analyzing code dependencies in JavaScript/TypeScript projects",
+  "main": "server.py",
+  "scripts": {
+    "start": "python3 server.py",
+    "analyze": "node scripts/enhanced-dependency-analysis.cjs"
+  },
+  "bin": {
+    "dependency-analyzer": "./server.py"
+  },
+  "keywords": [
+    "dependency",
+    "analysis",
+    "visualization",
+    "code-quality",
+    "javascript",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "d3": "^7.0.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/dependency-analyzer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/dependency-analyzer/issues"
+  },
+  "homepage": "https://github.com/your-username/dependency-analyzer#readme"
+} 

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dependency List View</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+    .file-item {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .file-name {
+      font-weight: bold;
+      color: #0066cc;
+      margin-bottom: 5px;
+    }
+    .imports, .imported-by {
+      margin-left: 20px;
+    }
+    .search {
+      margin-bottom: 20px;
+    }
+    #searchInput {
+      padding: 8px;
+      width: 300px;
+      font-size: 16px;
+    }
+    #fileCount {
+      margin-left: 10px;
+      color: #666;
+    }
+    .client-src {
+      background-color: #e6f7ff;
+    }
+    .src {
+      background-color: #fff7e6;
+    }
+    .other {
+      background-color: #f6ffed;
+    }
+    .group-key {
+      margin-right: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dependency List View</h1>
+  
+  <div class="key">
+    <div class="group-key" style="background-color: #e6f7ff;">client/src</div>
+    <div class="group-key" style="background-color: #fff7e6;">src</div>
+    <div class="group-key" style="background-color: #f6ffed;">other</div>
+  </div>
+  
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="Search files..." oninput="filterFiles()">
+    <span id="fileCount"></span>
+  </div>
+  
+  <div id="fileList">Loading...</div>
+
+  <script>
+    // Function to fetch and display the dependency data
+    async function loadDependencies() {
+      try {
+        const response = await fetch('dependency-graph.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        // Create a map of file dependencies
+        const dependencies = new Map();
+        
+        // Process nodes
+        data.nodes.forEach(node => {
+          dependencies.set(node.id, {
+            id: node.id,
+            group: node.group,
+            imports: [],
+            importedBy: []
+          });
+        });
+        
+        // Process links
+        data.links.forEach(link => {
+          const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
+          const targetId = typeof link.target === 'object' ? link.target.id : link.target;
+          
+          // Add to imports of source
+          if (dependencies.has(sourceId)) {
+            dependencies.get(sourceId).imports.push({
+              file: targetId,
+              isReExport: link.value === 2
+            });
+          }
+          
+          // Add to importedBy of target
+          if (dependencies.has(targetId)) {
+            dependencies.get(targetId).importedBy.push({
+              file: sourceId,
+              isReExport: link.value === 2
+            });
+          }
+        });
+        
+        // Display the dependencies
+        displayDependencies(dependencies);
+      } catch (error) {
+        console.error('Error loading dependency data:', error);
+        document.getElementById('fileList').innerHTML = `<p>Error loading data: ${error.message}</p>`;
+      }
+    }
+    
+    // Function to display the dependencies
+    function displayDependencies(dependencies) {
+      const fileListElement = document.getElementById('fileList');
+      const dependencyArray = Array.from(dependencies.values());
+      
+      // Store the full array for filtering
+      window.allDependencies = dependencyArray;
+      
+      // Update file count
+      document.getElementById('fileCount').textContent = `${dependencyArray.length} files`;
+      
+      // Generate HTML for each file
+      const html = dependencyArray.map(dep => {
+        // Determine the group class
+        let groupClass = 'other';
+        if (dep.group === 1) groupClass = 'client-src';
+        else if (dep.group === 2) groupClass = 'src';
+        
+        return `
+          <div class="file-item ${groupClass}" data-file="${dep.id}">
+            <div class="file-name">${dep.id}</div>
+            <div class="imports">
+              <strong>Imports (${dep.imports.length}):</strong>
+              ${dep.imports.length === 0 ? ' None' : 
+                '<ul>' + 
+                  dep.imports.map(imp => 
+                    `<li>${imp.file}${imp.isReExport ? ' <span style="color: red;">(re-export)</span>' : ''}</li>`
+                  ).join('') + 
+                '</ul>'
+              }
+            </div>
+            <div class="imported-by">
+              <strong>Imported By (${dep.importedBy.length}):</strong>
+              ${dep.importedBy.length === 0 ? ' None' : 
+                '<ul>' + 
+                  dep.importedBy.map(imp => 
+                    `<li>${imp.file}${imp.isReExport ? ' <span style="color: red;">(re-export)</span>' : ''}</li>`
+                  ).join('') + 
+                '</ul>'
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      fileListElement.innerHTML = html;
+    }
+    
+    // Function to filter files based on search
+    function filterFiles() {
+      const searchText = document.getElementById('searchInput').value.toLowerCase();
+      const fileItems = document.querySelectorAll('.file-item');
+      let visibleCount = 0;
+      
+      fileItems.forEach(item => {
+        const fileName = item.getAttribute('data-file').toLowerCase();
+        if (fileName.includes(searchText)) {
+          item.style.display = '';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      
+      document.getElementById('fileCount').textContent = `${visibleCount} of ${window.allDependencies.length} files`;
+    }
+    
+    // Load the dependencies when the page loads
+    document.addEventListener('DOMContentLoaded', loadDependencies);
+  </script>
+</body>
+</html> 

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dependency Graph Visualization</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    .links line { stroke: #999; stroke-opacity: 0.6; }
+    .links line.duplicate { stroke: #9932cc; stroke-width: 2px; stroke-opacity: 0.8; }
+    .nodes circle { stroke: #fff; stroke-width: 1.5px; }
+    .node-label { font-size: 10px; }
+    .legend { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.8); padding: 10px; }
+    .duplicate-group { stroke: #9932cc; stroke-width: 2px; }
+  </style>
+</head>
+<body>
+  <div class="legend">
+    <div><span style="color: #1f77b4;">●</span> client/src</div>
+    <div><span style="color: #ff7f0e;">●</span> src</div>
+    <div><span style="color: #2ca02c;">●</span> other</div>
+    <div><span style="color: #999;">—</span> imports</div>
+    <div><span style="color: #ff0000;">—</span> re-exports</div>
+    <div><span style="color: #9932cc;">—</span> duplicates (1 groups)</div>
+  </div>
+  <svg width="1200" height="900"></svg>
+  <script>
+    fetch('dependency-graph.json')
+      .then(response => response.json())
+      .then(data => {
+        const svg = d3.select("svg");
+        const width = +svg.attr("width");
+        const height = +svg.attr("height");
+
+        // Create a map of node IDs for quick lookup
+        const nodeMap = new Map();
+        data.nodes.forEach(node => {
+          nodeMap.set(node.id, node);
+        });
+        console.log(`Created node map with ${nodeMap.size} entries`);
+        
+        // Find missing nodes in the links
+        const missingNodes = new Set();
+        const missingLinks = [];
+        
+        // Identify missing nodes referenced in links
+        data.links.forEach(link => {
+          const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
+          const targetId = typeof link.target === 'object' ? link.target.id : link.target;
+          
+          if (!nodeMap.has(sourceId)) {
+            missingNodes.add(sourceId);
+            // Don't add the link, just track it
+            missingLinks.push({source: sourceId, target: targetId, missing: 'source'});
+          } else if (!nodeMap.has(targetId)) {
+            missingNodes.add(targetId);
+            // Don't add the link, just track it
+            missingLinks.push({source: sourceId, target: targetId, missing: 'target'});
+          }
+        });
+        
+        // Add missing nodes to the visualization with a different style
+        if (missingNodes.size > 0) {
+          console.log(`Found ${missingNodes.size} missing nodes, adding them to visualization`);
+          document.querySelector(".legend").innerHTML += `<div><span style="color: #ff0000;">✕</span> missing nodes (${missingNodes.size})</div>`;
+          
+          // Create new nodes for missing files
+          missingNodes.forEach(missingId => {
+            const parts = missingId.split('/');
+            const group = missingId.startsWith('client/') ? 1 : 
+                        missingId.startsWith('src/') ? 2 : 0;
+            
+            // Add the missing node to data
+            data.nodes.push({
+              id: missingId,
+              group: group,
+              missing: true
+            });
+          });
+          
+          // Add filtered links back
+          missingLinks.forEach(link => {
+            data.links.push({
+              source: link.source,
+              target: link.target,
+              value: 1,
+              missing: true
+            });
+          });
+        }
+
+        const simulation = d3.forceSimulation(data.nodes)
+          .force("link", d3.forceLink(data.links).id(d => d.id).distance(d => {
+            // Make duplicate links shorter to pull duplicate files closer together
+            return d.value === 3 ? 30 : 100;
+          }))
+          .force("charge", d3.forceManyBody().strength(-100))
+          .force("center", d3.forceCenter(width / 2, height / 2));
+
+        const link = svg.append("g")
+          .attr("class", "links")
+          .selectAll("line")
+          .data(data.links)
+          .enter().append("line")
+          .attr("class", d => {
+            if (d.value === 3) return "duplicate";
+            if (d.missing) return "missing-link";
+            return "";
+          })
+          .attr("stroke", d => {
+            if (d.missing) return "#ff0000"; // Red for missing links
+            if (d.value === 3) return "#9932cc"; // Purple for duplicates
+            if (d.value === 2) return "#ff0000"; // Red for re-exports
+            return "#999"; // Gray for regular imports
+          })
+          .attr("stroke-width", d => Math.sqrt(d.value || 1))
+          .attr("stroke-dasharray", d => d.missing ? "5,5" : null);
+
+        const node = svg.append("g")
+          .attr("class", "nodes")
+          .selectAll("g")
+          .data(data.nodes)
+          .enter().append("g");
+
+        // Add circles or X marks based on whether node is missing
+        node.each(function(d) {
+          const el = d3.select(this);
+          if (d.missing) {
+            // Create an X for missing nodes
+            const size = 5;
+            el.append("line")
+              .attr("x1", -size)
+              .attr("y1", -size)
+              .attr("x2", size)
+              .attr("y2", size)
+              .attr("stroke", "#ff0000")
+              .attr("stroke-width", 2);
+            
+            el.append("line")
+              .attr("x1", -size)
+              .attr("y1", size)
+              .attr("x2", size)
+              .attr("y2", -size)
+              .attr("stroke", "#ff0000")
+              .attr("stroke-width", 2);
+          } else {
+            // Regular node circle
+            el.append("circle")
+              .attr("r", 5)
+              .attr("fill", d => {
+                if (d.group === 1) return "#1f77b4";
+                if (d.group === 2) return "#ff7f0e";
+                return "#2ca02c";
+              });
+          }
+        });
+
+        node.append("title")
+          .text(d => d.missing ? `Missing: ${d.id}` : d.id);
+
+        node.append("text")
+          .attr("class", "node-label")
+          .attr("dx", 8)
+          .attr("dy", ".35em")
+          .text(d => {
+            const parts = d.id.split('/');
+            return parts[parts.length - 1];
+          })
+          .style("fill", d => d.missing ? "#ff0000" : "black")
+          .style("font-style", d => d.missing ? "italic" : "normal");
+
+        simulation.on("tick", () => {
+          link
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+          node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+        // Add zoom functionality
+        const zoom = d3.zoom()
+          .scaleExtent([0.1, 10])
+          .on("zoom", e => {
+            svg.selectAll("g").attr("transform", e.transform);
+          });
+
+        svg.call(zoom);
+      });
+  </script>
+</body>
+</html>

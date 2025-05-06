@@ -1,0 +1,3993 @@
+{
+  "nodes": [
+    {
+      "id": "tsconfig.node.json",
+      "group": 3
+    },
+    {
+      "id": "tsconfig.json",
+      "group": 3
+    },
+    {
+      "id": "tsconfig.app.json",
+      "group": 3
+    },
+    {
+      "id": "staticwebapp.config.json",
+      "group": 3
+    },
+    {
+      "id": "package.json",
+      "group": 3
+    },
+    {
+      "id": "package-lock.json",
+      "group": 3
+    },
+    {
+      "id": "mock-db-schema.json",
+      "group": 3
+    },
+    {
+      "id": "eslint.config.js",
+      "group": 3
+    },
+    {
+      "id": "dependency-graph.json",
+      "group": 3
+    },
+    {
+      "id": "src/main.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/App.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/types/xla.ts",
+      "group": 2
+    },
+    {
+      "id": "src/types/env.d.ts",
+      "group": 2
+    },
+    {
+      "id": "src/services/mockDataProvider.js",
+      "group": 2
+    },
+    {
+      "id": "src/services/azureClient.js",
+      "group": 2
+    },
+    {
+      "id": "src/services/apiMetrics.js",
+      "group": 2
+    },
+    {
+      "id": "src/services/SettingsService.ts",
+      "group": 2
+    },
+    {
+      "id": "src/services/MonitoringService.ts",
+      "group": 2
+    },
+    {
+      "id": "src/services/GlobalSettingsService.ts",
+      "group": 2
+    },
+    {
+      "id": "src/routes/XLAConfiguration.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/routes/AuthRoutes.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/pages/ServiceMonitoringPage.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/pages/HelpPage.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/lib/version.ts",
+      "group": 2
+    },
+    {
+      "id": "src/lib/settings.ts",
+      "group": 2
+    },
+    {
+      "id": "src/lib/releaseNotes.ts",
+      "group": 2
+    },
+    {
+      "id": "src/lib/logger.ts",
+      "group": 2
+    },
+    {
+      "id": "src/lib/debug.ts",
+      "group": 2
+    },
+    {
+      "id": "src/lib/db.ts",
+      "group": 2
+    },
+    {
+      "id": "src/lib/ability.ts",
+      "group": 2
+    },
+    {
+      "id": "src/lib/services/SettingsService.ts",
+      "group": 2
+    },
+    {
+      "id": "src/lib/services/ApiXliMappingService.ts",
+      "group": 2
+    },
+    {
+      "id": "src/data/xlaData.ts",
+      "group": 2
+    },
+    {
+      "id": "src/contexts/DataContext.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/contexts/AbilityContext.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/XLADetailView.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/XLAConfigPanel.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/XLAChart.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/UserManagement.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/Sidebar.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/SettingsPage.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/RoleManagement.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/ReleaseNotesPage.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/OverallScoreCard.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/GlobalSettings.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/GlobalAdminPage.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/ErrorBoundary.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/Dashboard.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/AssetErrorFallback.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/AlertTicker.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/AdminSettingsPage.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/settings/DataSourcesSection.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/settings/DataSourceConfig.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/modules/IntelliSpaces.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/modules/IntelliNetwork.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/modules/IntelliHealth.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/modules/IntelliEX.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/modules/IntelliCX.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/modules/IntelliAsset.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/configuration/XLAConfigurationPanel.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/common/ProgressBar.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/common/MetricCard.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/components/common/DataSourceInfo.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/auth/index.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/utils/storage.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/utils/auth.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/storage/AuthStateManager.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/services/authApi.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/routes/AuthRoutes.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/auth/providers/index.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/providers/SamlProvider.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/providers/OAuthProvider.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/providers/MsalProvider.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/providers/LocalProvider.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/providers/EntraIdProvider.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/providers/BaseAuthProvider.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/integration/index.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/auth/hooks/useAuth.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/hooks/index.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/contexts/AuthContext.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/auth/config/msalConfig.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/components/index.ts",
+      "group": 2
+    },
+    {
+      "id": "src/auth/components/RoleBasedAccess.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/auth/components/ProtectedRoute.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/auth/components/Login.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/auth/components/LocalLogin.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/auth/components/AuthCallback.tsx",
+      "group": 2
+    },
+    {
+      "id": "src/auth/components/AdminSettings.tsx",
+      "group": 2
+    },
+    {
+      "id": "shared/tsconfig.json",
+      "group": 3
+    },
+    {
+      "id": "shared/package.json",
+      "group": 3
+    },
+    {
+      "id": "shared/index.ts",
+      "group": 3
+    },
+    {
+      "id": "shared/models/index.ts",
+      "group": 3
+    },
+    {
+      "id": "shared/models/MetricModels.ts",
+      "group": 3
+    },
+    {
+      "id": "shared/components/auth/index.ts",
+      "group": 3
+    },
+    {
+      "id": "server/package.json",
+      "group": 3
+    },
+    {
+      "id": "server/src/services/azureClient.ts",
+      "group": 3
+    },
+    {
+      "id": "server/src/routes/api.ts",
+      "group": 3
+    },
+    {
+      "id": "secure_credentials/app_connection_example.js",
+      "group": 3
+    },
+    {
+      "id": "scripts/package.json",
+      "group": 3
+    },
+    {
+      "id": "scripts/package-lock.json",
+      "group": 3
+    },
+    {
+      "id": "scripts/find-cross-deps.js",
+      "group": 3
+    },
+    {
+      "id": "scripts/db-seed.js",
+      "group": 3
+    },
+    {
+      "id": "scripts/db-init.js",
+      "group": 3
+    },
+    {
+      "id": "public/module-loader.js",
+      "group": 3
+    },
+    {
+      "id": "public/scripts/env-config.js",
+      "group": 3
+    },
+    {
+      "id": "functions/tsconfig.json",
+      "group": 3
+    },
+    {
+      "id": "functions/package.json",
+      "group": 3
+    },
+    {
+      "id": "functions/package-lock.json",
+      "group": 3
+    },
+    {
+      "id": "functions/host.json",
+      "group": 3
+    },
+    {
+      "id": "functions/src/functions/api-clients.ts",
+      "group": 3
+    },
+    {
+      "id": "docs/dependency-analysis/dependency-graph.json",
+      "group": 3
+    },
+    {
+      "id": "client/vite.config.ts",
+      "group": 3
+    },
+    {
+      "id": "client/tsconfig.node.json",
+      "group": 3
+    },
+    {
+      "id": "client/tsconfig.json",
+      "group": 3
+    },
+    {
+      "id": "client/tsconfig.check.json",
+      "group": 3
+    },
+    {
+      "id": "client/tailwind.config.js",
+      "group": 3
+    },
+    {
+      "id": "client/postcss.config.js",
+      "group": 3
+    },
+    {
+      "id": "client/package.json",
+      "group": 3
+    },
+    {
+      "id": "client/azure-app-service.config.json",
+      "group": 3
+    },
+    {
+      "id": "client/src/vite-env.d.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/main.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/main.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/index.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/index.css",
+      "group": 1
+    },
+    {
+      "id": "client/src/environment.d.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/App.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/types/xla.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/types/settings.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/types/env.d.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/types/debug.d.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/types/database.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/types/auth.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/xliSchedulerService.js",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/xlaApiService.js",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/mockMetricsApi.js",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/mockDataProvider.js",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/dbTest.js",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/dataValidation.js",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/azureClient.js",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/azureClient.d.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/apiResilience.js",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/apiMetrics.js",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/SettingsService.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/MonitoringService.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/services/GlobalSettingsService.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/routes/index.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/routes/XLAConfiguration.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/routes/ChartRoutes.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/routes/AuthRoutes.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/pages/ServiceMonitoringPage.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/pages/HelpPage.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/pages/AuthDocumentation.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/pages/AuthDocumentation.css",
+      "group": 1
+    },
+    {
+      "id": "client/src/pages/charts/ChartDashboardPage.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/pages/charts/ChartDashboardPage.css",
+      "group": 1
+    },
+    {
+      "id": "client/src/pages/auth/LoginTroubleshooting.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/pages/api/ApiConfigPage.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/pages/api/ApiConfigPage.css",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/version.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/utils.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/tickerUtils.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/sidebarModules.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/settings.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/releaseNotes.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/logger.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/debug.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/db.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/constants.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/abilityUtils.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/abilityHooks.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/ability.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/FallbackData.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/validation/xlaValidation.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/services/XLAService.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/services/SettingsService.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/services/MetricAggregationService.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/services/ExternalAPIService.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/services/ApiXliMappingService.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/auth/errors.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/lib/auth/AuthContext.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/data/xlaData.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/data/ReleaseNotesData.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/contexts/TickerContext.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/contexts/DataContext.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/contexts/AbilityContext.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/constants/text.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/constants/text.js",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/XLIManager.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/XLALogTable.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/XLADetailView.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/XLAConfigPanel.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/XLAChart.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/UserManagement.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/TenantManagement.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/TenantAdminPage.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/Sidebar.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/SettingsPage.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/Settings.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ScoreCard.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/RoleManagement.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/RoleBasedAccess.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ReleaseNotesPage.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/Profile.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/OverallScoreCard.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/LoginPage.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/LoadingSpinner.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/GlobalSettings.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/GlobalAdminPage.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ErrorBoundary.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/DatabaseTest.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/Dashboard.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/AuthProviderSettings.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/AuthDebugger.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/AssetErrorFallback.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ApiClientManager.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/AlertTicker.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/AdminSettingsPage.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/AdminRoutes.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ui/use-toast.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ui/tooltip.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ui/tabs.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ui/table.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ui/label.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ui/input.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ui/index.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ui/card.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ui/button.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/ui/badge.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/shared/Tabs.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/shared/CollapsibleSection.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/settings/DebugSettings.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/settings/DataSourcesSection.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/settings/DataSourceConfig.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/modules/IntelliSpaces.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/modules/IntelliNetwork.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/modules/IntelliHealth.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/modules/IntelliEX.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/modules/IntelliCX.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/modules/IntelliAsset.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/configuration/XLAConfigurationPanel.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/configuration/XLAConfigurationPanel.css",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/common/ProgressBar.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/common/MetricCard.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/common/DateRangePicker.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/common/DatabaseErrorDisplay.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/common/DataSourceInfo.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/common/CollapsibleCard.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/auth/AuthCallback.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/api/ApiConfigWizard.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/components/api/ApiConfigWizard.css",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/types.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/index.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/utils/storage.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/utils/state.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/utils/index.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/utils/auth.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/types/index.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/services/authApi.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/routes/AuthRoutes.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/providers/index.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/providers/SamlProvider.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/providers/OAuthProvider.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/providers/MsalProvider.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/providers/MsalProvider.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/providers/EntraIdProvider.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/providers/BaseAuthProvider.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/providers/AuthProviderStrategy.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/integration/index.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/hooks/useAuth.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/hooks/useAuth.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/hooks/index.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/contexts/AuthContext.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/config/msalConfig.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/components/index.ts",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/components/RoleBasedAccess.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/components/ProtectedRoute.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/components/Login.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/components/Login.css",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/components/AuthCallback.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/components/AuthCallback.css",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/components/AdminSettings.tsx",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/components/AdminSettings.css",
+      "group": 1
+    },
+    {
+      "id": "client/src/auth/components/AccessDenied.tsx",
+      "group": 1
+    }
+  ],
+  "links": [
+    {
+      "source": "src/main.tsx",
+      "target": "src/App.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/main.tsx",
+      "target": "src/services/azureClient.js",
+      "value": 1
+    },
+    {
+      "source": "src/main.tsx",
+      "target": "src/auth",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/contexts/AbilityContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/contexts/DataContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/Dashboard.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/XLADetailView.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/SettingsPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/ReleaseNotesPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/Sidebar.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/modules/IntelliAsset.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/modules/IntelliCX.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/modules/IntelliEX.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/modules/IntelliSpaces.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/modules/IntelliHealth.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/modules/IntelliNetwork.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/AlertTicker.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/GlobalAdminPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/ErrorBoundary.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/pages/ServiceMonitoringPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/auth",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/auth/components/ProtectedRoute.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/AssetErrorFallback.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/components/AdminSettingsPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/routes/XLAConfiguration.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/routes/AuthRoutes.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/auth/components/Login.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/App.tsx",
+      "target": "src/pages/HelpPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/services/azureClient.js",
+      "target": "src/services/mockDataProvider.js",
+      "value": 1
+    },
+    {
+      "source": "src/services/SettingsService.ts",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/services/SettingsService.ts",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/services/SettingsService.ts",
+      "target": "src/lib/releaseNotes.ts",
+      "value": 1
+    },
+    {
+      "source": "src/services/MonitoringService.ts",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/services/GlobalSettingsService.ts",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/services/GlobalSettingsService.ts",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/services/GlobalSettingsService.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/routes/XLAConfiguration.tsx",
+      "target": "src/components/configuration/XLAConfigurationPanel.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/routes/XLAConfiguration.tsx",
+      "target": "src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "src/routes/AuthRoutes.tsx",
+      "target": "src/auth/components",
+      "value": 1
+    },
+    {
+      "source": "src/routes/AuthRoutes.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/routes/AuthRoutes.tsx",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/pages/ServiceMonitoringPage.tsx",
+      "target": "src/services/MonitoringService.ts",
+      "value": 1
+    },
+    {
+      "source": "src/lib/version.ts",
+      "target": "src/lib/releaseNotes.ts",
+      "value": 1
+    },
+    {
+      "source": "src/lib/settings.ts",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/lib/settings.ts",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/lib/db.ts",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/lib/db.ts",
+      "target": "src/services/azureClient.js",
+      "value": 1
+    },
+    {
+      "source": "src/lib/services/SettingsService.ts",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/lib/services/ApiXliMappingService.ts",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/lib/services/ApiXliMappingService.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/lib/services/ApiXliMappingService.ts",
+      "target": "src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "src/data/xlaData.ts",
+      "target": "src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "src/contexts/DataContext.tsx",
+      "target": "src/auth",
+      "value": 1
+    },
+    {
+      "source": "src/contexts/DataContext.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/contexts/AbilityContext.tsx",
+      "target": "src/lib/ability.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/XLADetailView.tsx",
+      "target": "src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/XLADetailView.tsx",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/XLADetailView.tsx",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/XLAConfigPanel.tsx",
+      "target": "src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/XLAConfigPanel.tsx",
+      "target": "src/data/xlaData.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/XLAConfigPanel.tsx",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/XLAConfigPanel.tsx",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/XLAChart.tsx",
+      "target": "src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/XLAChart.tsx",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/XLAChart.tsx",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/UserManagement.tsx",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/UserManagement.tsx",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/Sidebar.tsx",
+      "target": "src/auth",
+      "value": 1
+    },
+    {
+      "source": "src/components/Sidebar.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/SettingsPage.tsx",
+      "target": "src/auth",
+      "value": 1
+    },
+    {
+      "source": "src/components/SettingsPage.tsx",
+      "target": "src/components/settings/DataSourcesSection.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/SettingsPage.tsx",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/SettingsPage.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/SettingsPage.tsx",
+      "target": "src/lib/settings.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/SettingsPage.tsx",
+      "target": "src/components/XLAConfigPanel.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/ReleaseNotesPage.tsx",
+      "target": "src/lib/version.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/ReleaseNotesPage.tsx",
+      "target": "src/services/SettingsService.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/ReleaseNotesPage.tsx",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/ReleaseNotesPage.tsx",
+      "target": "src/lib/releaseNotes.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/OverallScoreCard.tsx",
+      "target": "src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/GlobalSettings.tsx",
+      "target": "src/services/GlobalSettingsService.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/GlobalSettings.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/GlobalAdminPage.tsx",
+      "target": "src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/GlobalAdminPage.tsx",
+      "target": "src/components/RoleManagement.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/GlobalAdminPage.tsx",
+      "target": "src/components/UserManagement.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/GlobalAdminPage.tsx",
+      "target": "src/components/GlobalSettings.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/ErrorBoundary.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/Dashboard.tsx",
+      "target": "src/components/XLAChart.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/Dashboard.tsx",
+      "target": "src/components/OverallScoreCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/Dashboard.tsx",
+      "target": "src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/Dashboard.tsx",
+      "target": "src/services/azureClient.js",
+      "value": 1
+    },
+    {
+      "source": "src/components/Dashboard.tsx",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/Dashboard.tsx",
+      "target": "src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/Dashboard.tsx",
+      "target": "src/data/xlaData.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/Dashboard.tsx",
+      "target": "src/services/SettingsService.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/AdminSettingsPage.tsx",
+      "target": "src/components/GlobalSettings.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/settings/DataSourcesSection.tsx",
+      "target": "src/components/settings/DataSourceConfig.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/settings/DataSourcesSection.tsx",
+      "target": "src/lib/settings.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/settings/DataSourcesSection.tsx",
+      "target": "src/auth",
+      "value": 1
+    },
+    {
+      "source": "src/components/settings/DataSourcesSection.tsx",
+      "target": "src/lib/services/SettingsService.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/settings/DataSourceConfig.tsx",
+      "target": "src/lib/settings.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/modules/IntelliNetwork.tsx",
+      "target": "src/components/common/MetricCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/modules/IntelliNetwork.tsx",
+      "target": "src/components/common/ProgressBar.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/modules/IntelliNetwork.tsx",
+      "target": "src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/modules/IntelliHealth.tsx",
+      "target": "src/components/common/MetricCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/modules/IntelliHealth.tsx",
+      "target": "src/components/common/ProgressBar.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/modules/IntelliHealth.tsx",
+      "target": "src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/modules/IntelliCX.tsx",
+      "target": "src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/modules/IntelliAsset.tsx",
+      "target": "src/components/common/MetricCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/modules/IntelliAsset.tsx",
+      "target": "src/components/common/ProgressBar.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/modules/IntelliAsset.tsx",
+      "target": "src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "src/auth",
+      "value": 1
+    },
+    {
+      "source": "src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "src/lib/services/ApiXliMappingService.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/components/common/MetricCard.tsx",
+      "target": "src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/index.ts",
+      "target": "src/auth/contexts/AuthContext.tsx",
+      "value": 2
+    },
+    {
+      "source": "src/auth/index.ts",
+      "target": "src/auth/hooks/useAuth.ts",
+      "value": 2
+    },
+    {
+      "source": "src/auth/index.ts",
+      "target": "src/auth/hooks/index.ts",
+      "value": 2
+    },
+    {
+      "source": "src/auth/index.ts",
+      "target": "src/auth/components/index.ts",
+      "value": 2
+    },
+    {
+      "source": "src/auth/index.ts",
+      "target": "src/auth/components/RoleBasedAccess.tsx",
+      "value": 2
+    },
+    {
+      "source": "src/auth/utils/storage.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/utils/storage.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/utils/auth.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/utils/auth.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/storage/AuthStateManager.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/storage/AuthStateManager.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/services/authApi.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/services/authApi.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/services/authApi.ts",
+      "target": "src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/routes/AuthRoutes.tsx",
+      "target": "src/auth/components",
+      "value": 1
+    },
+    {
+      "source": "src/auth/routes/AuthRoutes.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/routes/AuthRoutes.tsx",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/index.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/index.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/index.ts",
+      "target": "src/auth/providers/BaseAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/index.ts",
+      "target": "src/auth/providers/EntraIdProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/index.ts",
+      "target": "src/auth/providers/OAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/index.ts",
+      "target": "src/auth/providers/SamlProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/index.ts",
+      "target": "src/auth/providers/BaseAuthProvider.ts",
+      "value": 2
+    },
+    {
+      "source": "src/auth/providers/index.ts",
+      "target": "src/auth/providers/EntraIdProvider.ts",
+      "value": 2
+    },
+    {
+      "source": "src/auth/providers/index.ts",
+      "target": "src/auth/providers/OAuthProvider.ts",
+      "value": 2
+    },
+    {
+      "source": "src/auth/providers/index.ts",
+      "target": "src/auth/providers/SamlProvider.ts",
+      "value": 2
+    },
+    {
+      "source": "src/auth/providers/SamlProvider.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/SamlProvider.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/SamlProvider.ts",
+      "target": "src/auth/providers/BaseAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/SamlProvider.ts",
+      "target": "src/auth/utils/auth.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/SamlProvider.ts",
+      "target": "src/auth/utils/storage.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/OAuthProvider.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/OAuthProvider.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/OAuthProvider.ts",
+      "target": "src/auth/providers/BaseAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/OAuthProvider.ts",
+      "target": "src/auth/utils/auth.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/OAuthProvider.ts",
+      "target": "src/auth/utils/storage.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/MsalProvider.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/LocalProvider.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/LocalProvider.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/LocalProvider.ts",
+      "target": "src/auth/providers/BaseAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/EntraIdProvider.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/EntraIdProvider.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/EntraIdProvider.ts",
+      "target": "src/auth/providers/BaseAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/EntraIdProvider.ts",
+      "target": "src/auth/providers/MsalProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/EntraIdProvider.ts",
+      "target": "src/auth/storage/AuthStateManager.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/BaseAuthProvider.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/BaseAuthProvider.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/providers/BaseAuthProvider.ts",
+      "target": "src/auth/storage/AuthStateManager.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/index.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/contexts/AuthContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/hooks/index.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/components/index.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/components/RoleBasedAccess.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/components/ProtectedRoute.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/components/Login.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/components/AuthCallback.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/components/AdminSettings.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/integration/index.tsx",
+      "target": "src/auth/components/LocalLogin.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/hooks/useAuth.ts",
+      "target": "src/auth/contexts/AuthContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/hooks/useAuth.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/hooks/useAuth.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/hooks/index.ts",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/hooks/index.ts",
+      "target": "src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/hooks/index.ts",
+      "target": "src/auth/hooks/useAuth.ts",
+      "value": 2
+    },
+    {
+      "source": "src/auth/contexts/AuthContext.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/contexts/AuthContext.tsx",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/contexts/AuthContext.tsx",
+      "target": "src/auth/providers",
+      "value": 1
+    },
+    {
+      "source": "src/auth/contexts/AuthContext.tsx",
+      "target": "src/auth/utils/storage.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/contexts/AuthContext.tsx",
+      "target": "src/auth/utils/auth.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/config/msalConfig.ts",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/index.ts",
+      "target": "src/auth/components/ProtectedRoute.tsx",
+      "value": 2
+    },
+    {
+      "source": "src/auth/components/index.ts",
+      "target": "src/auth/components/RoleBasedAccess.tsx",
+      "value": 2
+    },
+    {
+      "source": "src/auth/components/index.ts",
+      "target": "src/auth/components/Login.tsx",
+      "value": 2
+    },
+    {
+      "source": "src/auth/components/index.ts",
+      "target": "src/auth/components/AuthCallback.tsx",
+      "value": 2
+    },
+    {
+      "source": "src/auth/components/index.ts",
+      "target": "src/auth/components/AdminSettings.tsx",
+      "value": 2
+    },
+    {
+      "source": "src/auth/components/index.ts",
+      "target": "src/auth/components/LocalLogin.tsx",
+      "value": 2
+    },
+    {
+      "source": "src/auth/components/RoleBasedAccess.tsx",
+      "target": "src/auth/hooks",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/RoleBasedAccess.tsx",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/ProtectedRoute.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/ProtectedRoute.tsx",
+      "target": "src/auth/hooks",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/ProtectedRoute.tsx",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/Login.tsx",
+      "target": "src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/Login.tsx",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/Login.tsx",
+      "target": "src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/Login.tsx",
+      "target": "src/lib/version.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/Login.tsx",
+      "target": "src/auth/contexts/AuthContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/Login.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/LocalLogin.tsx",
+      "target": "src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/LocalLogin.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/AuthCallback.tsx",
+      "target": "src/auth/contexts/AuthContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/AuthCallback.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/AdminSettings.tsx",
+      "target": "src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/AdminSettings.tsx",
+      "target": "src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "src/auth/components/AdminSettings.tsx",
+      "target": "src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "shared/index.ts",
+      "target": "shared/models/index.ts",
+      "value": 2
+    },
+    {
+      "source": "shared/models/index.ts",
+      "target": "shared/models/MetricModels.ts",
+      "value": 2
+    },
+    {
+      "source": "server/src/routes/api.ts",
+      "target": "server/src/services/azureClient.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/main.tsx",
+      "target": "client/src/index.css",
+      "value": 1
+    },
+    {
+      "source": "client/src/main.tsx",
+      "target": "client/src/App.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/main.tsx",
+      "target": "client/src/services/azureClient.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/main.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/index.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/auth/components/ProtectedRoute.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/types/auth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/contexts/AbilityContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/contexts/TickerContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/contexts/DataContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/Dashboard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/XLADetailView.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/SettingsPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/ReleaseNotesPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/Sidebar.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/modules/IntelliAsset.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/modules/IntelliCX.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/modules/IntelliEX.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/modules/IntelliSpaces.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/modules/IntelliHealth.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/modules/IntelliNetwork.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/AlertTicker.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/GlobalAdminPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/TenantAdminPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/ErrorBoundary.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/pages/ServiceMonitoringPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/AdminSettingsPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/routes/XLAConfiguration.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/routes/AuthRoutes.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/pages/AuthDocumentation.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/auth/components/Login.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/auth/components/AuthCallback.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/pages/HelpPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/pages/api/ApiConfigPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/auth/components/AccessDenied.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/Profile.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/Settings",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "client/src/components/AdminRoutes.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/App.tsx",
+      "target": "src/auth/components/ProtectedRoute.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/xliSchedulerService.js",
+      "target": "client/src/services/azureClient.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/xliSchedulerService.js",
+      "target": "client/src/services/xlaApiService.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/xlaApiService.js",
+      "target": "client/src/services/azureClient.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/xlaApiService.js",
+      "target": "client/src/services/apiResilience.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/xlaApiService.js",
+      "target": "client/src/services/dataValidation.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/xlaApiService.js",
+      "target": "client/src/services/apiMetrics.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/azureClient.js",
+      "target": "client/src/services/mockDataProvider.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/apiMetrics.js",
+      "target": "client/src/services/mockMetricsApi.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/SettingsService.ts",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/SettingsService.ts",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/SettingsService.ts",
+      "target": "client/src/lib/releaseNotes.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/MonitoringService.ts",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/GlobalSettingsService.ts",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/GlobalSettingsService.ts",
+      "target": "client/src/types/database.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/services/GlobalSettingsService.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/index.tsx",
+      "target": "client/src/auth/components",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/index.tsx",
+      "target": "client/src/components/Dashboard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/index.tsx",
+      "target": "client/src/routes/XLAConfiguration.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/index.tsx",
+      "target": "client/src/pages/api/ApiConfigPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/index.tsx",
+      "target": "client/src/pages/charts/ChartDashboardPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/index.tsx",
+      "target": "client/src/routes/ChartRoutes.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/XLAConfiguration.tsx",
+      "target": "client/src/components/configuration/XLAConfigurationPanel.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/XLAConfiguration.tsx",
+      "target": "client/src/lib/services/ExternalAPIService.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/XLAConfiguration.tsx",
+      "target": "client/src/lib/services/XLAService.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/XLAConfiguration.tsx",
+      "target": "client/src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/ChartRoutes.tsx",
+      "target": "client/src/auth/components",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/ChartRoutes.tsx",
+      "target": "client/src/pages/charts/ChartDashboardPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/AuthRoutes.tsx",
+      "target": "client/src/auth/components",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/AuthRoutes.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/routes/AuthRoutes.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/ServiceMonitoringPage.tsx",
+      "target": "client/src/components/ui/button.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/ServiceMonitoringPage.tsx",
+      "target": "client/src/components/ui/card.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/ServiceMonitoringPage.tsx",
+      "target": "client/src/services/MonitoringService.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/ServiceMonitoringPage.tsx",
+      "target": "client/src/components/ui/tabs.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/ServiceMonitoringPage.tsx",
+      "target": "client/src/components/ui/table.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/ServiceMonitoringPage.tsx",
+      "target": "client/src/components/ui/badge.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/ServiceMonitoringPage.tsx",
+      "target": "client/src/components/ui/use-toast.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/ServiceMonitoringPage.tsx",
+      "target": "client/src/components/ui/input.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/HelpPage.tsx",
+      "target": "client/src/components/ui/button.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/HelpPage.tsx",
+      "target": "client/src/components/ui/input.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/HelpPage.tsx",
+      "target": "client/src/components/ui/card.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/HelpPage.tsx",
+      "target": "client/src/components/ui/tabs.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/AuthDocumentation.tsx",
+      "target": "client/src/pages/AuthDocumentation.css",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/AuthDocumentation.tsx",
+      "target": "client/src/pages/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/charts/ChartDashboardPage.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/charts/ChartDashboardPage.tsx",
+      "target": "client/src/pages/charts/ChartDashboardPage.css",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/api/ApiConfigPage.tsx",
+      "target": "client/src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/api/ApiConfigPage.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/api/ApiConfigPage.tsx",
+      "target": "client/src/components/api/ApiConfigWizard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/api/ApiConfigPage.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/pages/api/ApiConfigPage.tsx",
+      "target": "client/src/pages/api/ApiConfigPage.css",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/version.ts",
+      "target": "client/src/lib/releaseNotes.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/settings.ts",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/settings.ts",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/db.ts",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/db.ts",
+      "target": "client/src/services/azureClient.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/constants.ts",
+      "target": "client/src/constants/text.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/abilityUtils.ts",
+      "target": "client/src/lib/ability.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/abilityUtils.ts",
+      "target": "client/src/types/auth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/abilityHooks.ts",
+      "target": "client/src/lib/abilityUtils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/ability.ts",
+      "target": "client/src/types/auth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/validation/xlaValidation.ts",
+      "target": "client/src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/services/XLAService.ts",
+      "target": "client/src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/services/XLAService.ts",
+      "target": "client/src/lib/services/ExternalAPIService.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/services/SettingsService.ts",
+      "target": "client/src/types/settings.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/services/SettingsService.ts",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/services/SettingsService.ts",
+      "target": "client/src/types/database.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/services/ExternalAPIService.ts",
+      "target": "client/src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/services/ApiXliMappingService.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/services/ApiXliMappingService.ts",
+      "target": "client/src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/lib/auth/AuthContext.tsx",
+      "target": "client/src/lib/auth/errors.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/data/xlaData.ts",
+      "target": "client/src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/contexts/TickerContext.tsx",
+      "target": "client/src/lib/tickerUtils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/contexts/DataContext.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/contexts/DataContext.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/contexts/AbilityContext.tsx",
+      "target": "client/src/lib/ability.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/contexts/AbilityContext.tsx",
+      "target": "client/src/lib/abilityUtils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/contexts/AbilityContext.tsx",
+      "target": "client/src/types/auth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLIManager.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLADetailView.tsx",
+      "target": "client/src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLADetailView.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLADetailView.tsx",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLADetailView.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLADetailView.tsx",
+      "target": "client/src/data/xlaData.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLAConfigPanel.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLAConfigPanel.tsx",
+      "target": "client/src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLAConfigPanel.tsx",
+      "target": "client/src/data/xlaData.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLAConfigPanel.tsx",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLAConfigPanel.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLAChart.tsx",
+      "target": "client/src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/XLAChart.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/UserManagement.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/UserManagement.tsx",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/UserManagement.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantManagement.tsx",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantManagement.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantManagement.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantManagement.tsx",
+      "target": "client/src/lib/services/SettingsService.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantManagement.tsx",
+      "target": "client/src/types/settings.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantManagement.tsx",
+      "target": "client/src/components/ui/button.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantManagement.tsx",
+      "target": "client/src/components/ui/input.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantManagement.tsx",
+      "target": "client/src/components/ui/card.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantManagement.tsx",
+      "target": "client/src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantAdminPage.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantAdminPage.tsx",
+      "target": "client/src/components/RoleManagement.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/TenantAdminPage.tsx",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Sidebar.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Sidebar.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Sidebar.tsx",
+      "target": "client/src/lib/sidebarModules.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Sidebar.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/SettingsPage.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/SettingsPage.tsx",
+      "target": "client/src/contexts/TickerContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/SettingsPage.tsx",
+      "target": "client/src/components/settings/DataSourcesSection.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/SettingsPage.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/SettingsPage.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/SettingsPage.tsx",
+      "target": "client/src/lib/settings.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/SettingsPage.tsx",
+      "target": "client/src/components/shared/CollapsibleSection.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/SettingsPage.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/SettingsPage.tsx",
+      "target": "client/src/components/XLAConfigPanel.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Settings.tsx",
+      "target": "client/src/components/SettingsPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ScoreCard.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ScoreCard.tsx",
+      "target": "client/src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/RoleBasedAccess.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/RoleBasedAccess.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ReleaseNotesPage.tsx",
+      "target": "client/src/lib/version.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ReleaseNotesPage.tsx",
+      "target": "client/src/services/SettingsService.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ReleaseNotesPage.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ReleaseNotesPage.tsx",
+      "target": "client/src/lib/releaseNotes.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Profile.tsx",
+      "target": "client/src/components/SettingsPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/OverallScoreCard.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/OverallScoreCard.tsx",
+      "target": "client/src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/LoginPage.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/LoginPage.tsx",
+      "target": "client/src/lib/version.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/LoginPage.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/LoginPage.tsx",
+      "target": "client/src/components/AuthDebugger.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/GlobalSettings.tsx",
+      "target": "client/src/components/ui/use-toast.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/GlobalSettings.tsx",
+      "target": "client/src/services/GlobalSettingsService.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/GlobalSettings.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/GlobalAdminPage.tsx",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/GlobalAdminPage.tsx",
+      "target": "client/src/components/RoleManagement.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/GlobalAdminPage.tsx",
+      "target": "client/src/components/UserManagement.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/GlobalAdminPage.tsx",
+      "target": "client/src/components/GlobalSettings.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/GlobalAdminPage.tsx",
+      "target": "client/src/components/shared/CollapsibleSection.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/GlobalAdminPage.tsx",
+      "target": "client/src/lib/FallbackData.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ErrorBoundary.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/DatabaseTest.tsx",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Dashboard.tsx",
+      "target": "client/src/components/ScoreCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Dashboard.tsx",
+      "target": "client/src/components/XLAChart.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Dashboard.tsx",
+      "target": "client/src/components/OverallScoreCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Dashboard.tsx",
+      "target": "client/src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Dashboard.tsx",
+      "target": "client/src/lib/db.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Dashboard.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Dashboard.tsx",
+      "target": "client/src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Dashboard.tsx",
+      "target": "client/src/data/xlaData.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/Dashboard.tsx",
+      "target": "client/src/lib/services/SettingsService.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/AuthDebugger.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ApiClientManager.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/AlertTicker.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/AdminRoutes.tsx",
+      "target": "client/src/components/TenantAdminPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/AdminRoutes.tsx",
+      "target": "client/src/components/AdminSettingsPage.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ui/tooltip.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ui/tabs.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ui/table.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ui/input.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ui/card.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ui/button.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/ui/badge.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/shared/Tabs.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DebugSettings.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DebugSettings.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DebugSettings.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DebugSettings.tsx",
+      "target": "client/src/components/shared/CollapsibleSection.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DataSourcesSection.tsx",
+      "target": "client/src/components/settings/DataSourceConfig.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DataSourcesSection.tsx",
+      "target": "client/src/lib/settings.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DataSourcesSection.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DataSourcesSection.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DataSourcesSection.tsx",
+      "target": "client/src/lib/services/SettingsService.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DataSourcesSection.tsx",
+      "target": "client/src/types/settings.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DataSourceConfig.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/settings/DataSourceConfig.tsx",
+      "target": "client/src/lib/settings.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliNetwork.tsx",
+      "target": "client/src/components/common/MetricCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliNetwork.tsx",
+      "target": "client/src/components/common/CollapsibleCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliNetwork.tsx",
+      "target": "client/src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliHealth.tsx",
+      "target": "client/src/components/common/MetricCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliHealth.tsx",
+      "target": "client/src/components/common/ProgressBar.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliHealth.tsx",
+      "target": "client/src/components/common/CollapsibleCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliHealth.tsx",
+      "target": "client/src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliCX.tsx",
+      "target": "client/src/components/common/CollapsibleCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliCX.tsx",
+      "target": "client/src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliAsset.tsx",
+      "target": "client/src/components/common/MetricCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliAsset.tsx",
+      "target": "client/src/components/common/ProgressBar.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliAsset.tsx",
+      "target": "client/src/components/common/CollapsibleCard.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/modules/IntelliAsset.tsx",
+      "target": "client/src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "client/src/types/xla.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "client/src/lib/validation/xlaValidation.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "client/src/constants/text.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "client/src/components/api/ApiConfigWizard.css",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "client/src/components/configuration/XLAConfigurationPanel.css",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/configuration/XLAConfigurationPanel.tsx",
+      "target": "client/src/lib/services/ApiXliMappingService.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/common/MetricCard.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/common/MetricCard.tsx",
+      "target": "client/src/components/common/DataSourceInfo.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/common/DateRangePicker.tsx",
+      "target": "client/src/components/ui/button.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/common/DateRangePicker.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/common/DataSourceInfo.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/common/CollapsibleCard.tsx",
+      "target": "client/src/lib/utils.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/api/ApiConfigWizard.tsx",
+      "target": "client/src/auth",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/api/ApiConfigWizard.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/api/ApiConfigWizard.tsx",
+      "target": "client/src/constants/text.js",
+      "value": 1
+    },
+    {
+      "source": "client/src/components/api/ApiConfigWizard.tsx",
+      "target": "client/src/components/api/ApiConfigWizard.css",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/index.ts",
+      "target": "client/src/auth/contexts/AuthContext.tsx",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/index.ts",
+      "target": "client/src/auth/hooks/useAuth.ts",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/index.ts",
+      "target": "client/src/auth/hooks/index.ts",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/index.ts",
+      "target": "client/src/auth/components/ProtectedRoute.tsx",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/index.ts",
+      "target": "client/src/auth/components/RoleBasedAccess.tsx",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/utils/storage.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/utils/storage.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/utils/state.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/utils/state.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/utils/index.ts",
+      "target": "client/src/auth/utils/auth.ts",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/utils/index.ts",
+      "target": "client/src/auth/utils/storage.ts",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/utils/auth.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/utils/auth.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/services/authApi.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/services/authApi.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/services/authApi.ts",
+      "target": "client/src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/routes/AuthRoutes.tsx",
+      "target": "client/src/auth/components",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/routes/AuthRoutes.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/routes/AuthRoutes.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/routes/AuthRoutes.tsx",
+      "target": "client/src/pages/auth/LoginTroubleshooting.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/index.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/index.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/index.ts",
+      "target": "client/src/auth/providers/BaseAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/index.ts",
+      "target": "client/src/auth/providers/EntraIdProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/index.ts",
+      "target": "client/src/auth/providers/OAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/index.ts",
+      "target": "client/src/auth/providers/SamlProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/index.ts",
+      "target": "client/src/auth/providers/BaseAuthProvider.ts",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/providers/index.ts",
+      "target": "client/src/auth/providers/EntraIdProvider.ts",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/providers/index.ts",
+      "target": "client/src/auth/providers/OAuthProvider.ts",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/providers/index.ts",
+      "target": "client/src/auth/providers/SamlProvider.ts",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/providers/SamlProvider.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/SamlProvider.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/SamlProvider.ts",
+      "target": "client/src/auth/providers/BaseAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/SamlProvider.ts",
+      "target": "client/src/auth/utils/auth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/SamlProvider.ts",
+      "target": "client/src/auth/utils/storage.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/SamlProvider.ts",
+      "target": "client/src/auth/providers/AuthProviderStrategy.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/OAuthProvider.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/OAuthProvider.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/OAuthProvider.ts",
+      "target": "client/src/auth/providers/BaseAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/OAuthProvider.ts",
+      "target": "client/src/auth/providers/AuthProviderStrategy.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/OAuthProvider.ts",
+      "target": "client/src/auth/utils/auth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/OAuthProvider.ts",
+      "target": "client/src/auth/utils/storage.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/MsalProvider.tsx",
+      "target": "client/src/auth/config/msalConfig.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/MsalProvider.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/EntraIdProvider.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/EntraIdProvider.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/EntraIdProvider.ts",
+      "target": "client/src/auth/providers/BaseAuthProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/EntraIdProvider.ts",
+      "target": "client/src/auth/providers/AuthProviderStrategy.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/EntraIdProvider.ts",
+      "target": "client/src/auth/providers/MsalProvider.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/BaseAuthProvider.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/BaseAuthProvider.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/BaseAuthProvider.ts",
+      "target": "client/src/auth/providers/AuthProviderStrategy.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/providers/AuthProviderStrategy.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/integration/index.tsx",
+      "target": "client/src/auth/index.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/integration/index.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/integration/index.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/integration/index.tsx",
+      "target": "client/src/auth/contexts/AuthContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/integration/index.tsx",
+      "target": "client/src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/integration/index.tsx",
+      "target": "client/src/auth/hooks/index.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/integration/index.tsx",
+      "target": "client/src/auth/components/ProtectedRoute.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/integration/index.tsx",
+      "target": "client/src/auth/components/RoleBasedAccess.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/hooks/useAuth.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/hooks/useAuth.tsx",
+      "target": "client/src/auth/contexts/AuthContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/hooks/useAuth.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/hooks/useAuth.ts",
+      "target": "client/src/auth/contexts/AuthContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/hooks/useAuth.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/hooks/useAuth.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/hooks/index.ts",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/hooks/index.ts",
+      "target": "client/src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/hooks/index.ts",
+      "target": "client/src/auth/hooks/useAuth.ts",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/contexts/AuthContext.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/contexts/AuthContext.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/contexts/AuthContext.tsx",
+      "target": "client/src/auth/providers",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/contexts/AuthContext.tsx",
+      "target": "client/src/auth/utils/storage.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/contexts/AuthContext.tsx",
+      "target": "client/src/auth/utils/auth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/config/msalConfig.ts",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/index.ts",
+      "target": "client/src/auth/components/ProtectedRoute.tsx",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/components/index.ts",
+      "target": "client/src/auth/components/RoleBasedAccess.tsx",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/components/index.ts",
+      "target": "client/src/auth/components/Login.tsx",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/components/index.ts",
+      "target": "client/src/auth/components/AuthCallback.tsx",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/components/index.ts",
+      "target": "client/src/auth/components/AdminSettings.tsx",
+      "value": 2
+    },
+    {
+      "source": "client/src/auth/components/RoleBasedAccess.tsx",
+      "target": "client/src/auth/hooks",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/RoleBasedAccess.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/ProtectedRoute.tsx",
+      "target": "client/src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/ProtectedRoute.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/Login.tsx",
+      "target": "client/src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/Login.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/Login.tsx",
+      "target": "client/src/lib/logger.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/Login.tsx",
+      "target": "client/src/lib/version.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/Login.tsx",
+      "target": "client/src/auth/contexts/AuthContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/Login.tsx",
+      "target": "client/src/components/ui/button.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/Login.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/Login.tsx",
+      "target": "client/src/auth/components/Login.css",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/AuthCallback.tsx",
+      "target": "client/src/auth/contexts/AuthContext.tsx",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/AuthCallback.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/AuthCallback.tsx",
+      "target": "client/src/auth/components/AuthCallback.css",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/AdminSettings.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/AdminSettings.tsx",
+      "target": "client/src/auth/hooks/useAuth.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/AdminSettings.tsx",
+      "target": "client/src/lib/debug.ts",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/AdminSettings.tsx",
+      "target": "client/src/auth/components/AdminSettings.css",
+      "value": 1
+    },
+    {
+      "source": "client/src/auth/components/AccessDenied.tsx",
+      "target": "client/src/auth/types",
+      "value": 1
+    },
+    {
+      "source": "dependency-graph.json",
+      "target": "docs/dependency-analysis/dependency-graph.json",
+      "value": 3
+    }
+  ]
+}

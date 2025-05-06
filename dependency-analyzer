@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# dependency-analyzer - A tool for analyzing code dependencies in JavaScript/TypeScript projects
+#
+# This script is a wrapper around the server.py script that starts the dependency analyzer
+
+# Get the directory of this script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Run the Python server with all the arguments passed to this script
+python3 "${SCRIPT_DIR}/server.py" "$@" 

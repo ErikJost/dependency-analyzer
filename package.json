@@ -18,7 +18,7 @@
     "javascript",
     "typescript"
   ],
-  "author": "",
+  "author": "Erik Jost",
   "license": "MIT",
   "engines": {
     "node": ">=14.0.0"
@@ -29,10 +29,10 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/dependency-analyzer.git"
+    "url": "git+https://github.com/ErikJost/dependency-analyzer.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/dependency-analyzer/issues"
+    "url": "https://github.com/ErikJost/dependency-analyzer/issues"
   },
-  "homepage": "https://github.com/your-username/dependency-analyzer#readme"
+  "homepage": "https://github.com/ErikJost/dependency-analyzer#readme"
 } 

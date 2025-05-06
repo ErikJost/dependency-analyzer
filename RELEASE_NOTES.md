@@ -106,4 +106,6 @@ We welcome your feedback and bug reports! Please submit issues on our [GitHub re
 ### Notes
 - Using a host path for `/data` ensures your analysis results and project data persist across container and image changes.
 - The MCP server is now fully compatible with Cursor's recommended integration pattern.
-- See the README for more details and troubleshooting tips. 
+- See the README for more details and troubleshooting tips.
+- Data volumes should NOT be attached during the Docker build step. Only mount persistent data at runtime when starting the container.
+- This keeps the image portable and ensures persistent data is not baked into the image. 

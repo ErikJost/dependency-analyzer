@@ -1,0 +1,39 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Docker Image Hygiene Rule
+
+When building a new Docker image for the dependency analyzer MCP server, always remove any old containers that use the previous image before starting a new one. This prevents clutter and resource waste from having multiple containers and images running simultaneously.
+
+## Steps
+
+1. **Stop and remove the old container before running a new one:**
+   - Use the following commands before starting a new container:
+     ```bash
+     docker stop DependencyMCP || true
+     docker rm DependencyMCP || true
+     ```
+   - This ensures that the container named `DependencyMCP` is not left running or in a stopped state.
+
+2. **Build the new image:**
+   - Example:
+     ```bash
+     docker build --no-cache -t mcp/sdk-minimal -f Dockerfile.sdk_minimal .
+     ```
+
+3. **Start the new container with the updated image:**
+   - Example:
+     ```bash
+     docker run -d --name DependencyMCP -v /Users/erikjost/data:/data mcp/sdk-minimal
+     ```
+
+## Rationale
+- Prevents confusion and resource waste from having multiple containers with the same purpose.
+- Ensures the running container always uses the latest image.
+- Keeps the Docker environment clean and manageable.
+
+## See Also
+- [README.md](mdc:README.md) for persistent data and container management instructions.
+- [RELEASE_NOTES.md](mdc:RELEASE_NOTES.md) for upgrade steps and best practices.

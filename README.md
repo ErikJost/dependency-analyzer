@@ -236,70 +236,19 @@ All tools are implemented in `sdk_minimal_server.py` and return mock data by def
 
 For questions or contributions, please open an issue or pull request.
 
-## Building and Running the MCP Server
+## Running the MCP Server with Docker
 
-### Building the Docker Image
+1. **Build the Docker image (no data volumes attached at build time):**
+   ```bash
+   docker build --no-cache -t mcp/sdk-minimal -f Dockerfile.sdk_minimal .
+   ```
+   > **Note:** Do NOT attach any data volumes during the build step. The build step is for image creation only.
 
-To build the Docker image for the dependency analyzer MCP server:
-
-```bash
-# Build the image
-docker build -t mcp/sdk-minimal -f Dockerfile.sdk_minimal .
-```
-
-### Running the Container Manually
-
-For manual testing and development, run the container with a consistent name:
-
-```bash
-# For manual testing - use container name for easier management
-docker run -i --rm --name DependencyMCP -v mcp_dependency_data:/data mcp/sdk-minimal
-```
-
-Using a consistent container name with `--name DependencyMCP` makes development easier:
-- Stop the container: `docker stop DependencyMCP`
-- View logs: `docker logs DependencyMCP`
-- Manage the container: `docker inspect DependencyMCP`
-
-**Important:** Always use a named volume (`mcp_dependency_data:/data`) to ensure data persists between container invocations. This is critical because Docker creates a new container each time the `run` command is executed, but the data needs to be persistent across these invocations.
-
-### Testing the MCP Server
-
-Test the server directly using:
-
-```bash
-# Initialize the server (for manual testing)
-echo '{"jsonrpc":"2.0","id":"test","method":"initialize"}' | docker run -i --rm --name DependencyMCP -v mcp_dependency_data:/data mcp/sdk-minimal
-
-# List projects (for manual testing)
-echo '{"jsonrpc":"2.0","id":"test","method":"tools/list"}' | docker run -i --rm --name DependencyMCP -v mcp_dependency_data:/data mcp/sdk-minimal
-```
-
-### Configuring Cursor
-
-To configure Cursor to use this MCP server, create or update `~/.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "dependencyAnalyzer": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-v",
-        "/Users/erikjost/data:/data",
-        "mcp/sdk-minimal"
-      ]
-    }
-  }
-}
-```
-
-**Note:** The Cursor configuration should NOT include the `--name` flag used for manual testing, as this could cause conflicts if Cursor tries to create multiple containers.
-
-After updating the configuration, restart Cursor for the changes to take effect.
+2. **Start the container with persistent data and project directories mounted (attach volumes at runtime):**
+   ```bash
+   docker run -d --name DependencyMCP -v /Users/erikjost/data:/data -v /Users/erikjost:/Users/erikjost -p 8000:8000 mcp/sdk-minimal
+   ```
+   > This ensures persistent data is available to the running container, but not baked into the image.
 
 ## Persistent Data and Project Access with Docker
 

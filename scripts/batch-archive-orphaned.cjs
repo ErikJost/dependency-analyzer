@@ -14,9 +14,9 @@ const { execSync } = require('child_process');
 // Configuration
 const config = {
   rootDir: path.resolve(__dirname, '..'),
-  finalAnalysisFile: path.resolve(__dirname, '..', 'docs', 'dependency-analysis', 'final-orphaned-files.md'),
+  finalAnalysisFile: path.resolve(__dirname, '..', 'output', 'final-orphaned-files.md'),
   archiveScript: path.join(__dirname, 'archive-orphaned-file.cjs'),
-  reportFile: path.resolve(__dirname, '..', 'docs', 'FILE_CLEANUP_REPORT.md')
+  reportFile: path.resolve(__dirname, '..', 'output', 'FILE_CLEANUP_REPORT.md')
 };
 
 /**

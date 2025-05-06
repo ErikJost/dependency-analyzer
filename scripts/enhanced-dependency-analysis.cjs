@@ -126,9 +126,9 @@ const config = {
     'component={([^}]+)}',    // component props
     'render={[^}]*=>\\s*<([^>]+)' // render props with component
   ],
-  // Default output location is in the project root under docs/dependency-analysis
+  // Default output location is in the project root under output
   get outputDir() {
-    const dir = path.resolve(this.rootDir, 'docs', 'dependency-analysis');
+    const dir = path.resolve(this.rootDir, 'output');
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }

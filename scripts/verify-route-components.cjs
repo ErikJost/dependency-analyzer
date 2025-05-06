@@ -27,9 +27,9 @@ const config = {
     '**/main.tsx'
   ],
   // Orphaned files report
-  orphanedFilesReport: path.resolve(__dirname, '..', 'docs', 'dependency-analysis', 'confirmed-orphaned-files.md'),
+  orphanedFilesReport: path.resolve(__dirname, '..', 'output', 'confirmed-orphaned-files.md'),
   // Output file
-  outputFile: path.resolve(__dirname, '..', 'docs', 'dependency-analysis', 'route-component-verification.md')
+  outputFile: path.resolve(__dirname, '..', 'output', 'route-component-verification.md')
 };
 
 /**

@@ -32,9 +32,9 @@ const config = {
     '.cursor'
   ],
   // The list of potentially orphaned files
-  orphanedFilesReport: path.resolve(__dirname, '..', 'docs', 'dependency-analysis', 'confirmed-orphaned-files.md'),
+  orphanedFilesReport: path.resolve(__dirname, '..', 'output', 'confirmed-orphaned-files.md'),
   // Output file for the results
-  outputFile: path.resolve(__dirname, '..', 'docs', 'dependency-analysis', 'dynamic-references.md')
+  outputFile: path.resolve(__dirname, '..', 'output', 'dynamic-references.md')
 };
 
 // Patterns to search for

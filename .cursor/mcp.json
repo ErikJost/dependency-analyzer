@@ -1,0 +1,63 @@
+{
+  "mcpServers": {
+    "Web Research": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mzxrai/mcp-webresearch@latest"
+      ]
+    },
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "ghcr.io/cursor-ai/github-mcp:latest"
+      ],
+      "env": {}
+    },
+    "gordon": {
+      "command": "docker",
+      "args": [
+        "ai",
+        "mcpserver"
+      ]
+    },
+    "azure-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli@latest",
+        "run",
+        "@Streen9/azure-mcp"
+      ]
+    },
+    "dependencyAnalyzer": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-p",
+        "8000:8000",
+        "-v",
+        "/Users/erikjost/data:/data",
+        "-v",
+        "/Users/erikjost:/Users/erikjost",
+        "mcp/sdk-minimal"
+      ],
+      "env": {}
+    },
+    "codeium": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "ghcr.io/cursor-ai/codeium-mcp:latest"
+      ],
+      "env": {}
+    }
+  }
+}

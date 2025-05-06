@@ -6,6 +6,16 @@ WORKDIR /app
 # Install MCP SDK
 RUN pip install --no-cache-dir mcp
 
+# Install Node.js (LTS version)
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install chalk globally for Node.js scripts
+RUN npm install -g chalk
+
 # Install any additional dependencies
 # None currently needed beyond standard library
 
@@ -19,6 +29,11 @@ RUN mkdir -p /data && \
 
 # Copy only the server file
 COPY sdk_minimal_server.py .
+# Copy the scripts directory
+COPY scripts/ scripts/
+# Copy package.json and package-lock.json if present, then install dependencies
+COPY package*.json ./
+RUN npm install
 
 # Verify data directory on startup
 RUN echo "echo 'Data directory:' && ls -la /data" > /app/startup.sh && \

@@ -1,0 +1,53 @@
+{
+  "nodes": [
+    {
+      "id": "updated_mcp.json",
+      "group": 3
+    },
+    {
+      "id": "temp_multi_server_mcp.json",
+      "group": 3
+    },
+    {
+      "id": "simple_mcp_fixed.json",
+      "group": 3
+    },
+    {
+      "id": "simple_mcp_clean.json",
+      "group": 3
+    },
+    {
+      "id": "simple_mcp.json",
+      "group": 3
+    },
+    {
+      "id": "package.json",
+      "group": 3
+    },
+    {
+      "id": "package-lock.json",
+      "group": 3
+    },
+    {
+      "id": "mcp.server.json",
+      "group": 3
+    },
+    {
+      "id": "final_mcp.json",
+      "group": 3
+    },
+    {
+      "id": "dependency-graph.json",
+      "group": 3
+    },
+    {
+      "id": "debug_mcp.json",
+      "group": 3
+    },
+    {
+      "id": "output/dependency-graph.json",
+      "group": 3
+    }
+  ],
+  "links": []
+}

@@ -1,8 +1,8 @@
 {
-  "name": "dependency-analyzer",
+  "name": "dependency-analyzer-mcp",
   "version": "1.0.0",
-  "description": "A tool for analyzing code dependencies in JavaScript/TypeScript projects",
-  "main": "server.py",
+  "description": "Dependency Analyzer MCP Server Node.js dependencies",
+  "main": "index.js",
   "scripts": {
     "start": "python3 server.py",
     "analyze": "node scripts/enhanced-dependency-analysis.cjs",
@@ -29,7 +29,8 @@
     "http-server": "^14.1.1",
     "glob": "^10.3.10",
     "commander": "^11.1.0",
-    "madge": "^6.1.0"
+    "madge": "^6.1.0",
+    "chalk": "^5.3.0"
   },
   "devDependencies": {},
   "repository": {

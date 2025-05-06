@@ -13,8 +13,8 @@ const path = require('path');
 // Configuration
 const config = {
   buildLogFile: path.resolve(__dirname, '..', 'build_log.txt'),
-  orphanedFilesReport: path.resolve(__dirname, '..', 'docs', 'dependency-analysis', 'orphaned-files.md'),
-  outputFile: path.resolve(__dirname, '..', 'docs', 'dependency-analysis', 'build-dependencies.md')
+  orphanedFilesReport: path.resolve(__dirname, '..', 'output', 'orphaned-files.md'),
+  outputFile: path.resolve(__dirname, '..', 'output', 'build-dependencies.md')
 };
 
 // Main function to run the analysis

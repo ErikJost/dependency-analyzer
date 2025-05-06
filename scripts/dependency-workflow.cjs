@@ -108,28 +108,28 @@ console.log(`Using project root: ${rootDir}`);
 
 const config = {
   rootDir: rootDir,
-  scriptsDir: path.join(rootDir, 'dependency-analysis', 'scripts'),
-  docsDir: path.join(rootDir, 'dependency-analysis'),
+  scriptsDir: path.join(rootDir, 'scripts'),
+  docsDir: path.join(rootDir, 'output'),
   buildLogFile: path.join(rootDir, 'build_log.txt'),
   reports: {
-    initialOrphaned: path.resolve(rootDir, 'dependency-analysis', 'orphaned-files.md'),
-    enhancedOrphaned: path.resolve(rootDir, 'dependency-analysis', 'enhanced-orphaned-files.md'),
-    buildDependencies: path.resolve(rootDir, 'dependency-analysis', 'build-dependencies.md'),
-    dynamicReferences: path.resolve(rootDir, 'dependency-analysis', 'dynamic-references.md'),
-    routeVerification: path.resolve(rootDir, 'dependency-analysis', 'route-component-verification.md'),
-    confirmedOrphaned: path.resolve(rootDir, 'dependency-analysis', 'confirmed-orphaned-files.md'),
-    refinedAnalysis: path.resolve(rootDir, 'dependency-analysis', 'refined-orphaned-files.md'),
-    finalAnalysis: path.resolve(rootDir, 'dependency-analysis', 'final-orphaned-files.md'),
-    archivalReport: path.resolve(rootDir, 'FILE_CLEANUP_REPORT.md')
+    initialOrphaned: path.resolve(rootDir, 'output', 'orphaned-files.md'),
+    enhancedOrphaned: path.resolve(rootDir, 'output', 'enhanced-orphaned-files.md'),
+    buildDependencies: path.resolve(rootDir, 'output', 'build-dependencies.md'),
+    dynamicReferences: path.resolve(rootDir, 'output', 'dynamic-references.md'),
+    routeVerification: path.resolve(rootDir, 'output', 'route-component-verification.md'),
+    confirmedOrphaned: path.resolve(rootDir, 'output', 'confirmed-orphaned-files.md'),
+    refinedAnalysis: path.resolve(rootDir, 'output', 'refined-orphaned-files.md'),
+    finalAnalysis: path.resolve(rootDir, 'output', 'final-orphaned-files.md'),
+    archivalReport: path.resolve(rootDir, 'output', 'FILE_CLEANUP_REPORT.md')
   },
   scripts: {
-    basicAnalysis: path.resolve(rootDir, 'dependency-analysis', 'scripts', 'analyze-dependencies.cjs'),
-    enhancedAnalysis: path.resolve(rootDir, 'dependency-analysis', 'scripts', 'enhanced-dependency-analysis.cjs'),
-    buildAnalysis: path.resolve(rootDir, 'dependency-analysis', 'scripts', 'analyze-build-dependencies.cjs'),
-    updateReport: path.resolve(rootDir, 'dependency-analysis', 'scripts', 'update-orphaned-files-report.cjs'),
-    dynamicImports: path.resolve(rootDir, 'dependency-analysis', 'scripts', 'check-dynamic-imports.cjs'),
-    routeComponents: path.resolve(rootDir, 'dependency-analysis', 'scripts', 'verify-route-components.cjs'),
-    batchArchive: path.resolve(rootDir, 'dependency-analysis', 'scripts', 'batch-archive-orphaned.cjs')
+    basicAnalysis: path.resolve(rootDir, 'scripts', 'analyze-dependencies.cjs'),
+    enhancedAnalysis: path.resolve(rootDir, 'scripts', 'enhanced-dependency-analysis.cjs'),
+    buildAnalysis: path.resolve(rootDir, 'scripts', 'analyze-build-dependencies.cjs'),
+    updateReport: path.resolve(rootDir, 'scripts', 'update-orphaned-files-report.cjs'),
+    dynamicImports: path.resolve(rootDir, 'scripts', 'check-dynamic-imports.cjs'),
+    routeComponents: path.resolve(rootDir, 'scripts', 'verify-route-components.cjs'),
+    batchArchive: path.resolve(rootDir, 'scripts', 'batch-archive-orphaned.cjs')
   }
 };
 
@@ -276,26 +276,13 @@ This report was automatically generated. It should be reviewed and refined manua
  */
 async function createFinalAnalysis() {
   console.log('\n📋 Creating final analysis report...');
-  
-  // Ask for manual review first
-  if (!options.autoArchive) {
-    const reviewPrompt = await prompt(
-      'Have you manually reviewed the reports and want to generate a final analysis? (y/n): '
-    );
-    
-    if (reviewPrompt.toLowerCase() !== 'y') {
-      console.log('⏭️  Skipping final analysis');
-      return false;
-    }
-  }
-  
+  // Always generate the final analysis without prompting
   // Read the confirmed orphaned files report
   if (!fs.existsSync(config.reports.confirmedOrphaned)) {
     console.error(`❌ Confirmed orphaned files report not found at ${config.reports.confirmedOrphaned}`);
     console.log('⚠️  Please run update-orphaned-files-report.cjs first');
     return false;
   }
-  
   const confirmedContent = fs.readFileSync(config.reports.confirmedOrphaned, 'utf-8');
   
   // Generate the final analysis report
@@ -554,9 +541,13 @@ async function runWorkflow() {
     console.log('\n📊 Step 2: Running enhanced dependency analysis...');
     runScript(config.scripts.enhancedAnalysis);
     
-    // Step 3: Build analysis (optional)
+    // Step 3: Update orphaned files report (moved up)
+    console.log('\n📊 Step 3: Updating orphaned files report...');
+    runScript(config.scripts.updateReport);
+    
+    // Step 4: Build analysis (optional)
     if (!options.skipBuild) {
-      console.log('\n📊 Step 3: Running build analysis...');
+      console.log('\n📊 Step 4: Running build analysis...');
       await runBuild();
       
       if (fs.existsSync(config.buildLogFile)) {
@@ -566,17 +557,13 @@ async function runWorkflow() {
       }
     }
     
-    // Step 4: Check dynamic imports
-    console.log('\n📊 Step 4: Checking for dynamic imports...');
+    // Step 5: Check dynamic imports
+    console.log('\n📊 Step 5: Checking for dynamic imports...');
     runScript(config.scripts.dynamicImports);
     
-    // Step 5: Verify route components
-    console.log('\n📊 Step 5: Verifying route components...');
+    // Step 6: Verify route components
+    console.log('\n📊 Step 6: Verifying route components...');
     runScript(config.scripts.routeComponents);
-    
-    // Step 6: Update orphaned files report
-    console.log('\n📊 Step 6: Updating orphaned files report...');
-    runScript(config.scripts.updateReport);
     
     // Step 7: Create refined analysis report
     console.log('\n📊 Step 7: Creating refined analysis report...');
@@ -587,12 +574,13 @@ async function runWorkflow() {
     const finalAnalysisCreated = await createFinalAnalysis();
     
     // Step 9: Archive orphaned files (if requested)
-    if (finalAnalysisCreated && (options.autoArchive || await prompt('Do you want to archive orphaned files? (y/n): ') === 'y')) {
-      console.log('\n📊 Step 9: Archiving orphaned files...');
-      await archiveOrphanedFiles();
-    } else {
-      console.log('\n⏭️  Skipping file archival step');
-    }
+    // if (finalAnalysisCreated && (options.autoArchive || await prompt('Do you want to archive orphaned files? (y/n): ') === 'y')) {
+    //   console.log('\n📊 Step 9: Archiving orphaned files...');
+    //   await archiveOrphanedFiles();
+    // } else {
+    //   console.log('\n⏭️  Skipping file archival step');
+    // }
+    console.log('\n⏭️  Skipping file archival step (archival is now a separate function)');
     
     // Create workflow summary
     createWorkflowSummary();

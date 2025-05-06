@@ -12,9 +12,9 @@ const path = require('path');
 
 // Configuration
 const config = {
-  orphanedFilesReport: path.resolve(__dirname, '..', 'docs', 'dependency-analysis', 'orphaned-files.md'),
-  buildDependenciesReport: path.resolve(__dirname, '..', 'docs', 'dependency-analysis', 'build-dependencies.md'),
-  updatedReportFile: path.resolve(__dirname, '..', 'docs', 'dependency-analysis', 'confirmed-orphaned-files.md')
+  orphanedFilesReport: path.resolve(__dirname, '..', 'output', 'orphaned-files.md'),
+  buildDependenciesReport: path.resolve(__dirname, '..', 'output', 'build-dependencies.md'),
+  updatedReportFile: path.resolve(__dirname, '..', 'output', 'confirmed-orphaned-files.md')
 };
 
 // Main function to run the update
@@ -32,8 +32,12 @@ async function main() {
   // Read the build dependencies report
   console.log(`Reading build dependencies report from ${config.buildDependenciesReport}...`);
   if (!fs.existsSync(config.buildDependenciesReport)) {
-    console.error(`Error: Build dependencies report not found at ${config.buildDependenciesReport}`);
-    process.exit(1);
+    console.warn(`Warning: Build dependencies report not found at ${config.buildDependenciesReport}`);
+    console.warn('Proceeding without build analysis. All orphaned files will be considered as confirmed.');
+    // Just copy the orphaned files report to the confirmed report
+    fs.writeFileSync(config.updatedReportFile, orphanedFilesReport);
+    console.log(`Confirmed orphaned files report written to ${config.updatedReportFile} (no build analysis performed)`);
+    process.exit(0);
   }
   const buildDependenciesReport = fs.readFileSync(config.buildDependenciesReport, 'utf-8');
   

@@ -44,7 +44,7 @@ const config = {
     '.env',
     'staticwebapp.config.json'
   ],
-  outputDir: path.resolve(__dirname, '..', 'docs', 'dependency-analysis')
+  outputDir: path.resolve(__dirname, '..', 'output')
 };
 
 // Map to store dependency data

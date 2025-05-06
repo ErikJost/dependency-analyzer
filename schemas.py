@@ -60,6 +60,11 @@ ANALYZE_DEPENDENCIES_SCHEMA = {
                 }
             },
             "additionalProperties": False
+        },
+        "streaming": {
+            "type": "boolean",
+            "default": False,
+            "description": "Whether to use streaming mode for long-running analysis"
         }
     },
     "additionalProperties": False
@@ -124,6 +129,41 @@ CHECK_CIRCULAR_DEPENDENCIES_SCHEMA = {
     "additionalProperties": False
 }
 
+# JSON Schema for get_operation_status
+GET_OPERATION_STATUS_SCHEMA = {
+    "type": "object",
+    "required": ["operation_id"],
+    "properties": {
+        "operation_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Operation identifier"
+        }
+    },
+    "additionalProperties": False
+}
+
+# JSON Schema for cancel_operation
+CANCEL_OPERATION_SCHEMA = {
+    "type": "object",
+    "required": ["operation_id"],
+    "properties": {
+        "operation_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Operation identifier"
+        }
+    },
+    "additionalProperties": False
+}
+
+# JSON Schema for list_operations
+LIST_OPERATIONS_SCHEMA = {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": False
+}
+
 # Map of tool names to their schemas
 TOOL_SCHEMAS = {
     "list_projects": LIST_PROJECTS_SCHEMA,
@@ -131,7 +171,10 @@ TOOL_SCHEMAS = {
     "analyze_dependencies": ANALYZE_DEPENDENCIES_SCHEMA,
     "get_dependency_graph": GET_DEPENDENCY_GRAPH_SCHEMA,
     "find_orphaned_files": FIND_ORPHANED_FILES_SCHEMA,
-    "check_circular_dependencies": CHECK_CIRCULAR_DEPENDENCIES_SCHEMA
+    "check_circular_dependencies": CHECK_CIRCULAR_DEPENDENCIES_SCHEMA,
+    "get_operation_status": GET_OPERATION_STATUS_SCHEMA,
+    "cancel_operation": CANCEL_OPERATION_SCHEMA,
+    "list_operations": LIST_OPERATIONS_SCHEMA
 }
 
 def get_schema_for_tool(tool_name: str) -> Optional[Dict[str, Any]]:

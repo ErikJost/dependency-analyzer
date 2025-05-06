@@ -28,6 +28,8 @@ from mcp_api import handle_mcp_request, handle_mcp_resource
 from error_handler import handle_exception, create_error_response, get_http_status_for_error
 from validation import validate_resource_uri, validate_tool_parameters
 from structured_logging import get_logger, create_correlation_id
+# Import the MCP compatibility endpoints
+from mcp_endpoints import get_tools_list, get_capabilities
 
 # Initialize configuration
 initialize_config()
@@ -147,6 +149,19 @@ class MCPRequestHandler(BaseHTTPRequestHandler):
             parsed_url = urllib.parse.urlparse(self.path)
             path = parsed_url.path
             query = urllib.parse.parse_qs(parsed_url.query)
+            
+            # Handle MCP protocol endpoints
+            if path == '/api/tools':
+                self.request_logger.info("MCP tools list request")
+                tools_response = get_tools_list()
+                self.send_json_response(tools_response)
+                return
+                
+            if path == '/api/v1/capabilities':
+                self.request_logger.info("MCP capabilities request")
+                capabilities_response = get_capabilities()
+                self.send_json_response(capabilities_response)
+                return
             
             # Handle health check endpoint
             if path == '/api/health':

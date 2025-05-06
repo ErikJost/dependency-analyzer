@@ -1,0 +1,91 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# MCP JSON-RPC 2.0 Format Requirements
+
+## Overview
+
+This rule documents the specific JSON-RPC 2.0 format requirements for MCP (Model Context Protocol) servers used with Cursor. Failure to adhere to this format will result in "No server info found" errors.
+
+## JSON-RPC 2.0 Format
+
+All MCP servers **must** use strict JSON-RPC 2.0 format for all communication:
+
+1. Every message must include the `jsonrpc: "2.0"` field
+2. All responses must include an `id` field
+3. Responses must contain either a `result` object or an `error` object
+4. **Important**: Only send responses to messages from Cursor - do not send unsolicited messages
+
+## Request-Response Pattern
+
+Cursor follows a strict request-response pattern:
+
+1. Cursor sends a request with a specific ID
+2. The server responds with the same ID
+3. Cursor expects responses only for requests it has sent
+
+**Warning**: Do not send automatic initialization responses when the server starts. Wait for Cursor to send an `initialize` request first.
+
+## Common Request Types
+
+Cursor will send these common request types:
+
+1. **Initialize/ListOfferings**:
+   ```json
+   {"jsonrpc":"2.0","id":"request-id","method":"initialize"}
+   {"jsonrpc":"2.0","id":"request-id","method":"mcp/listOfferings"}
+   ```
+
+2. **Function Call**:
+   ```json
+   {
+     "jsonrpc":"2.0",
+     "id":"request-id",
+     "method":"mcp/invokeFunction",
+     "params":{
+       "function":"function_name",
+       "parameters":{...}
+     }
+   }
+   ```
+
+## Implementation Example
+
+Our working implementation can be found in [simple_mcp_server.py](mdc:simple_mcp_server.py), which demonstrates:
+
+1. Proper response handling for initialization requests
+2. Handling of function invocations
+3. Proper error responses
+4. Waiting for requests instead of sending unsolicited messages
+
+The Docker setup in [Dockerfile.simple](mdc:Dockerfile.simple) provides the container environment needed for Cursor integration.
+
+## Configuration
+
+The MCP configuration is handled in Cursor's preferences and should use the minimal format as shown in [simple_mcp.json](mdc:simple_mcp.json):
+
+```json
+{
+  "mcpServers": {
+    "dependencyAnalyzer": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/simple-dependmap"
+      ],
+      "env": {}
+    }
+  }
+}
+```
+
+## Common Errors
+
+- **"No server info found"**: The server did not respond with a properly formatted initialization response
+- **"Client closed"**: The communication with the server was closed unexpectedly
+- **"Invalid type"**: Response fields do not match the expected JSON-RPC 2.0 schema
+- **"Received a response for an unknown message ID"**: The server sent a response that doesn't correspond to any request Cursor sent

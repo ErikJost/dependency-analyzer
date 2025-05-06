@@ -1,0 +1,101 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Dockerfile Best Practices for MCP Servers
+
+This rule provides best practices for creating reliable Docker containers for MCP servers.
+
+## Base Image Selection
+
+### Recommended Base Images
+
+1. **Python-based MCP servers**: Use `python:3.9-slim` for minimal size
+2. **Node.js-based analyzers**: Use `node:16-alpine` for efficiency
+3. **Combined environments**: Use `python:3.9` with Node.js installed manually
+
+See [Dockerfile.simple](mdc:Dockerfile.simple) for a reference implementation.
+
+## Container Configuration
+
+### Essential Configuration
+
+1. Set proper working directory: `WORKDIR /app`
+2. Copy requirements first for better caching: `COPY requirements.txt .`
+3. Install dependencies: `RUN pip install --no-cache-dir -r requirements.txt`
+4. Copy application code: `COPY . .`
+5. Set proper execution permissions: `RUN chmod +x *.py *.sh`
+
+### Environment Settings
+
+Configure the container with these environment variables:
+
+```dockerfile
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONIOENCODING=UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+```
+
+These settings ensure proper output handling for the MCP protocol.
+
+## I/O Handling
+
+### STDIO Communication
+
+For MCP servers using STDIO:
+
+1. Use a non-interactive entrypoint: `ENTRYPOINT ["python", "simple_mcp_server.py"]`
+2. **Critical**: Do not use `CMD` that might generate automatic output
+3. Ensure all output is proper JSON-RPC 2.0 format
+4. Buffer and flush output properly
+
+### HTTP Communication
+
+For HTTP-based MCP servers:
+
+1. Use [Dockerfile.http](mdc:Dockerfile.http) as reference
+2. Expose port correctly: `EXPOSE 8000`
+3. Use a production-grade WSGI server (gunicorn, uvicorn)
+4. Configure health checks
+
+## Security Considerations
+
+1. Run as non-root user: `USER 1000`
+2. Remove sensitive data from the image
+3. Use multi-stage builds to minimize image size
+4. Scan the image for vulnerabilities
+
+## Optimizations
+
+### Reducing Image Size
+
+1. Use `.dockerignore` to exclude unnecessary files
+2. Remove cache after package installation
+3. Combine RUN commands with `&&` to reduce layers
+4. Use multi-stage builds for compilation steps
+
+### Performance Tuning
+
+1. Place frequently changing files last in the Dockerfile
+2. Pre-compile Python modules when possible
+3. Use volume mounts for analysis data
+4. Configure resource limits for stability
+
+## Testing Containers
+
+Always test containers before connecting to Cursor:
+
+```bash
+# Test initialization
+echo '{"jsonrpc":"2.0","id":"test123","method":"initialize"}' | docker run -i --rm mcp/simple-dependmap
+
+# Test function invocation
+echo '{"jsonrpc":"2.0","id":"func123","method":"mcp/invokeFunction","params":{"function":"list_projects","parameters":{}}}' | docker run -i --rm mcp/simple-dependmap
+```
+
+Compare different Dockerfiles in the project:
+- [Dockerfile.simple](mdc:Dockerfile.simple) - Basic STDIO MCP server
+- [Dockerfile.http](mdc:Dockerfile.http) - HTTP-based MCP server
+- [Dockerfile.fixed](mdc:Dockerfile.fixed) - Fixed version with best practices

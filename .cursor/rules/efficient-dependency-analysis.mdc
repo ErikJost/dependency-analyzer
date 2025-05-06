@@ -1,0 +1,103 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Efficient Dependency Analysis
+
+This rule provides guidance on efficiently analyzing dependencies using the MCP server tools.
+
+## Optimizing Analysis Performance
+
+### Project Structure Considerations
+
+For best performance:
+
+1. Create logical project boundaries for analysis
+2. Use dedicated entry points for each module
+3. Organize code into feature-based directories
+4. Maintain clean import paths (avoid `../../../` patterns)
+
+### Analysis Configuration
+
+Optimize the analysis configuration by:
+
+1. Excluding test files, generated code, and third-party libraries
+2. Setting appropriate depth limits for large codebases
+3. Using incremental analysis for subsequent runs
+4. Focusing on specific directories for targeted analysis
+
+Example configuration:
+
+```json
+{
+  "project_id": "my-project",
+  "options": {
+    "exclude": ["node_modules", "dist", "**/*.test.*"],
+    "extensions": [".js", ".jsx", ".ts", ".tsx"],
+    "entryPoints": ["src/index.js", "src/app.js"],
+    "depth": 5,
+    "incremental": true
+  }
+}
+```
+
+## Analysis Strategies
+
+### Phased Approach
+
+For large projects, use a phased approach:
+
+1. **Phase 1**: Analyze core modules and entry points
+2. **Phase 2**: Extend to utility and shared components
+3. **Phase 3**: Analyze feature-specific code
+4. **Phase 4**: Identify cross-cutting concerns
+
+### Focused Analysis
+
+To focus on specific concerns:
+
+1. Use `analyze_dependencies` with directory filters
+2. Apply path-based exclusions for irrelevant code
+3. Track only specific file types relevant to your query
+4. Use the `--depth` parameter to limit analysis scope
+
+## Dealing with Complex Projects
+
+### Handling Dynamic Imports
+
+For projects with dynamic imports:
+
+1. Check [dynamic-references.md](mdc:dynamic-references.md) for special handling
+2. Enable the `trackDynamicImports` option
+3. Use the path mapping feature for aliased imports
+4. Verify import resolution with test cases
+
+### Circular Dependencies
+
+To identify and resolve circular dependencies:
+
+1. Use the `check_circular_dependencies` tool
+2. Examine the root causes in the dependency chain
+3. Apply refactoring strategies from [dependency-analysis.md](mdc:dependency-analysis.md)
+4. Use the visualization tools to identify problematic patterns
+
+## Integration with Development Workflow
+
+### CI/CD Integration
+
+Integrate dependency analysis into your workflow:
+
+1. Run analysis as part of CI/CD pipeline
+2. Generate reports for code reviews
+3. Track dependency changes over time
+4. Set guardrails for maximum dependency counts
+
+### Detecting Dead Code
+
+Use these techniques to identify dead code:
+
+1. Run `find_orphaned_files` regularly
+2. Validate results against [confirmed-orphaned-files.md](mdc:confirmed-orphaned-files.md)
+3. Track usage patterns over time
+4. Consider archiving or removing unused files

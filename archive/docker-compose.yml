@@ -1,22 +1,23 @@
-version: '3.8'
-
 services:
   # HTTP mode service - accessible via REST API
   mcp-http:
     build: .
+    command: ["python3", "server_mcp.py", "--port", "8000"]
     ports:
       - "8000:8000"
     volumes:
       - projects:/app/projects
       - analysis:/app/analysis
       - config:/app/config
+      - ${HOST_PROJECT_DIR:-/tmp}:/host  # Mount host directory for external project access
     environment:
       - PORT=8000
       - MCP_MODE=http
       - PROJECTS_DIR=/app/projects
       - ANALYSIS_DIR=/app/analysis
       - CONFIG_DIR=/app/config
-      - LOG_LEVEL=INFO
+      - HOST_MOUNT_POINT=/host
+      - LOG_LEVEL=DEBUG
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
@@ -28,17 +29,20 @@ services:
   # stdio mode service - for direct AI agent interaction
   mcp-stdio:
     build: .
+    command: ["python3", "stdio_mcp.py"]
     # No ports exposed for stdio mode
     volumes:
       - projects:/app/projects
       - analysis:/app/analysis
       - config:/app/config
+      - ${HOST_PROJECT_DIR:-/tmp}:/host  # Mount host directory for external project access
     environment:
       - MCP_MODE=stdio
       - PROJECTS_DIR=/app/projects
       - ANALYSIS_DIR=/app/analysis
       - CONFIG_DIR=/app/config
-      - LOG_LEVEL=INFO
+      - HOST_MOUNT_POINT=/host
+      - LOG_LEVEL=DEBUG
     # Using tty and stdin_open to allow interactive use
     tty: true
     stdin_open: true

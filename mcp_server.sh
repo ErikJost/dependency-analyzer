@@ -9,6 +9,7 @@ LOG_LEVEL="INFO"
 DOCKERFILE="./Dockerfile"
 DOCKER_COMPOSE="./docker-compose.yml"
 CONTAINER_PREFIX="dependency-analyzer"
+HOST_PROJECT_DIR=${HOST_PROJECT_DIR:-$(cd .. && pwd)}  # Default to parent directory
 
 # Function to display usage information
 show_usage() {
@@ -23,55 +24,73 @@ show_usage() {
     echo "  status       Show server status"
     echo "  logs         Show server logs"
     echo "  build        Build the Docker image"
-    echo "  shell        Open a shell in the running container"
-    echo "  help         Show this help message"
+    echo "  shell        Open a shell in the container"
     echo ""
     echo "Options:"
-    echo "  --mode=MODE      Set the server mode (http or stdio, default: $MODE)"
-    echo "  --port=PORT      Set the server port (default: $PORT)"
-    echo "  --log-level=LEVEL Set the log level (default: $LOG_LEVEL)"
-    echo "  --docker         Use Docker for server operations"
-    echo "  --attach         Attach to stdio mode (when using Docker)"
+    echo "  --port       Port to run the server on (default: $PORT)"
+    echo "  --mode       Server mode: http or stdio (default: $MODE)"
+    echo "  --docker     Use Docker mode"
+    echo "  --log-level  Set log level: DEBUG, INFO, WARNING, ERROR (default: $LOG_LEVEL)"
+    echo "  --host-dir   Host directory to mount in Docker (default: $HOST_PROJECT_DIR)"
     echo ""
     echo "Examples:"
-    echo "  $0 start --mode=http --port=8000"
-    echo "  $0 start --mode=stdio"
-    echo "  $0 start --docker --mode=http"
+    echo "  $0 start --port 9000 --mode http"
+    echo "  $0 start --docker --mode stdio"
+    echo "  $0 logs --docker"
     echo "  $0 stop"
-    echo "  $0 logs"
     echo ""
 }
 
-# Parse command line arguments
-COMMAND=""
-USE_DOCKER=false
-ATTACH=false
+# Parse command
+if [ $# -eq 0 ]; then
+    show_usage
+    exit 1
+fi
 
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        start|stop|restart|status|logs|build|shell|help)
-            COMMAND="$1"
+COMMAND=$1
+shift
+
+# Parse options
+USE_DOCKER=false
+DOCKER_ARGS=""
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --port=*)
+            PORT="${1#*=}"
             shift
+            ;;
+        --port)
+            PORT="$2"
+            shift 2
             ;;
         --mode=*)
             MODE="${1#*=}"
             shift
             ;;
-        --port=*)
-            PORT="${1#*=}"
+        --mode)
+            MODE="$2"
+            shift 2
+            ;;
+        --docker)
+            USE_DOCKER=true
             shift
             ;;
         --log-level=*)
             LOG_LEVEL="${1#*=}"
             shift
             ;;
-        --docker)
-            USE_DOCKER=true
+        --log-level)
+            LOG_LEVEL="$2"
+            shift 2
+            ;;
+        --host-dir=*)
+            HOST_PROJECT_DIR="${1#*=}"
             shift
             ;;
-        --attach)
-            ATTACH=true
-            shift
+        --host-dir)
+            HOST_PROJECT_DIR="$2"
+            shift 2
             ;;
         *)
             echo "Unknown option: $1"
@@ -81,209 +100,129 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Function to check if Docker is available
-check_docker() {
-    if ! command -v docker &> /dev/null; then
-        echo "Error: Docker is not installed or not in PATH"
-        exit 1
-    fi
-    
-    if ! command -v docker-compose &> /dev/null; then
-        echo "Error: Docker Compose is not installed or not in PATH"
+# Function to get the Docker compose service name
+get_service_name() {
+    local mode=$1
+    if [ "$mode" = "http" ]; then
+        echo "mcp-http"
+    elif [ "$mode" = "stdio" ]; then
+        echo "mcp-stdio"
+    else
+        echo "Unknown mode: $mode"
         exit 1
     fi
 }
 
-# Function to start the server
-start_server() {
-    if [ "$USE_DOCKER" = true ]; then
-        check_docker
-        
-        echo "Starting MCP server in Docker ($MODE mode)..."
-        
-        if [ "$MODE" = "stdio" ]; then
-            # Start the stdio mode service
-            docker-compose -f "$DOCKER_COMPOSE" up -d mcp-stdio
-            
-            if [ "$ATTACH" = true ]; then
-                echo "Attaching to stdio mode container..."
-                docker attach "${CONTAINER_PREFIX}-mcp-stdio"
+# Execute a command
+case "$COMMAND" in
+    # Start the server
+    start)
+        if [ "$USE_DOCKER" = true ]; then
+            echo "Starting MCP server in Docker ($MODE mode)..."
+            export HOST_PROJECT_DIR="$HOST_PROJECT_DIR"
+            docker-compose -f "$DOCKER_COMPOSE" up -d "$(get_service_name $MODE)"
+            echo "Server started at http://localhost:$PORT"
+        else
+            echo "Starting MCP server natively..."
+            if [ "$MODE" = "http" ]; then
+                python3 server_mcp.py --port "$PORT" --log-level "$LOG_LEVEL" &
+                echo "Server started at http://localhost:$PORT"
+                echo $! > .server.pid
+            elif [ "$MODE" = "stdio" ]; then
+                python3 stdio_mcp.py
             else
-                echo "Server started in stdio mode, use '$0 shell --mode=stdio' to connect"
+                echo "Unknown mode: $MODE"
+                exit 1
+            fi
+        fi
+        ;;
+
+    # Stop the server
+    stop)
+        if [ "$USE_DOCKER" = true ]; then
+            echo "Stopping MCP server in Docker..."
+            docker-compose -f "$DOCKER_COMPOSE" down
+            echo "Server stopped"
+        else
+            echo "Stopping MCP server natively..."
+            if [ -f .server.pid ]; then
+                kill -15 $(cat .server.pid) 2>/dev/null || true
+                rm .server.pid
+                echo "Server stopped"
+            else
+                echo "No running server found"
+            fi
+        fi
+        ;;
+
+    # Restart the server
+    restart)
+        $0 stop "$@"
+        sleep 2
+        $0 start "$@"
+        ;;
+
+    # Show server status
+    status)
+        if [ "$USE_DOCKER" = true ]; then
+            echo "MCP server status (Docker):"
+            docker-compose -f "$DOCKER_COMPOSE" ps
+        else
+            echo "MCP server status (native):"
+            if [ -f .server.pid ] && ps -p $(cat .server.pid) > /dev/null; then
+                echo "Server is running with PID $(cat .server.pid)"
+            else
+                echo "Server is not running"
+            fi
+        fi
+        ;;
+
+    # Show server logs
+    logs)
+        if [ "$USE_DOCKER" = true ]; then
+            echo "MCP server logs (Docker):"
+            if [ "$MODE" = "http" ] || [ "$MODE" = "stdio" ]; then
+                docker-compose -f "$DOCKER_COMPOSE" logs "$(get_service_name $MODE)"
+            else
+                docker-compose -f "$DOCKER_COMPOSE" logs
             fi
         else
-            # Start the HTTP mode service
-            docker-compose -f "$DOCKER_COMPOSE" up -d mcp-http
-            echo "Server started at http://localhost:$PORT"
+            echo "MCP server logs (native):"
+            if [ -f server.log ]; then
+                tail -n 100 server.log
+            else
+                echo "No log file found"
+            fi
         fi
-    else
-        # Start natively
-        echo "Starting MCP server natively ($MODE mode)..."
-        
-        # Check if Python and required packages are available
-        if ! command -v python3 &> /dev/null; then
-            echo "Error: Python 3 is not installed or not in PATH"
+        ;;
+
+    # Build Docker image
+    build)
+        echo "Building Docker image..."
+        docker-compose -f "$DOCKER_COMPOSE" build
+        echo "Build complete"
+        ;;
+
+    # Open a shell in the container
+    shell)
+        if [ "$USE_DOCKER" = true ]; then
+            echo "Opening shell in Docker container..."
+            if [ "$MODE" = "http" ] || [ "$MODE" = "stdio" ]; then
+                docker-compose -f "$DOCKER_COMPOSE" exec "$(get_service_name $MODE)" /bin/bash
+            else
+                echo "Please specify --mode=http or --mode=stdio"
+                exit 1
+            fi
+        else
+            echo "Shell command is only available in Docker mode"
             exit 1
         fi
-        
-        # Create a log directory if it doesn't exist
-        mkdir -p logs
-        
-        if [ "$MODE" = "stdio" ]; then
-            # Start the stdio mode server
-            python3 stdio_mcp.py &
-            echo "Server started in stdio mode (PID: $!)"
-        else
-            # Start the HTTP mode server
-            nohup python3 server_mcp.py --port="$PORT" > logs/server.log 2>&1 &
-            echo "Server started at http://localhost:$PORT (PID: $!)"
-            echo "Logs available at logs/server.log"
-        fi
-    fi
-}
+        ;;
 
-# Function to stop the server
-stop_server() {
-    if [ "$USE_DOCKER" = true ]; then
-        check_docker
-        
-        echo "Stopping MCP server in Docker..."
-        docker-compose -f "$DOCKER_COMPOSE" down
-        echo "Server stopped"
-    else
-        # Stop natively
-        echo "Stopping MCP server natively..."
-        
-        if [ "$MODE" = "stdio" ]; then
-            pkill -f "python3 stdio_mcp.py"
-        else
-            pkill -f "python3 server_mcp.py"
-        fi
-        
-        echo "Server stopped"
-    fi
-}
-
-# Function to show server status
-show_status() {
-    if [ "$USE_DOCKER" = true ]; then
-        check_docker
-        
-        echo "MCP server status (Docker):"
-        docker-compose -f "$DOCKER_COMPOSE" ps
-    else
-        # Show native process status
-        echo "MCP server status (Native):"
-        
-        if [ "$MODE" = "stdio" ]; then
-            pgrep -f "python3 stdio_mcp.py" > /dev/null
-        else
-            pgrep -f "python3 server_mcp.py" > /dev/null
-        fi
-        
-        if [ $? -eq 0 ]; then
-            echo "Server is running"
-            
-            if [ "$MODE" = "http" ]; then
-                # Try to get more information from the server API
-                if command -v curl &> /dev/null; then
-                    curl -s http://localhost:$PORT/api/health | grep -q "\"status\": \"healthy\""
-                    if [ $? -eq 0 ]; then
-                        echo "Server health: HEALTHY"
-                    else
-                        echo "Server health: NOT HEALTHY"
-                    fi
-                fi
-            fi
-        else
-            echo "Server is not running"
-        fi
-    fi
-}
-
-# Function to show server logs
-show_logs() {
-    if [ "$USE_DOCKER" = true ]; then
-        check_docker
-        
-        echo "MCP server logs (Docker):"
-        if [ "$MODE" = "stdio" ]; then
-            docker-compose -f "$DOCKER_COMPOSE" logs mcp-stdio
-        else
-            docker-compose -f "$DOCKER_COMPOSE" logs mcp-http
-        fi
-    else
-        # Show native logs
-        echo "MCP server logs (Native):"
-        
-        if [ -f logs/server.log ]; then
-            tail -n 50 logs/server.log
-        else
-            echo "No log file found at logs/server.log"
-        fi
-    fi
-}
-
-# Function to build Docker image
-build_docker() {
-    check_docker
-    
-    echo "Building Docker image..."
-    docker-compose -f "$DOCKER_COMPOSE" build
-    echo "Build complete"
-}
-
-# Function to open a shell in the running container
-open_shell() {
-    if [ "$USE_DOCKER" = false ]; then
-        echo "Error: Shell command is only available with --docker option"
-        exit 1
-    fi
-    
-    check_docker
-    
-    if [ "$MODE" = "stdio" ]; then
-        echo "Opening shell in stdio mode container..."
-        docker-compose -f "$DOCKER_COMPOSE" exec mcp-stdio /bin/bash
-    else
-        echo "Opening shell in HTTP mode container..."
-        docker-compose -f "$DOCKER_COMPOSE" exec mcp-http /bin/bash
-    fi
-}
-
-# Execute the requested command
-case "$COMMAND" in
-    start)
-        start_server
-        ;;
-    stop)
-        stop_server
-        ;;
-    restart)
-        stop_server
-        sleep 2
-        start_server
-        ;;
-    status)
-        show_status
-        ;;
-    logs)
-        show_logs
-        ;;
-    build)
-        build_docker
-        ;;
-    shell)
-        open_shell
-        ;;
-    help|"")
-        show_usage
-        ;;
+    # Show usage for unknown commands
     *)
         echo "Unknown command: $COMMAND"
         show_usage
         exit 1
         ;;
-esac
-
-exit 0 
+esac 

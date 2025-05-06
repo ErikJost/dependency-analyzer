@@ -1,0 +1,11 @@
+FROM mcp/dependmap:latest
+
+# Replace the entrypoint script to run in HTTP mode
+RUN echo '#!/bin/bash\nexec python3 server_mcp.py' > /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh
+
+# Set environment variables
+ENV MCP_MODE=http
+
+# Retain the original entry point
+ENTRYPOINT ["/app/entrypoint.sh"] 

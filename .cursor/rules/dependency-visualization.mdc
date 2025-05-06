@@ -1,0 +1,64 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Dependency Visualization Guide
+
+This rule provides guidance on using the visualization tools included in the dependency analyzer.
+
+## Available Visualizations
+
+The project includes several visualization options:
+
+1. [dependency-visualizer.html](mdc:dependency-visualizer.html) - Basic force-directed graph visualization
+2. [enhanced-dependency-visualizer.html](mdc:enhanced-dependency-visualizer.html) - Advanced visualization with filtering
+3. [dependency-list-view.html](mdc:dependency-list-view.html) - Tabular view of dependencies
+
+## Accessing Visualizations
+
+After analyzing dependencies with the `analyze_dependencies` tool, visualizations can be accessed by:
+
+1. Opening the HTML files directly in a browser
+2. Using the endpoint: `http://localhost:8000/visualize/{project_id}`
+
+## Visualization Features
+
+### Force-Directed Graph
+
+The force-directed graph provides:
+
+- Interactive node dragging
+- Hover tooltips with file details
+- Color coding by file type
+- Zoom and pan controls
+
+### Configuration Options
+
+The visualizations can be customized through URL parameters:
+
+```
+?filter=component&highlight=auth&exclude=test
+```
+
+- `filter`: Filter nodes by type (component, util, hook)
+- `highlight`: Highlight specific modules or files 
+- `exclude`: Exclude patterns from visualization
+- `layout`: Change layout algorithm (force, radial, hierarchical)
+
+## Exporting Results
+
+Visualization data can be exported in several formats:
+
+1. JSON: For programmatic processing
+2. CSV: For spreadsheet analysis
+3. PNG/SVG: For documentation
+
+## Integration with Cursor
+
+When using with Cursor, the dependency visualizer provides context about:
+
+1. Import relationships between files
+2. Module coupling and cohesion
+3. Code organization patterns
+4. Potential refactoring opportunities

@@ -1,0 +1,18 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Copy the server implementations
+COPY simple_mcp_server.py /app/
+COPY stdio_mcp_jsonrpc.py /app/
+
+# Make the scripts executable
+RUN chmod +x /app/simple_mcp_server.py
+RUN chmod +x /app/stdio_mcp_jsonrpc.py
+
+# Set the entry point - use the simple server by default
+# but can be changed to stdio_mcp_jsonrpc.py for strict JSON-RPC 2.0
+# ENTRYPOINT ["/app/simple_mcp_server.py"]
+
+# Use the JSON-RPC 2.0 compliant server as the default entry point
+ENTRYPOINT ["/app/stdio_mcp_jsonrpc.py"] 

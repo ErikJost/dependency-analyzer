@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "dependencyAnalyzer": {
+      "command": "/bin/bash",
+      "args": [
+        "${localProjectDir}/run_mcp_server.sh"
+      ],
+      "env": {}
+    }
+  }
+} 

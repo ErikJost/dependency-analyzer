@@ -1,0 +1,82 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# MCP Dependency Analyzer Setup
+
+This rule documents how to set up and use the dependency analyzer MCP server for Cursor integration.
+
+## Docker Image
+
+The MCP server runs as a Docker container using the image `mcp/simple-dependmap` which provides dependency analysis functionality through stdio communication.
+
+To build the image:
+
+1. Use the [Dockerfile.simple](mdc:Dockerfile.simple) to create a container
+2. Build with: `docker build -t mcp/simple-dependmap -f Dockerfile.simple .`
+
+## Testing STDIO Protocol
+
+Always test the STDIO interface directly:
+
+```bash
+# Test by sending an initialize request
+echo '{"jsonrpc":"2.0","id":"test123","method":"initialize"}' | docker run -i --rm mcp/simple-dependmap
+
+# Test a function call
+echo '{"jsonrpc":"2.0","id":"func123","method":"mcp/invokeFunction","params":{"function":"list_projects","parameters":{}}}' | docker run -i --rm mcp/simple-dependmap
+```
+
+You should see properly formatted JSON-RPC 2.0 responses with tool offerings and results.
+
+## MCP Configuration
+
+Cursor integration is configured in `~/.cursor/mcp.json` with:
+```json
+{
+  "mcpServers": {
+    "dependencyAnalyzer": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/simple-dependmap"
+      ],
+      "env": {}
+    }
+  }
+}
+```
+
+See [simple_mcp.json](mdc:simple_mcp.json) for reference.
+
+## Available Tools
+
+The dependency analyzer provides these tools:
+
+1. `list_projects` - Lists all projects being analyzed
+2. `add_project` - Adds a new project for analysis
+3. `analyze_dependencies` - Analyzes dependencies in a project
+4. `get_dependency_graph` - Returns dependency information
+5. `find_orphaned_files` - Identifies files not imported by other files
+6. `check_circular_dependencies` - Detects circular dependencies
+7. `get_operation_status` - Checks status of async operations
+8. `cancel_operation` - Cancels a running operation
+9. `list_operations` - Lists all active operations
+
+## Implementation Details
+
+The core implementation is in [simple_mcp_server.py](mdc:simple_mcp_server.py) which:
+
+1. Uses strict JSON-RPC 2.0 format for all communication
+2. Sends an initialization response immediately on startup
+3. Handles tool invocations through the mcp/invokeFunction method
+
+## Important Notes
+
+1. Always check running containers with `docker ps | grep mcp/simple-dependmap` before starting new ones
+2. The container must provide an immediate JSON-RPC 2.0 response when started
+3. All errors must be formatted as proper JSON-RPC 2.0 error objects
+4. After updating the MCP configuration, restart Cursor for changes to take effect

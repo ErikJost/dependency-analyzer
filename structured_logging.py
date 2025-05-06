@@ -17,6 +17,7 @@ from typing import Dict, Any, Optional, List, Union
 
 try:
     import structlog
+    from structlog.stdlib import BoundLogger
     STRUCTLOG_AVAILABLE = True
 except ImportError:
     STRUCTLOG_AVAILABLE = False
@@ -53,6 +54,15 @@ def get_log_format():
     if CONFIG_AVAILABLE:
         return config.get("logging.format", "json").lower()
     return "json"  # Default to JSON if config is not available
+
+# Extend the BoundLogger class to add with_correlation_id method
+if STRUCTLOG_AVAILABLE:
+    def with_correlation_id(self, correlation_id: str) -> BoundLogger:
+        """Bind correlation_id to logger."""
+        return self.bind(correlation_id=correlation_id)
+    
+    # Add the method to BoundLogger
+    BoundLogger.with_correlation_id = with_correlation_id
 
 def setup_logging(name: str, level: str = None, output_stream=sys.stderr):
     """

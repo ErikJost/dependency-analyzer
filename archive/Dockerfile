@@ -1,16 +1,19 @@
 FROM python:3.10-slim
 
-# Install Node.js and essential tools
-# Node.js is needed for the dependency analysis scripts
+# Install essential tools and setup Node.js from NodeSource repo
 RUN apt-get update && apt-get install -y \
-    nodejs \
-    npm \
     curl \
     git \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Update to latest npm for better dependency management
-RUN npm install -g npm@latest
+# Add NodeSource repository and install modern Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Update to a compatible npm version
+RUN npm install -g npm@8
 
 # Set working directory for the MCP server
 WORKDIR /app
@@ -42,20 +45,21 @@ ENV PROJECTS_DIR=/app/projects
 ENV ANALYSIS_DIR=/app/analysis
 ENV CONFIG_DIR=/app/config
 ENV MCP_MODE=http
-ENV LOG_LEVEL=INFO
+ENV LOG_LEVEL=DEBUG
 
 # Add health check for HTTP mode
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:${PORT}/api/health || exit 1
 
-# Create a wrapper script to handle different MCP server modes
+# Create a wrapper script to directly use the appropriate server implementations
 RUN echo '#!/bin/bash\n\
+echo "Starting MCP server in $MCP_MODE mode"\n\
 if [ "$MCP_MODE" = "stdio" ]; then\n\
-    echo "Starting MCP server in stdio mode"\n\
+    # Use stdio mode directly\n\
     exec python3 stdio_mcp.py\n\
 else\n\
-    echo "Starting MCP server in HTTP mode on port $PORT"\n\
-    exec python3 server_mcp.py --port=$PORT\n\
+    # Use HTTP mode directly\n\
+    exec python3 server_mcp.py --port $PORT\n\
 fi' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
 # Set the entry point to the wrapper script

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "dependencyAnalyzer": {
+      "command": "python3",
+      "args": [
+        "${localProjectDir}/debug_env.py"
+      ],
+      "env": {}
+    }
+  }
+} 

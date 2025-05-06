@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "dependencyAnalyzer": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/simple-dependmap"
+      ],
+      "env": {}
+    }
+  }
+} 

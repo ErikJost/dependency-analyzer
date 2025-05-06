@@ -9,12 +9,19 @@ allowing AI agents to interact with the code dependency data.
 import os
 import json
 import subprocess
+import time
+import shutil
+import re
 from urllib.parse import unquote
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any, Optional, Union, Callable
+
+# Import streaming support
+from streaming import execute_streaming_operation, streaming_manager
 
 # Constants for project and analysis directories
 PROJECTS_DIR = os.environ.get("PROJECTS_DIR", os.path.join(os.getcwd(), "projects"))
 ANALYSIS_DIR = os.environ.get("ANALYSIS_DIR", os.path.join(os.getcwd(), "analysis"))
+HOST_MOUNT_POINT = os.environ.get("HOST_MOUNT_POINT", "/host")
 
 # Ensure directories exist
 os.makedirs(PROJECTS_DIR, exist_ok=True)
@@ -32,7 +39,8 @@ class MCPApi:
     def _load_projects(self) -> Dict[str, Dict[str, Any]]:
         """Load existing projects from the projects directory"""
         projects = {}
-        # Check each subdirectory in the projects directory
+        
+        # Check each subdirectory in the projects directory for internal projects
         for item in os.listdir(PROJECTS_DIR):
             project_dir = os.path.join(PROJECTS_DIR, item)
             if os.path.isdir(project_dir):
@@ -51,22 +59,118 @@ class MCPApi:
                         "id": item,
                         "name": item,
                         "path": project_dir,
-                        "created_at": None
+                        "created_at": None,
+                        "is_external": False
                     }
+        
+        # Load external projects from registry
+        registry_path = os.path.join(ANALYSIS_DIR, "external_projects_registry.json")
+        if os.path.exists(registry_path):
+            try:
+                with open(registry_path, 'r') as f:
+                    external_projects = json.load(f)
+                    # Add external projects to the projects dictionary
+                    for project_id, metadata in external_projects.items():
+                        # Verify that the external path still exists
+                        if os.path.exists(metadata["path"]):
+                            projects[project_id] = metadata
+                        else:
+                            print(f"Warning: External project path no longer exists: {metadata['path']}")
+            except Exception as e:
+                print(f"Error loading external projects registry: {e}")
+        
         return projects
 
     def _save_project_metadata(self, project_id: str, metadata: Dict[str, Any]) -> None:
-        """Save project metadata to the project directory"""
-        project_dir = os.path.join(PROJECTS_DIR, project_id)
-        os.makedirs(project_dir, exist_ok=True)
+        """Save project metadata to the appropriate location"""
+        is_external = metadata.get("is_external", False)
         
-        metadata_path = os.path.join(project_dir, ".project-metadata.json")
-        with open(metadata_path, 'w') as f:
-            json.dump(metadata, f, indent=2)
+        if is_external:
+            # For external projects, update the registry
+            registry_path = os.path.join(ANALYSIS_DIR, "external_projects_registry.json")
+            external_projects = {}
+            
+            # Load existing registry if it exists
+            if os.path.exists(registry_path):
+                try:
+                    with open(registry_path, 'r') as f:
+                        external_projects = json.load(f)
+                except Exception as e:
+                    print(f"Error loading external projects registry: {e}")
+            
+            # Update the registry with this project
+            external_projects[project_id] = metadata
+            
+            # Save the updated registry
+            with open(registry_path, 'w') as f:
+                json.dump(external_projects, f, indent=2)
+        else:
+            # For internal projects, save metadata in the project directory
+            project_dir = os.path.join(PROJECTS_DIR, project_id)
+            os.makedirs(project_dir, exist_ok=True)
+            
+            metadata_path = os.path.join(project_dir, ".project-metadata.json")
+            with open(metadata_path, 'w') as f:
+                json.dump(metadata, f, indent=2)
 
     def _get_analysis_path(self, project_id: str) -> str:
         """Get the path to the analysis results for a project"""
         return os.path.join(ANALYSIS_DIR, project_id)
+        
+    def _convert_host_path_to_container_path(self, host_path: str) -> str:
+        """
+        Convert a host filesystem path to a container-accessible path
+        
+        This function maps paths from the host OS to their location in the container
+        using the mounted directories.
+        """
+        # For paths that already exist in the container directly, return as-is
+        if os.path.exists(host_path):
+            return host_path
+            
+        # Check if HOST_MOUNT_POINT is available
+        if not os.path.exists(HOST_MOUNT_POINT):
+            raise ValueError(f"Host mount point {HOST_MOUNT_POINT} is not available")
+            
+        # Convert absolute paths from host to container paths
+        # For example: /Users/name/projects -> /host/projects
+        
+        # Get the host's OS type (e.g., macOS paths vs. Linux paths)
+        # Generally, we expect paths like these:
+        # - macOS/Linux: /Users/name/path or /home/name/path
+        # - Windows: C:\Users\name\path or /c/Users/name/path (in WSL/Git Bash)
+        
+        # Convert Windows-style paths if needed
+        if re.match(r'^[A-Za-z]:\\', host_path):
+            # Windows drive letter path (C:\path\to\dir)
+            drive_letter = host_path[0].lower()
+            path_segments = host_path[2:].replace('\\', '/').split('/')
+            host_path = f"/{drive_letter}/{'/'.join(path_segments)}"
+        
+        # Get just the relative part after the mount
+        if not HOST_MOUNT_POINT.endswith('/'):
+            host_mount_with_slash = HOST_MOUNT_POINT + '/'
+        else:
+            host_mount_with_slash = HOST_MOUNT_POINT
+            
+        container_path = os.path.join(host_mount_with_slash, os.path.basename(host_path))
+        
+        # Check if the converted path exists
+        if not os.path.exists(container_path):
+            # If the direct mapping doesn't work, try looking for a partial match
+            # This handles cases where the host path doesn't exactly match the container path
+            for root, dirs, _ in os.walk(HOST_MOUNT_POINT):
+                for dir_name in dirs:
+                    if host_path.endswith(dir_name):
+                        potential_path = os.path.join(root, dir_name)
+                        if os.path.exists(potential_path):
+                            return potential_path
+            
+            # If we can't find a matching path, use the default mapping
+            # and let the caller handle any access issues
+            return container_path
+            
+        return container_path
 
     # MCP Tool: list_projects
     def list_projects(self) -> Dict[str, Any]:
@@ -97,86 +201,123 @@ class MCPApi:
                 }
             }
         
-        # Create project directory
-        project_dir = os.path.join(PROJECTS_DIR, project_id)
-        os.makedirs(project_dir, exist_ok=True)
+        # Determine if the source is a repository or a local path
+        is_repository = source.startswith("http://") or source.startswith("https://") or source.startswith("git@")
         
-        # If source is a git URL, clone the repository
-        if source.startswith("http://") or source.startswith("https://") or source.startswith("git@"):
-            try:
-                cmd = ["git", "clone", source]
-                if branch:
-                    cmd.extend(["--branch", branch])
-                cmd.append(project_dir)
+        # Check if it's a local path
+        host_path_exists = False
+        original_source = source
+        
+        try:
+            # For local paths, we need to convert host paths to container paths
+            if not is_repository:
+                # Try to convert the path and check if it exists
+                try:
+                    source = self._convert_host_path_to_container_path(source)
+                    host_path_exists = os.path.exists(source) and os.path.isdir(source)
+                except Exception as e:
+                    return {
+                        "status": "error",
+                        "error": {
+                            "code": "path_conversion_error",
+                            "message": f"Failed to convert host path: {str(e)}",
+                            "details": {"source": original_source}
+                        }
+                    }
+        
+            is_local_path = host_path_exists
+            is_external = is_local_path
+            
+            if is_repository:
+                # For repositories, clone into our projects directory
+                project_dir = os.path.join(PROJECTS_DIR, project_id)
+                os.makedirs(project_dir, exist_ok=True)
                 
-                subprocess.run(cmd, check=True, capture_output=True)
-            except subprocess.CalledProcessError as e:
+                try:
+                    cmd = ["git", "clone", source]
+                    if branch:
+                        cmd.extend(["--branch", branch])
+                    cmd.append(project_dir)
+                    
+                    subprocess.run(cmd, check=True, capture_output=True)
+                except subprocess.CalledProcessError as e:
+                    return {
+                        "status": "error",
+                        "error": {
+                            "code": "git_clone_failed",
+                            "message": "Failed to clone repository",
+                            "details": {
+                                "error": str(e),
+                                "stdout": e.stdout.decode() if e.stdout else "",
+                                "stderr": e.stderr.decode() if e.stderr else ""
+                            }
+                        }
+                    }
+            elif is_local_path:
+                # For local paths, simply register the external directory
+                project_dir = source
+                
+                # Verify the directory is accessible
+                if not os.access(project_dir, os.R_OK):
+                    return {
+                        "status": "error",
+                        "error": {
+                            "code": "directory_access_error",
+                            "message": "Cannot access the specified directory",
+                            "details": {"directory": project_dir, "original_path": original_source}
+                        }
+                    }
+            else:
                 return {
                     "status": "error",
                     "error": {
-                        "code": "git_clone_failed",
-                        "message": "Failed to clone repository",
-                        "details": {
-                            "error": str(e),
-                            "stdout": e.stdout.decode() if e.stdout else "",
-                            "stderr": e.stderr.decode() if e.stderr else ""
-                        }
+                        "code": "invalid_source",
+                        "message": "Source is not a valid URL or path",
+                        "details": {"source": original_source, "converted_path": source}
                     }
                 }
-        # If source is a local path, copy the contents
-        elif os.path.exists(source):
-            try:
-                # Use rsync or similar for copying
-                subprocess.run(["rsync", "-av", f"{source}/", project_dir], check=True, capture_output=True)
-            except subprocess.CalledProcessError as e:
-                return {
-                    "status": "error",
-                    "error": {
-                        "code": "copy_failed",
-                        "message": "Failed to copy project files",
-                        "details": {
-                            "error": str(e),
-                            "stdout": e.stdout.decode() if e.stdout else "",
-                            "stderr": e.stderr.decode() if e.stderr else ""
-                        }
-                    }
+            
+            # Create analysis directory for the project
+            analysis_dir = self._get_analysis_path(project_id)
+            os.makedirs(analysis_dir, exist_ok=True)
+            
+            # Create metadata
+            import datetime
+            metadata = {
+                "id": project_id,
+                "name": name,
+                "source": original_source,  # Store the original source for reference
+                "container_path": project_dir,  # The path used inside the container
+                "branch": branch,
+                "path": project_dir,
+                "is_external": is_external,
+                "created_at": datetime.datetime.now().isoformat()
+            }
+            
+            # Save metadata
+            self._save_project_metadata(project_id, metadata)
+            
+            # Update projects dictionary
+            self.projects[project_id] = metadata
+            
+            return {
+                "status": "success",
+                "data": {
+                    "project": metadata
                 }
-        else:
+            }
+        except Exception as e:
             return {
                 "status": "error",
                 "error": {
-                    "code": "invalid_source",
-                    "message": "Source is not a valid URL or path",
-                    "details": {"source": source}
+                    "code": "add_project_failed",
+                    "message": f"Failed to add project: {str(e)}",
+                    "details": {"source": original_source}
                 }
             }
-        
-        # Create metadata
-        import datetime
-        metadata = {
-            "id": project_id,
-            "name": name,
-            "source": source,
-            "branch": branch,
-            "path": project_dir,
-            "created_at": datetime.datetime.now().isoformat()
-        }
-        
-        # Save metadata
-        self._save_project_metadata(project_id, metadata)
-        
-        # Update projects dictionary
-        self.projects[project_id] = metadata
-        
-        return {
-            "status": "success",
-            "data": {
-                "project": metadata
-            }
-        }
 
     # MCP Tool: analyze_dependencies
-    def analyze_dependencies(self, project_id: str, options: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def analyze_dependencies(self, project_id: str, options: Optional[Dict[str, Any]] = None, use_streaming: bool = False) -> Dict[str, Any]:
         """Analyze dependencies for a project"""
         if project_id not in self.projects:
             return {
@@ -188,8 +329,57 @@ class MCPApi:
                 }
             }
         
+        # If streaming is requested, use the streaming operation
+        if use_streaming:
+            # Start a streaming operation
+            params = {
+                "project_id": project_id,
+                "options": options
+            }
+            
+            operation = execute_streaming_operation(
+                task_func=self._analyze_dependencies_task,
+                params=params
+            )
+            
+            # Return the operation details
+            return {
+                "status": "accepted",
+                "data": {
+                    "operation_id": operation.operation_id,
+                    "status": operation.status,
+                    "correlation_id": operation.correlation_id
+                },
+                "metadata": {
+                    "streaming": True,
+                    "started_at": operation.start_time
+                }
+            }
+        
+        # Non-streaming version
         project = self.projects[project_id]
         project_dir = project["path"]
+        
+        # Verify the directory exists and is accessible
+        if not os.path.exists(project_dir):
+            return {
+                "status": "error",
+                "error": {
+                    "code": "directory_not_found",
+                    "message": f"Project directory does not exist: {project_dir}",
+                    "details": {"project_id": project_id, "path": project_dir}
+                }
+            }
+        
+        if not os.access(project_dir, os.R_OK):
+            return {
+                "status": "error",
+                "error": {
+                    "code": "directory_access_error",
+                    "message": f"Cannot access project directory: {project_dir}",
+                    "details": {"project_id": project_id, "path": project_dir}
+                }
+            }
         
         # Create analysis directory
         analysis_dir = self._get_analysis_path(project_id)
@@ -216,13 +406,16 @@ class MCPApi:
             # Parse output to determine if successful
             output_lines = result.stdout.split("\n")
             
-            # Look for the generated dependency graph file
-            dependency_graph_path = os.path.join(project_dir, "dependency-graph.json")
-            if os.path.exists(dependency_graph_path):
-                # Copy to analysis directory
-                import shutil
-                shutil.copy(dependency_graph_path, os.path.join(analysis_dir, "dependency-graph.json"))
+            # Copy all generated analysis files to the analysis directory
+            source_analysis_dir = os.path.join(project_dir, "docs", "dependency-analysis")
+            if os.path.exists(source_analysis_dir):
+                # Copy all files from the source analysis directory to the destination
+                for filename in os.listdir(source_analysis_dir):
+                    source_file = os.path.join(source_analysis_dir, filename)
+                    if os.path.isfile(source_file):
+                        shutil.copy2(source_file, os.path.join(analysis_dir, filename))
             
+            import datetime
             return {
                 "status": "success",
                 "data": {
@@ -250,6 +443,216 @@ class MCPApi:
                     }
                 }
             }
+    
+    def _analyze_dependencies_task(self, operation, project_id: str, options: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Task function for analyzing dependencies with progress updates"""
+        project = self.projects[project_id]
+        project_dir = project["path"]
+        
+        # Verify the directory exists and is accessible
+        if not os.path.exists(project_dir):
+            operation.add_message(f"Project directory does not exist: {project_dir}", "error")
+            raise FileNotFoundError(f"Project directory does not exist: {project_dir}")
+        
+        if not os.access(project_dir, os.R_OK):
+            operation.add_message(f"Cannot access project directory: {project_dir}", "error")
+            raise PermissionError(f"Cannot access project directory: {project_dir}")
+        
+        # Create analysis directory
+        analysis_dir = self._get_analysis_path(project_id)
+        os.makedirs(analysis_dir, exist_ok=True)
+        
+        # Set default options
+        if options is None:
+            options = {}
+        
+        try:
+            # Update progress
+            operation.update_progress(0.1, "Preparing dependency analysis")
+            
+            # Count files to analyze (for progress estimation)
+            file_count = 0
+            for root, dirs, files in os.walk(project_dir):
+                # Skip node_modules and other common excludes
+                if any(exclude in root for exclude in ["node_modules", ".git", "dist", "build"]):
+                    continue
+                
+                # Count relevant files
+                file_count += sum(1 for f in files if f.endswith(('.js', '.jsx', '.ts', '.tsx')))
+            
+            operation.update_progress(0.2, f"Found {file_count} files to analyze")
+            
+            # Prepare command - note we're running analysis directly on the project directory
+            script_path = os.path.join(os.getcwd(), "scripts", "enhanced-dependency-analysis.cjs")
+            cmd = ["node", script_path, f"--root-dir={project_dir}"]
+            
+            # Add options
+            if "exclude" in options:
+                excludes = options["exclude"]
+                if isinstance(excludes, list):
+                    cmd.append(f"--exclude={','.join(excludes)}")
+            
+            # Run analysis in chunks to provide progress updates
+            operation.update_progress(0.3, "Starting dependency analysis")
+            
+            # Start the process
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1  # Line buffered
+            )
+            
+            stdout_lines = []
+            stderr_lines = []
+            
+            # Track progress through output
+            progress = 0.3
+            progress_step = 0.5 / (file_count if file_count > 0 else 100)
+            files_processed = 0
+            
+            # Process output
+            while True:
+                # Check for process completion
+                if process.poll() is not None:
+                    break
+                
+                # Read available stdout
+                line = process.stdout.readline()
+                if line:
+                    stdout_lines.append(line.strip())
+                    
+                    # Parse the line to update progress
+                    if "Analyzing file:" in line:
+                        files_processed += 1
+                        if files_processed % 10 == 0:  # Update every 10 files
+                            progress = min(0.8, 0.3 + (files_processed * progress_step))
+                            operation.update_progress(
+                                progress, 
+                                f"Analyzed {files_processed}/{file_count} files"
+                            )
+                
+                # Read available stderr
+                err_line = process.stderr.readline()
+                if err_line:
+                    stderr_lines.append(err_line.strip())
+                    operation.add_message(f"Error: {err_line.strip()}", "error")
+                
+                # Avoid CPU spin
+                time.sleep(0.1)
+            
+            # Get any remaining output
+            remaining_stdout, remaining_stderr = process.communicate()
+            if remaining_stdout:
+                stdout_lines.extend(remaining_stdout.splitlines())
+            if remaining_stderr:
+                stderr_lines.extend(remaining_stderr.splitlines())
+                for line in remaining_stderr.splitlines():
+                    operation.add_message(f"Error: {line}", "error")
+            
+            # Check result
+            if process.returncode != 0:
+                raise subprocess.CalledProcessError(
+                    process.returncode, cmd, 
+                    output="\n".join(stdout_lines), 
+                    stderr="\n".join(stderr_lines)
+                )
+            
+            operation.update_progress(0.9, "Analysis complete, saving results")
+            
+            # Copy all generated analysis files to our central analysis directory
+            source_analysis_dir = os.path.join(project_dir, "docs", "dependency-analysis")
+            if os.path.exists(source_analysis_dir):
+                # Copy all files from the source analysis directory to the destination
+                for filename in os.listdir(source_analysis_dir):
+                    source_file = os.path.join(source_analysis_dir, filename)
+                    if os.path.isfile(source_file):
+                        shutil.copy2(source_file, os.path.join(analysis_dir, filename))
+                operation.add_message("Copied analysis files to central analysis directory", "info")
+            
+            import datetime
+            # Return the final result
+            result = {
+                "project_id": project_id,
+                "output": stdout_lines,
+                "analysis_path": analysis_dir,
+                "files_processed": files_processed,
+                "total_files": file_count,
+                "timestamp": datetime.datetime.now().isoformat()
+            }
+            
+            operation.update_progress(1.0, "Dependency analysis completed successfully")
+            return result
+            
+        except subprocess.CalledProcessError as e:
+            operation.add_message(f"Analysis failed: {e}", "error")
+            raise
+        except Exception as e:
+            operation.add_message(f"Unexpected error: {e}", "error")
+            raise
+
+    # MCP Tool: get_operation_status
+    def get_operation_status(self, operation_id: str) -> Dict[str, Any]:
+        """Get the status of a streaming operation"""
+        operation = streaming_manager.get_operation(operation_id)
+        
+        if not operation:
+            return {
+                "status": "error",
+                "error": {
+                    "code": "operation_not_found",
+                    "message": f"Operation '{operation_id}' not found",
+                    "details": {"operation_id": operation_id}
+                }
+            }
+        
+        # Get the operation status
+        status = operation.get_status()
+        
+        # Return as MCP response
+        return {
+            "status": "success",
+            "data": status
+        }
+    
+    # MCP Tool: cancel_operation
+    def cancel_operation(self, operation_id: str) -> Dict[str, Any]:
+        """Cancel a streaming operation"""
+        result = streaming_manager.cancel_operation(operation_id)
+        
+        if result:
+            return {
+                "status": "success",
+                "data": {
+                    "operation_id": operation_id,
+                    "cancelled": True
+                }
+            }
+        else:
+            return {
+                "status": "error",
+                "error": {
+                    "code": "cancel_failed",
+                    "message": f"Failed to cancel operation '{operation_id}'",
+                    "details": {"operation_id": operation_id}
+                }
+            }
+    
+    # MCP Tool: list_operations
+    def list_operations(self) -> Dict[str, Any]:
+        """List all streaming operations"""
+        operations = streaming_manager.get_all_operations()
+        
+        return {
+            "status": "success",
+            "data": {
+                "operations": operations
+            },
+            "metadata": {
+                "count": len(operations)
+            }
+        }
 
     # MCP Tool: get_dependency_graph
     def get_dependency_graph(self, project_id: str, format: str = "json") -> Dict[str, Any]:
@@ -859,30 +1262,41 @@ def handle_mcp_request(tool_name: str, params: Dict[str, Any]) -> Dict[str, Any]
             "error": error_details
         }
 
+    # Create API instance
+    api = mcp_api
+    
     # Map tool names to methods
     tool_handlers = {
-        "list_projects": lambda: mcp_api.list_projects(),
-        "add_project": lambda: mcp_api.add_project(
+        "list_projects": lambda: api.list_projects(),
+        "add_project": lambda: api.add_project(
             name=params.get("name"),
             source=params.get("source"),
             branch=params.get("branch")
         ),
-        "analyze_dependencies": lambda: mcp_api.analyze_dependencies(
+        "analyze_dependencies": lambda: api.analyze_dependencies(
             project_id=params.get("project_id"),
-            options=params.get("options")
+            options=params.get("options"),
+            use_streaming=params.get("streaming", False)
         ),
-        "get_dependency_graph": lambda: mcp_api.get_dependency_graph(
+        "get_dependency_graph": lambda: api.get_dependency_graph(
             project_id=params.get("project_id"),
             format=params.get("format", "json")
         ),
-        "find_orphaned_files": lambda: mcp_api.find_orphaned_files(
+        "find_orphaned_files": lambda: api.find_orphaned_files(
             project_id=params.get("project_id"),
             exclude_patterns=params.get("exclude_patterns")
         ),
-        "check_circular_dependencies": lambda: mcp_api.check_circular_dependencies(
+        "check_circular_dependencies": lambda: api.check_circular_dependencies(
             project_id=params.get("project_id"),
             module=params.get("module")
-        )
+        ),
+        "get_operation_status": lambda: api.get_operation_status(
+            operation_id=params.get("operation_id")
+        ),
+        "cancel_operation": lambda: api.cancel_operation(
+            operation_id=params.get("operation_id")
+        ),
+        "list_operations": lambda: api.list_operations()
     }
     
     handler = tool_handlers.get(tool_name)

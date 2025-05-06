@@ -1,0 +1,73 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# MCP Troubleshooting Guide
+
+This rule provides solutions for common issues encountered when using the dependency analyzer MCP server.
+
+## Connection Issues
+
+### "No server info found" Error
+
+This occurs when the MCP server doesn't respond properly to initialization requests.
+
+**Solutions:**
+1. Verify the Docker container is running: `docker ps | grep mcp/simple-dependmap`
+2. Check the MCP server logs: `docker logs $(docker ps -q --filter ancestor=mcp/simple-dependmap)`
+3. Ensure the JSON-RPC format is correct in [simple_mcp_server.py](mdc:simple_mcp_server.py)
+4. Restart Cursor after updating the MCP configuration
+
+### "Failed to start MCP server" Error
+
+**Solutions:**
+1. Check if the Docker image exists: `docker images | grep mcp/simple-dependmap`
+2. Rebuild the Docker image: `docker build -t mcp/simple-dependmap -f Dockerfile.simple .`
+3. Verify port availability: `lsof -i :8000`
+4. Check for permission issues: `docker run --rm -it mcp/simple-dependmap ls -la /app`
+
+## Analysis Issues
+
+### Incomplete Dependency Graph
+
+When the dependency graph is missing expected connections:
+
+**Solutions:**
+1. Check if dynamic imports are being handled: [dynamic-references.md](mdc:dynamic-references.md)
+2. Verify file extensions are properly configured in analysis options
+3. Increase the analysis depth parameter
+4. Check the excludes list to ensure important directories aren't filtered out
+
+### Too Many False Positives in Orphaned Files
+
+**Solutions:**
+1. Review the exclude patterns in [orphaned-files.md](mdc:orphaned-files.md)
+2. Add specific files to [confirmed-orphaned-files.md](mdc:confirmed-orphaned-files.md)
+3. Add more entry points to the analysis configuration
+4. Check for dynamic imports or requires that might be missed
+
+## Performance Issues
+
+### Slow Analysis
+
+**Solutions:**
+1. Reduce project scope with targeted directory analysis
+2. Increase Docker container resources
+3. Add more exclusion patterns for large libraries
+4. Use the incremental analysis option
+
+### Container Memory Errors
+
+**Solutions:**
+1. Increase Docker memory limit: `docker run --memory=4g -i --rm mcp/simple-dependmap`
+2. Split analysis into smaller projects
+3. Use batch processing for large codebases
+4. Enable file caching in the configuration
+
+## MCP Communication Debugging
+
+1. Use [test_jsonrpc.py](mdc:test_jsonrpc.py) to test communication
+2. Review [stdio_mcp.py](mdc:stdio_mcp.py) for communication issues
+3. Check the server logs for malformed JSON
+4. Clear Cursor's MCP cache and restart

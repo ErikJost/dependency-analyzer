@@ -1,0 +1,102 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor Integration Best Practices
+
+This rule provides best practices for integrating the dependency analyzer with Cursor to prevent crashes and ensure reliable operation.
+
+## Configuration Safety
+
+### MCP Configuration
+
+Always use the simplified configuration approach in `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "dependencyAnalyzer": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/simple-dependmap"
+      ],
+      "env": {}
+    }
+  }
+}
+```
+
+**Important**: Do not modify this structure unless absolutely necessary. See [simple_mcp.json](mdc:simple_mcp.json) for reference.
+
+## Communication Protocol
+
+### Maintaining Stable Communication
+
+1. **Never send unsolicited messages** from the MCP server to Cursor
+2. Always respond to every request with the same ID as the request
+3. Validate JSON-RPC 2.0 format in both directions
+4. Keep responses under 10MB to prevent memory issues
+
+### Preventing Cursor Crashes
+
+Common issues that can crash Cursor:
+
+1. ❌ Sending malformed JSON responses
+2. ❌ Sending responses with incorrect IDs
+3. ❌ Sending large dependency graphs without pagination
+4. ❌ Attempting to initialize before receiving a request
+5. ❌ Sending multiple responses to a single request
+
+## Resource Management
+
+### Limiting Resource Usage
+
+To prevent Cursor crashes due to resource exhaustion:
+
+1. Limit analysis to specific directories rather than entire large projects
+2. Use pagination for large dependency graphs
+3. Keep visualization data under 5MB
+4. Run resource-intensive operations asynchronously
+5. Cancel long-running operations that aren't needed
+
+## Error Handling
+
+### Safe Error Responses
+
+Always use proper JSON-RPC 2.0 error format:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "request-id",
+  "error": {
+    "code": -32000,
+    "message": "Clear error message"
+  }
+}
+```
+
+Error codes should follow the JSON-RPC 2.0 specification as implemented in [simple_mcp_server.py](mdc:simple_mcp_server.py).
+
+## Recovery Steps
+
+If Cursor crashes:
+
+1. Check Docker container logs: `docker logs $(docker ps -q --filter ancestor=mcp/simple-dependmap)`
+2. Stop all running MCP containers: `docker stop $(docker ps -q --filter ancestor=mcp/simple-dependmap)`
+3. Clear the `~/.cursor/mcp_cache` directory if it exists
+4. Restart Cursor with a clean state
+
+## Testing Before Integration
+
+Always test any changes to the MCP server using the stdio interface before connecting to Cursor:
+
+```bash
+echo '{"jsonrpc":"2.0","id":"test","method":"initialize"}' | docker run -i --rm mcp/simple-dependmap
+```
+
+This helps identify issues before they can affect Cursor's stability.

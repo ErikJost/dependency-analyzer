@@ -28,7 +28,7 @@ npm install -g dependency-analyzer
 ### Clone Repository
 
 ```bash
-git clone https://github.com/your-username/dependency-analyzer.git
+git clone https://github.com/ErikJost/dependency-analyzer.git
 cd dependency-analyzer
 ```
 

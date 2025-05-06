@@ -10,7 +10,7 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 1. Fork the repository
 2. Clone your fork: `git clone https://github.com/your-username/dependency-analyzer.git`
-3. Add the upstream repository: `git remote add upstream https://github.com/original-owner/dependency-analyzer.git`
+3. Add the upstream repository: `git remote add upstream https://github.com/ErikJost/dependency-analyzer.git`
 4. Create a new branch for your contribution: `git checkout -b feature/your-feature-name`
 
 ## Development Workflow

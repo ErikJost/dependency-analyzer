@@ -301,22 +301,25 @@ To configure Cursor to use this MCP server, create or update `~/.cursor/mcp.json
 
 After updating the configuration, restart Cursor for the changes to take effect.
 
-## Persistent Data with Docker
+## Persistent Data and Project Access with Docker
 
-To ensure your analysis data persists across container restarts and image updates, use a host path volume mapping when running the container:
+To ensure your analysis data persists and your projects are accessible for validation, use multiple host path volume mappings when running the container:
 
 ```bash
-# Example: Run the container with persistent data
-# Replace /Users/erikjost/data with your preferred host directory
+# Example: Run the container with persistent data and full project access
+# Replace /Users/erikjost/data and /Users/erikjost with your actual directories
 
-docker run -d --name DependencyMCP -v /Users/erikjost/data:/data mcp/sdk-minimal
+docker run -d --name DependencyMCP \
+  -v /Users/erikjost/data:/data \
+  -v /Users/erikjost:/Users/erikjost \
+  mcp/sdk-minimal
 ```
 
-- `/Users/erikjost/data` is a directory on your host machine.
-- `/data` is the directory inside the container where all project and analysis data is stored.
-- This ensures your data is never lost, even if you remove or update the container image.
+- `/Users/erikjost/data` is a directory on your host machine for persistent analysis data.
+- `/Users/erikjost` is your user/project directory, making all your projects accessible inside the container.
+- `/data` and `/Users/erikjost` are the corresponding paths inside the container.
 
-## Cursor MCP Configuration
+## Cursor MCP Configuration (with multiple mounts)
 
 For Cursor integration, configure your `mcp.json` as follows:
 
@@ -329,14 +332,15 @@ For Cursor integration, configure your `mcp.json` as follows:
     "--rm",
     "-v",
     "/Users/erikjost/data:/data",
+    "-v",
+    "/Users/erikjost:/Users/erikjost",
     "mcp/sdk-minimal"
   ]
 }
 ```
 
-- This will start a new container for each request, using the persistent data directory.
-- No `env` block is needed.
-- Do **not** use `docker exec` or reference a running container for Cursor integration.
+- This will start a new container for each request, with both persistent data and project directories mounted.
+- Adjust the paths as needed for your environment.
 
 ## Release Notes
 

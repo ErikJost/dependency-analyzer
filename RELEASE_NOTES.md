@@ -64,4 +64,46 @@ The MCP server provides AI agents with powerful capabilities:
 - Erik Jost (@ErikJost)
 
 ### Feedback and Issues
-We welcome your feedback and bug reports! Please submit issues on our [GitHub repository](https://github.com/ErikJost/dependency-analyzer/issues). 
+We welcome your feedback and bug reports! Please submit issues on our [GitHub repository](https://github.com/ErikJost/dependency-analyzer/issues).
+
+## v1.0.0 (2024-05-06)
+
+### Major Changes
+- **Docker image now based on python:3.13-slim** for improved security and up-to-date dependencies.
+- **Persistent data strategy updated:**
+  - Use a host path volume mapping (e.g., `/Users/erikjost/data:/data`) for all project and analysis data.
+  - This ensures data is never lost, even if the container is removed or the image is updated.
+- **Cursor MCP integration:**
+  - Recommended configuration now uses `docker run` with the image name and host path volume mapping.
+  - Removed use of `docker exec` and container-based communication for Cursor.
+  - No `env` block is required in the MCP config.
+- **Documentation updated** to reflect these best practices and provide clear setup instructions.
+
+### Upgrade Instructions
+- Rebuild your Docker image:
+  ```bash
+  docker build --no-cache -t mcp/sdk-minimal -f Dockerfile.sdk_minimal .
+  ```
+- When running the container manually, use:
+  ```bash
+  docker run -d --name DependencyMCP -v /Users/erikjost/data:/data mcp/sdk-minimal
+  ```
+- For Cursor integration, update your `mcp.json`:
+  ```json
+  "dependencyAnalyzer": {
+    "command": "docker",
+    "args": [
+      "run",
+      "-i",
+      "--rm",
+      "-v",
+      "/Users/erikjost/data:/data",
+      "mcp/sdk-minimal"
+    ]
+  }
+  ```
+
+### Notes
+- Using a host path for `/data` ensures your analysis results and project data persist across container and image changes.
+- The MCP server is now fully compatible with Cursor's recommended integration pattern.
+- See the README for more details and troubleshooting tips. 

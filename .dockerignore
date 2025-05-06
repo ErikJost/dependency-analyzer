@@ -1,0 +1,22 @@
+# Git
+.git
+.gitignore
+.github
+
+# Node.js
+node_modules
+npm-debug.log
+
+# Project specific
+projects/*
+analysis/*
+*.md
+!README.md
+!RELEASE_NOTES.md
+
+# Other
+.DS_Store
+*.log
+*.swp
+*.swo
+.cursor 

@@ -1,0 +1,50 @@
+# Dependency Analyzer MCP Server Configuration
+# Place this file in one of the following locations:
+# - /app/config/config.yaml (in Docker container)
+# - ./config.yaml (current directory)
+# - ./config/config.yaml (config subdirectory)
+# 
+# Or specify a custom path with --config option
+
+# Server configuration
+server:
+  # HTTP server port (default: 8000)
+  port: 8000
+  
+  # Server hostname or IP address (default: 0.0.0.0)
+  host: 0.0.0.0
+  
+  # MCP interface mode: "http" or "stdio" (default: "http")
+  mode: http
+
+# Project directories configuration
+projects:
+  # Directory where project code is stored
+  projects_dir: /app/projects
+  
+  # Directory where analysis results are stored
+  analysis_dir: /app/analysis
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL (default: INFO)
+  level: INFO
+  
+  # Log format: "json" or "text" (default: "json")
+  format: json
+
+# Authentication configuration (not fully implemented yet)
+auth:
+  # Whether authentication is enabled (default: false)
+  enabled: false
+  
+  # Authentication username (if enabled)
+  username: admin
+  
+  # Authentication password (if enabled)
+  password: changeme
+
+# You can add custom configuration sections as needed
+# custom:
+#   option1: value1
+#   option2: value2 

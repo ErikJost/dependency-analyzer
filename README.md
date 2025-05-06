@@ -1,97 +1,157 @@
-# Dependency Analyzer
+# Dependency Analyzer MCP Server
 
-A powerful tool for analyzing and visualizing code dependencies in JavaScript and TypeScript projects.
+A Model Context Protocol (MCP) server for analyzing and visualizing code dependencies in JavaScript and TypeScript projects. Designed for AI agents and Cursor to gain deeper understanding of codebases.
 
 ## Features
 
-- Static code analysis to identify imports and exports
-- Interactive force-directed graph visualization
-- Orphaned file detection and reporting
-- Build process dependency analysis
-- Dynamic import detection
-- Route component verification
-- Cross-boundary dependency detection
+- **MCP API**: Standardized API for AI agents to access dependency information
+- **Dependency Analysis**: Static code analysis to identify imports and exports
+- **Multi-Project Support**: Analyze multiple projects simultaneously
+- **Interactive Visualization**: Force-directed graph visualization of dependencies
+- **Orphaned File Detection**: Identify unused files in the codebase
+- **Docker Integration**: Easy deployment in containerized environments
 
 ## Installation
 
 ### Prerequisites
 
-- Node.js (v14 or later)
-- Python 3.6+
+- Docker & Docker Compose (recommended)
+- Alternatively: Node.js (v14+) and Python 3.6+
 
-### Install from npm
-
-```bash
-npm install -g dependency-analyzer
-```
-
-### Clone Repository
+### Quick Start with Docker (Recommended)
 
 ```bash
+# Clone the repository
 git clone https://github.com/ErikJost/dependency-analyzer.git
 cd dependency-analyzer
+
+# Build and start with Docker Compose
+docker-compose up -d
 ```
 
-## Usage
+The MCP server will be available at http://localhost:8000
 
-### Quick Start
+### Local Installation
 
-1. Navigate to your project directory
-2. Run the dependency analyzer
+If you prefer a local installation without Docker:
 
 ```bash
-dependency-analyzer --root=/path/to/your/project
+# Clone the repository
+git clone https://github.com/ErikJost/dependency-analyzer.git
+cd dependency-analyzer
+
+# Install dependencies
+pip install -r requirements.txt
+npm install
+
+# Start the server
+python server.py
 ```
 
-Or if running from the cloned repository:
+## MCP API Reference
 
-```bash
-python3 server.py --root=/path/to/your/project
+The Dependency Analyzer MCP server provides a set of tools and resources for AI agents and Cursor to analyze code dependencies.
+
+### MCP Tools
+
+#### Dependency Analysis
+
+- **analyze_dependencies**: Analyze dependencies for a project
+  ```json
+  {
+    "project_id": "my-project",
+    "options": {
+      "exclude": ["node_modules", "dist"]
+    }
+  }
+  ```
+
+- **get_dependency_graph**: Retrieve the dependency graph
+  ```json
+  {
+    "project_id": "my-project",
+    "format": "json"
+  }
+  ```
+
+- **find_orphaned_files**: Find files not imported anywhere
+  ```json
+  {
+    "project_id": "my-project",
+    "exclude_patterns": ["*.test.ts", "*.spec.ts"]
+  }
+  ```
+
+#### Project Management
+
+- **list_projects**: List all available projects
+- **add_project**: Add a new project for analysis
+  ```json
+  {
+    "name": "my-new-project",
+    "source": "https://github.com/username/repo.git",
+    "branch": "main"
+  }
+  ```
+
+### MCP Resources
+
+- **Project Structure**: `project://{project_id}/structure`
+- **Dependency Graph**: `project://{project_id}/dependencies`
+- **File Dependencies**: `project://{project_id}/file/{path}/dependencies`
+- **Component Dependencies**: `project://{project_id}/component/{component_name}/dependencies`
+
+## Usage with AI Agents
+
+The Dependency Analyzer MCP server is designed to work with AI agents like GPT and Claude. AI agents can:
+
+1. Query the dependency structure of your code
+2. Find unused files or circular dependencies
+3. Understand the relationships between components
+4. Analyze the impact of potential code changes
+
+Example prompts for AI agents:
+
+- "Analyze the dependencies of the authentication module in my-project"
+- "Find unused files in the components directory"
+- "Show me the dependencies of the UserProfile component"
+- "Identify circular dependencies in the utils directory"
+
+## Docker Configuration
+
+The Docker container can be configured through environment variables:
+
+```yaml
+environment:
+  - PORT=8000
+  - PROJECTS_DIR=/app/projects
+  - ANALYSIS_DIR=/app/analysis
 ```
 
-A web server will start, and your browser will open to the visualization page.
+You can mount projects directly into the container:
 
-### CLI Options
-
+```yaml
+volumes:
+  - ./my-project:/app/projects/my-project
 ```
-python3 server.py [--root=<path>] [--port=<port>] [--script=<path>] [--no-browser]
-```
 
-- `--root`: Path to the root of the project to analyze (defaults to current directory)
-- `--port`: Port to run the web server on (defaults to 8000)
-- `--script`: Path to the analysis script (default: 'scripts/enhanced-dependency-analysis.cjs')
-- `--no-browser`: Don't automatically open the browser
+## Analysis Tools
 
-## Available Tools
+The Dependency Analyzer MCP server includes these core analysis scripts:
 
-### Analysis Scripts
+- **enhanced-dependency-analysis.cjs**: Main dependency analysis
+- **check-dynamic-imports.cjs**: Detect dynamically imported modules
+- **verify-route-components.cjs**: Verify route components
+- **batch-archive-orphaned.cjs**: Manage orphaned files
 
-- `scripts/enhanced-dependency-analysis.cjs` - Enhanced dependency analysis with visualization
-- `scripts/analyze-dependencies.cjs` - Basic dependency analysis
-- `scripts/analyze-build-dependencies.cjs` - Build process dependency analysis
-- `scripts/check-dynamic-imports.cjs` - Detect dynamically imported modules
-- `scripts/verify-route-components.cjs` - Verify route components
-- `scripts/update-orphaned-files-report.cjs` - Update orphaned files report
-- `scripts/batch-archive-orphaned.cjs` - Batch archive orphaned files
+## Visualizations
 
-### Reports
-
-The analysis generates various reports:
-
-- Orphaned files analysis
-- Build dependencies
-- Dynamic references
-- Route component verification
-
-### Visualization
+The server provides several visualization options:
 
 - Interactive force-directed graph visualization
-- Filter by folder or file type
-- Show/hide missing nodes and duplicates
-- Search functionality
-- Run analysis directly from the browser
-- Cancel running analysis with stop button
-- Real-time status updates
+- Tabular dependency views
+- Orphaned file reports
+- Build dependency analysis
 
 ## Development
 
@@ -101,10 +161,10 @@ The analysis generates various reports:
 npm test
 ```
 
-### Building from Source
+### Building Docker Image
 
 ```bash
-npm run build
+docker build -t dependency-analyzer-mcp .
 ```
 
 ## Contributing
@@ -115,32 +175,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Publishing to GitHub
+## Acknowledgments
 
-If you want to publish this tool to your own GitHub repository, follow these steps:
-
-1. Create a new repository on GitHub without initializing it (no README, .gitignore, or license)
-2. Copy the URL of your new repository
-3. Update the remote origin in your local repository:
-
-```bash
-git remote add origin https://github.com/your-username/dependency-analyzer.git
-```
-
-4. Update the package.json file with your repository details:
-   - Edit the `repository.url` field
-   - Edit the `bugs.url` field
-   - Edit the `homepage` field
-
-5. Push the code to GitHub:
-
-```bash
-git push -u origin main
-```
-
-6. (Optional) To publish to npm:
-
-```bash
-npm login
-npm publish
-``` 
+- Inspired by [GitHub's MCP Server](https://github.com/github/github-mcp-server) for AI agent integration
+- Built to enhance AI understanding of code structure 

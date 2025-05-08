@@ -398,16 +398,17 @@ async function archiveOrphanedFiles() {
 /**
  * Create a workflow summary
  */
-function createWorkflowSummary() {
+function createWorkflowSummary(visualizationLink) {
   console.log('\n📊 Creating workflow summary...');
-  
   const summaryPath = path.join(config.docsDir, 'workflow-summary.md');
   const timestamp = new Date().toISOString();
-  
   const summary = `# Dependency Analysis Workflow Summary
 
 ## Overview
 This document summarizes the dependency analysis workflow run on ${timestamp}.
+
+## Visualization
+- [Open Dependency Visualizer](${visualizationLink})
 
 ## Steps Completed
 
@@ -582,8 +583,28 @@ async function runWorkflow() {
     // }
     console.log('\n⏭️  Skipping file archival step (archival is now a separate function)');
     
+    // After all analysis steps, start the visualization server automatically
+    console.log(colorize.green('\n✅ Starting interactive visualization server...'));
+    try {
+      const serverScript = path.join(config.scriptsDir, 'start-dependency-server.sh');
+      fs.chmodSync(serverScript, '755');
+      const serverArgs = [];
+      if (options.rootDir) {
+        serverArgs.push(`--root=${options.rootDir}`);
+      }
+      const serverProcess = spawn(serverScript, serverArgs, {
+        stdio: 'inherit',
+        detached: true,
+        shell: true
+      });
+      serverProcess.unref();
+      console.log(colorize.green('\nAccess the visualization at: http://localhost:8000/dependency-visualizer.html'));
+    } catch (error) {
+      console.error(colorize.red(`❌ Error starting visualization server: ${error.message}`));
+    }
+
     // Create workflow summary
-    createWorkflowSummary();
+    createWorkflowSummary('http://localhost:8000/dependency-visualizer.html');
     
     // Generate visualization
     // await generateVisualization(results);  // Commenting out undefined function call

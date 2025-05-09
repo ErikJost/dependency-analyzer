@@ -34,4 +34,5 @@ When building a new Docker image for the dependency analyzer MCP server, always 
 
 ## See Also
 - [README.md](mdc:README.md) for persistent data and container management instructions.
-- [RELEASE_NOTES.md](mdc:RELEASE_NOTES.md) for upgrade steps and best practices. 
+- [RELEASE_NOTES.md](mdc:RELEASE_NOTES.md) for upgrade steps and best practices.
+- Orphaned files are now moved to the `archived_orphan` folder in the project root. If a file with the same name exists, a dash and the next available number is appended (e.g., `file.md`, `file-1.md`, `file-2.md`). No files are deleted. 

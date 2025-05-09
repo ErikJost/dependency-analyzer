@@ -7,6 +7,7 @@ import shutil
 import subprocess
 from mcp.server.fastmcp import FastMCP
 import socket
+import threading
 
 DATA_DIR = "/data"
 PROJECTS_INDEX_PATH = os.path.join(DATA_DIR, "projects_index.json")
@@ -142,16 +143,25 @@ def add_project(name: str, path: str) -> dict:
     else:
         logging.error(f"Failed to create project folder for {new_id}")
 
+    # Start dependency analysis in the background
+    def run_analysis():
+        try:
+            analyze_dependencies(new_id)
+        except Exception as e:
+            logging.error(f"Background analysis failed for {new_id}: {e}")
+    threading.Thread(target=run_analysis, daemon=True).start()
+
     return {
         "success": True,
         "project": project,
-        "path_verified": True
+        "path_verified": True,
+        "message": "Dependency analysis is running in the background."
     }
 
 @mcp.tool()
-def remove_project(project_id: str) -> dict:
-    logging.debug(f"remove_project called for project_id={project_id}")
-    print(f"remove_project called for project_id={project_id}", file=sys.stderr)
+def forget_project(project_id: str) -> dict:
+    logging.debug(f"forget_project called for project_id={project_id}")
+    print(f"forget_project called for project_id={project_id}", file=sys.stderr)
     
     # Find the project in the list
     project = next((p for p in projects if p["id"] == project_id), None)
@@ -179,14 +189,41 @@ def remove_project(project_id: str) -> dict:
         print(error_msg, file=sys.stderr)
         # Continue anyway to try to remove the folder
     
-    # Remove project folder
-    folder_removed = remove_project_folder(project_id)
+    # Remove project folder and metadata
+    project_dir = os.path.join(DATA_DIR, project_id)
+    metadata_path = os.path.join(project_dir, "metadata.json")
+    folder_removed = False
+    try:
+        if os.path.exists(project_dir):
+            shutil.rmtree(project_dir)
+            folder_removed = True
+            print(f"Project folder {project_dir} removed successfully", file=sys.stderr)
+        else:
+            print(f"Project folder {project_dir} not found", file=sys.stderr)
+        # Remove metadata file if it exists (should be in the folder, but just in case)
+        if os.path.exists(metadata_path):
+            os.remove(metadata_path)
+            print(f"Metadata file {metadata_path} removed", file=sys.stderr)
+    except Exception as e:
+        print(f"Error removing project folder or metadata: {str(e)}", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
     
     return {
         "success": True,
         "project": removed_project,
         "folder_removed": folder_removed
     }
+
+def get_web_url_for_output(file_path):
+    """Convert a local output file path to a web-accessible URL."""
+    if not os.path.exists(file_path):
+        return None
+    WEB_BASE_URL = os.environ.get("WEB_BASE_URL")
+    if not WEB_BASE_URL:
+        host_ip = get_host_ip()
+        WEB_BASE_URL = f"http://{host_ip}:8000/output/"
+    filename = os.path.basename(file_path)
+    return WEB_BASE_URL.rstrip("/") + f"/{filename}"
 
 @mcp.tool()
 def analyze_dependencies(project_id: str) -> dict:
@@ -215,13 +252,13 @@ def analyze_dependencies(project_id: str) -> dict:
 
         # Attempt to extract summary from workflow output or report files
         summary = {}
+        summary_url = None
         try:
             # Look for workflow-summary.md in the project
-            summary_path = os.path.join(project_dir, "dependency-analysis", "workflow-summary.md")
+            summary_path = os.path.join(project_dir, "output", "workflow-summary.md")
             if os.path.exists(summary_path):
                 with open(summary_path, "r") as f:
                     summary_content = f.read()
-                # Extract statistics from the summary
                 import re
                 files_analyzed = re.search(r"Initial orphaned file candidates: (\d+)", summary_content)
                 enhanced_orphans = re.search(r"Enhanced orphaned file candidates: (\d+)", summary_content)
@@ -232,39 +269,39 @@ def analyze_dependencies(project_id: str) -> dict:
                     "confirmed_orphaned_files": int(confirmed_orphans.group(1)) if confirmed_orphans else None,
                     "summary_path": summary_path
                 }
+                summary_url = get_web_url_for_output(summary_path)
             else:
                 summary = {"info": "workflow-summary.md not found"}
         except Exception as e:
             summary = {"error": f"Failed to extract summary: {str(e)}"}
 
         # Also include paths to key reports if they exist, as web URLs
-        report_dir = os.path.join(project_dir, "dependency-analysis")
+        report_dir = os.path.join(project_dir, "output")
         key_reports = [
             "enhanced-orphaned-files.md",
             "dependency-graph.json",
             "duplicate-files.md",
-            "final-orphaned-files.md"
+            "final-orphaned-files.md",
+            "confirmed-orphaned-files.md",
+            "build-dependencies.md",
+            "dynamic-references.md",
+            "route-component-verification.md",
+            "FILE_CLEANUP_REPORT.md"
         ]
-        report_paths = {}
-        # Get base URL from environment or auto-detect
-        WEB_BASE_URL = os.environ.get("WEB_BASE_URL")
-        if not WEB_BASE_URL:
-            host_ip = get_host_ip()
-            WEB_BASE_URL = f"http://{host_ip}:8000/dependency-analysis/"
+        report_urls = {}
         for report in key_reports:
             report_path = os.path.join(report_dir, report)
-            if os.path.exists(report_path):
-                # Only use the filename for the URL
-                report_url = WEB_BASE_URL.rstrip("/") + "/" + report
-                report_paths[report] = report_url
-        
+            url = get_web_url_for_output(report_path)
+            if url:
+                report_urls[report] = url
         return {
             "success": True,
             "project_id": project_id,
             "output": output,
             "analysis_path": analysis_path,
             "summary": summary,
-            "report_paths": report_paths
+            "summary_url": summary_url,
+            "report_urls": report_urls
         }
     except subprocess.CalledProcessError as e:
         logging.error(f"Dependency analysis failed: {e.stderr}")
@@ -363,6 +400,42 @@ def check_circular_dependencies(project_id: str) -> dict:
         print(f"Failed to save circular dependencies: {str(e)}", file=sys.stderr)
     
     return {"circular_dependencies": circular_deps}
+
+@mcp.tool()
+def archive_orphaned_files(project_id: str) -> dict:
+    logging.debug(f"archive_orphaned_files called for project_id={project_id}")
+    print(f"archive_orphaned_files called for project_id={project_id}", file=sys.stderr)
+
+    # Check if project exists
+    project = next((p for p in projects if p["id"] == project_id), None)
+    if not project:
+        logging.error(f"Project not found: {project_id}")
+        return {"success": False, "error": f"Project not found: {project_id}"}
+
+    project_dir = project["path"]
+    script_path = os.path.join(os.getcwd(), "scripts", "batch-archive-orphaned.cjs")
+    output_dir = os.path.join(project_dir, "output")
+    report_path = os.path.join(output_dir, "FILE_CLEANUP_REPORT.md")
+
+    try:
+        result = subprocess.run([
+            "node", script_path
+        ], check=True, capture_output=True, text=True, cwd=project_dir)
+        output = result.stdout
+        # Check if the report was generated
+        report_url = get_web_url_for_output(report_path)
+        return {
+            "success": True,
+            "output": output,
+            "report_url": report_url
+        }
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Archival failed: {e.stderr}")
+        return {
+            "success": False,
+            "error": "Archival failed",
+            "details": e.stderr
+        }
 
 # Check /data volume is accessible
 print(f"Starting server...", file=sys.stderr)

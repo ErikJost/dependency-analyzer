@@ -156,7 +156,7 @@ This report documents the archival of orphaned files identified through dependen
 
 ## Successfully Archived Files
 
-${successfulArchivals.map(r => `- \`${r.filePath}\` → \`archive/${r.filePath}\``).join('\n')}
+${successfulArchivals.map(r => `- \`${r.filePath}\` → \`archived_orphan/${path.basename(r.filePath)}\``).join('\n')}
 
 ## Files That Failed to Archive
 

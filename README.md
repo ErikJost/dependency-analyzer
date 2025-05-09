@@ -293,4 +293,8 @@ For Cursor integration, configure your `mcp.json` as follows:
 
 ## Release Notes
 
-See `RELEASE_NOTES.md` for a summary of recent changes and upgrade instructions. 
+See `RELEASE_NOTES.md` for a summary of recent changes and upgrade instructions.
+
+## Orphaned File Archival
+
+When archiving orphaned files, they are now moved to the `archived_orphan` folder in the project root. If a file with the same name already exists, a dash and the next available number is appended (e.g., `file.md`, `file-1.md`, `file-2.md`). No files are deleted. 

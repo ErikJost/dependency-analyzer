@@ -46,18 +46,7 @@
         "-v",
         "/Users/erikjost:/Users/erikjost",
         "mcp/sdk-minimal"
-      ],
-      "env": {}
-    },
-    "codeium": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "ghcr.io/cursor-ai/codeium-mcp:latest"
-      ],
-      "env": {}
+      ]
+    }
     }
   }
-}

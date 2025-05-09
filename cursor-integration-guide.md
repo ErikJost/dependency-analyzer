@@ -206,4 +206,6 @@ If Cursor doesn't display the tools:
 
 - [Official MCP Documentation](https://modelcontextprotocol.io/docs/concepts/architecture)
 - [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)
-- [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification) 
+- [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification)
+
+Orphaned files are now moved to the `archived_orphan` folder in the project root. If a file with the same name exists, a dash and the next available number is appended (e.g., `file.md`, `file-1.md`, `file-2.md`). No files are deleted. 

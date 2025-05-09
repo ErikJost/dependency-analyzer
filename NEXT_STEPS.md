@@ -4,6 +4,7 @@
 - The project now includes a fully working MCP server using the official Python SDK (`sdk_minimal_server.py`).
 - All required tools are exposed and compatible with Cursor and other MCP clients.
 - Docker workflow is streamlined with Dockerfile.sdk_minimal (located in the project root).
+- Orphaned files are now moved to the `archived_orphan` folder in the project root. If a file with the same name exists, a dash and the next available number is appended (e.g., `file.md`, `file-1.md`, `file-2.md`). No files are deleted.
 
 ## Immediate Next Steps
 

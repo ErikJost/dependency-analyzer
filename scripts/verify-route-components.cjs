@@ -12,6 +12,19 @@ const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 
+// Parse --output-dir argument
+let outputDir = null;
+const args = process.argv.slice(2);
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--output-dir' && args[i + 1]) {
+    outputDir = path.resolve(args[i + 1]);
+    i++;
+  } else if (args[i].startsWith('--output-dir=')) {
+    outputDir = path.resolve(args[i].split('=')[1]);
+  }
+}
+if (!outputDir) outputDir = path.resolve(__dirname, '..', 'output');
+
 // Configuration
 const config = {
   rootDir: path.resolve(__dirname, '..'),
@@ -27,9 +40,9 @@ const config = {
     '**/main.tsx'
   ],
   // Orphaned files report
-  orphanedFilesReport: path.resolve(__dirname, '..', 'output', 'confirmed-orphaned-files.md'),
+  orphanedFilesReport: path.join(outputDir, 'confirmed-orphaned-files.md'),
   // Output file
-  outputFile: path.resolve(__dirname, '..', 'output', 'route-component-verification.md')
+  outputFile: path.join(outputDir, 'route-component-verification.md')
 };
 
 /**
@@ -51,7 +64,7 @@ function getOrphanedFiles() {
       orphanedFiles.push(match[1]);
     }
     
-    console.log(`Found ${orphanedFiles.length} orphaned files in the report`);
+    console.error(`Found ${orphanedFiles.length} orphaned files in the report`);
     return orphanedFiles;
   } catch (error) {
     console.error('Error reading orphaned files report:', error);
@@ -76,7 +89,7 @@ function findRouteFiles() {
     matches.forEach(file => routeFiles.add(file));
   });
   
-  console.log(`Found ${routeFiles.size} potential route definition files`);
+  console.error(`Found ${routeFiles.size} potential route definition files`);
   return Array.from(routeFiles);
 }
 
@@ -220,20 +233,19 @@ async function main() {
     const orphanedComponents = extractComponentNames(orphanedFiles);
     
     // Analyze route files
-    console.log('Analyzing route files...');
+    console.error('Analyzing route files...');
     const results = analyzeRouteFiles(routeFiles, orphanedComponents);
     
     // Generate report
     const report = generateReport(results);
     
     // Write report
-    const outputDir = path.dirname(config.outputFile);
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
     
     fs.writeFileSync(config.outputFile, report);
-    console.log(`Report written to ${config.outputFile}`);
+    console.error(`Report written to ${config.outputFile}`);
     
   } catch (error) {
     console.error('Error in verification script:', error);

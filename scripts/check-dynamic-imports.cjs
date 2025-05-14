@@ -18,6 +18,19 @@ const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 
+// Parse --output-dir argument
+let outputDir = null;
+const args = process.argv.slice(2);
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--output-dir' && args[i + 1]) {
+    outputDir = path.resolve(args[i + 1]);
+    i++;
+  } else if (args[i].startsWith('--output-dir=')) {
+    outputDir = path.resolve(args[i].split('=')[1]);
+  }
+}
+if (!outputDir) outputDir = path.resolve(__dirname, '..', 'output');
+
 // Configuration
 const config = {
   rootDir: path.resolve(__dirname, '..'),
@@ -32,9 +45,9 @@ const config = {
     '.cursor'
   ],
   // The list of potentially orphaned files
-  orphanedFilesReport: path.resolve(__dirname, '..', 'output', 'confirmed-orphaned-files.md'),
+  orphanedFilesReport: path.join(outputDir, 'confirmed-orphaned-files.md'),
   // Output file for the results
-  outputFile: path.resolve(__dirname, '..', 'output', 'dynamic-references.md')
+  outputFile: path.join(outputDir, 'dynamic-references.md')
 };
 
 // Patterns to search for
@@ -53,7 +66,7 @@ const patterns = {
  * Extract orphaned file list from the report
  */
 function extractOrphanedFiles() {
-  console.log(`Reading orphaned files report from ${config.orphanedFilesReport}...`);
+  console.error(`Reading orphaned files report from ${config.orphanedFilesReport}...`);
   if (!fs.existsSync(config.orphanedFilesReport)) {
     console.error(`Error: Orphaned files report not found at ${config.orphanedFilesReport}`);
     process.exit(1);
@@ -68,7 +81,7 @@ function extractOrphanedFiles() {
     orphanedFiles.push(match[1]);
   }
   
-  console.log(`Found ${orphanedFiles.length} potentially orphaned files in the report.`);
+  console.error(`Found ${orphanedFiles.length} potentially orphaned files in the report.`);
   return orphanedFiles;
 }
 
@@ -76,7 +89,7 @@ function extractOrphanedFiles() {
  * Get all source files in the project
  */
 function getAllSourceFiles() {
-  console.log('Finding all source files...');
+  console.error('Finding all source files...');
   
   const pattern = `**/*+(${config.extensions.join('|')})`;
   const files = glob.sync(pattern, { 
@@ -86,7 +99,7 @@ function getAllSourceFiles() {
     nodir: true
   });
   
-  console.log(`Found ${files.length} source files to analyze.`);
+  console.error(`Found ${files.length} source files to analyze.`);
   return files;
 }
 
@@ -164,7 +177,7 @@ async function main() {
     const orphanedFiles = extractOrphanedFiles();
     const sourceFiles = getAllSourceFiles();
     
-    console.log('Analyzing files for dynamic references...');
+    console.error('Analyzing files for dynamic references...');
     
     // Map to store references by orphaned file
     const referencesByFile = {};
@@ -188,7 +201,7 @@ async function main() {
       }
     }
     
-    console.log(`Found ${totalReferences} potential dynamic references to orphaned files.`);
+    console.error(`Found ${totalReferences} potential dynamic references to orphaned files.`);
     
     // Generate a report
     const filesWithReferences = Object.keys(referencesByFile)
@@ -233,14 +246,14 @@ Generated on: ${new Date().toISOString()}
 `;
 
     // Write the report
-    console.log(`Writing report to ${config.outputFile}`);
+    console.error(`Writing report to ${config.outputFile}`);
     const outputDir = path.dirname(config.outputFile);
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
     fs.writeFileSync(config.outputFile, report);
     
-    console.log('Dynamic reference analysis complete!');
+    console.error('Dynamic reference analysis complete!');
   } catch (error) {
     console.error('Error during analysis:', error);
     process.exit(1);

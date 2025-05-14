@@ -15,13 +15,13 @@
 
 // Setup graceful termination handler
 process.on('SIGTERM', () => {
-  console.log('Received SIGTERM signal. Stopping dependency analysis gracefully...');
+  console.error('Received SIGTERM signal. Stopping dependency analysis gracefully...');
   cleanup();
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('Received SIGINT signal. Stopping dependency analysis gracefully...');
+  console.error('Received SIGINT signal. Stopping dependency analysis gracefully...');
   cleanup();
   process.exit(0);
 });
@@ -30,7 +30,7 @@ process.on('SIGINT', () => {
  * Cleanup function to be called before exiting
  */
 function cleanup() {
-  console.log('Cleaning up temporary files and releasing resources...');
+  console.error('Cleaning up temporary files and releasing resources...');
   // Any cleanup operations can go here
 }
 
@@ -41,12 +41,19 @@ const glob = require('glob');
 // Parse command line arguments
 const args = process.argv.slice(2);
 let customRootDir = null;
-
-// Look for --root-dir argument
-for (const arg of args) {
-  if (arg.startsWith('--root-dir=')) {
-    customRootDir = arg.split('=')[1];
-    break;
+let outputDir = null;
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--root-dir' && args[i + 1]) {
+    customRootDir = args[i + 1];
+    i++;
+  } else if (args[i].startsWith('--root-dir=')) {
+    customRootDir = args[i].split('=')[1];
+  }
+  if (args[i] === '--output-dir' && args[i + 1]) {
+    outputDir = path.resolve(args[i + 1]);
+    i++;
+  } else if (args[i].startsWith('--output-dir=')) {
+    outputDir = path.resolve(args[i].split('=')[1]);
   }
 }
 
@@ -66,7 +73,7 @@ function detectProjectRoot(startDir) {
     // Check if any root markers exist in this directory
     for (const marker of rootMarkers) {
       if (fs.existsSync(path.join(currentDir, marker))) {
-        console.log(`Detected project root at: ${currentDir} (found marker: ${marker})`);
+        console.error(`Detected project root at: ${currentDir} (found marker: ${marker})`);
         return currentDir;
       }
     }
@@ -83,7 +90,7 @@ function detectProjectRoot(startDir) {
   }
   
   // If we couldn't detect a root, default to script's parent directory
-  console.log(`Could not detect project root, using default: ${path.resolve(__dirname, '..')}`);
+  console.error(`Could not detect project root, using default: ${path.resolve(__dirname, '..')}`);
   return path.resolve(__dirname, '..');
 }
 
@@ -126,18 +133,12 @@ const config = {
     'component={([^}]+)}',    // component props
     'render={[^}]*=>\\s*<([^>]+)' // render props with component
   ],
-  // Default output location is in the project root under output
-  get outputDir() {
-    const dir = path.resolve(this.rootDir, 'output');
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    return dir;
-  }
+  // Output directory
+  outputDir: outputDir ? outputDir : path.resolve(customRootDir ? path.resolve(customRootDir) : detectProjectRoot(path.resolve(__dirname, '..')), 'output')
 };
 
-console.log(`Using project root: ${config.rootDir}`);
-console.log(`Output directory: ${config.outputDir}`);
+console.error(`Using project root: ${config.rootDir}`);
+console.error(`Output directory: ${config.outputDir}`);
 
 // Map to store dependency data
 const dependencyMap = new Map();
@@ -163,7 +164,7 @@ function shouldExcludePath(filePath) {
  * Get all project files that match our criteria
  */
 function getAllFiles() {
-  console.log('Collecting all project files...');
+  console.error('Collecting all project files...');
   
   const pattern = `**/*+(${config.extensions.join('|')})`;
   const files = glob.sync(pattern, { 
@@ -184,7 +185,7 @@ function getAllFiles() {
     });
   });
   
-  console.log(`Found ${allFiles.size} files to analyze`);
+  console.error(`Found ${allFiles.size} files to analyze`);
   return files;
 }
 
@@ -246,7 +247,7 @@ function extractImports(filePath, fileContent) {
  * Analyze a barrel file (index.ts/js) for re-exports
  */
 function analyzeBarrelFile(relativePath, fileContent) {
-  console.log(`Analyzing barrel file: ${relativePath}`);
+  console.error(`Analyzing barrel file: ${relativePath}`);
   const exportPatterns = [
     // Named re-exports
     /export\s+{\s*([^}]+)\s*}\s+from\s+['"](\.\/[^'"]+|\.\.\/[^'"]+)['"]/g,
@@ -344,7 +345,7 @@ function analyzeRouteComponents(relativePath, fileContent) {
       }
       routeComponentRefs.get(componentRef).add(relativePath);
       
-      console.log(`Found route component reference: ${componentRef} in ${relativePath}`);
+      console.error(`Found route component reference: ${componentRef} in ${relativePath}`);
     }
   }
 }
@@ -403,7 +404,7 @@ function analyzeFile(filePath) {
  * Process barrel file dependencies to handle re-exports
  */
 function processBarrelDependencies() {
-  console.log('Processing barrel file dependencies...');
+  console.error('Processing barrel file dependencies...');
   
   // Iterate through files imported via barrels and make sure they're marked as imported
   let changes = true;
@@ -436,13 +437,13 @@ function processBarrelDependencies() {
             importedFiles.add(sourceFile);
             changes = true;
             
-            console.log(`Added indirect dependency: ${importerFile} -> ${sourceFile} via ${barrelFile}`);
+            console.error(`Added indirect dependency: ${importerFile} -> ${sourceFile} via ${barrelFile}`);
           }
         });
       });
     });
     
-    console.log(`Barrel processing iteration ${iterations} completed, changes made: ${changes}`);
+    console.error(`Barrel processing iteration ${iterations} completed, changes made: ${changes}`);
   }
 }
 
@@ -450,7 +451,7 @@ function processBarrelDependencies() {
  * Process route component references
  */
 function processRouteReferences() {
-  console.log('Processing route component references...');
+  console.error('Processing route component references...');
   
   // Find component files matching the route references
   routeComponentRefs.forEach((referencingFiles, componentName) => {
@@ -461,7 +462,7 @@ function processRouteReferences() {
     });
     
     if (potentialMatches.length > 0) {
-      console.log(`Found ${potentialMatches.length} potential matches for route component: ${componentName}`);
+      console.error(`Found ${potentialMatches.length} potential matches for route component: ${componentName}`);
       
       potentialMatches.forEach(componentFile => {
         referencingFiles.forEach(referencingFile => {
@@ -473,11 +474,11 @@ function processRouteReferences() {
           dependencyMap.get(componentFile).importedBy.add(referencingFile);
           importedFiles.add(componentFile);
           
-          console.log(`Added route reference dependency: ${referencingFile} -> ${componentFile}`);
+          console.error(`Added route reference dependency: ${referencingFile} -> ${componentFile}`);
         });
       });
     } else {
-      console.log(`No matches found for route component: ${componentName}`);
+      console.error(`No matches found for route component: ${componentName}`);
     }
   });
 }
@@ -486,7 +487,7 @@ function processRouteReferences() {
  * Find potentially orphaned files
  */
 function findOrphanedFiles() {
-  console.log('Identifying potentially orphaned files...');
+  console.error('Identifying potentially orphaned files...');
   
   const orphanedFiles = [];
   
@@ -518,7 +519,7 @@ function findOrphanedFiles() {
  * Find potentially duplicated files
  */
 function findDuplicateFiles() {
-  console.log('Identifying potentially duplicated files...');
+  console.error('Identifying potentially duplicated files...');
   
   const filesByBasename = new Map();
   const duplicateGroups = [];
@@ -534,17 +535,17 @@ function findDuplicateFiles() {
     filesByBasename.get(basename).push(file);
   }
   
-  console.log(`Found ${filesByBasename.size} unique file basenames`);
+  console.error(`Found ${filesByBasename.size} unique file basenames`);
   
   // Find basenames with multiple occurrences
   const potentialDuplicates = Array.from(filesByBasename.entries())
     .filter(([_, files]) => files.length > 1);
   
-  console.log(`Found ${potentialDuplicates.length} basenames with multiple occurrences`);
+  console.error(`Found ${potentialDuplicates.length} basenames with multiple occurrences`);
   
   // Process each potential duplicate group
   for (const [basename, files] of potentialDuplicates) {
-    console.log(`Analyzing potential duplicates for ${basename} (${files.length} files)`);
+    console.error(`Analyzing potential duplicates for ${basename} (${files.length} files)`);
     
     // Verify content similarity to confirm they are true duplicates
     const fileContents = new Map();
@@ -568,7 +569,7 @@ function findDuplicateFiles() {
               .digest('hex');
             
             fileHashes.set(file, hash);
-            console.log(`  - ${file}: Hash ${hash.substring(0, 8)}...`);
+            console.error(`  - ${file}: Hash ${hash.substring(0, 8)}...`);
           } catch (readError) {
             console.error(`  - Error reading ${file}: ${readError.message}`);
             hashComparisonSuccessful = false;
@@ -580,7 +581,7 @@ function findDuplicateFiles() {
       }
       
       if (!hashComparisonSuccessful) {
-        console.log(`  Skipping ${basename} due to read errors`);
+        console.error(`  Skipping ${basename} due to read errors`);
         continue;
       }
       
@@ -601,7 +602,7 @@ function findDuplicateFiles() {
         if (hashFiles.length > 1) {
           duplicatesFound = true;
           
-          console.log(`  Found duplicate group: ${hashFiles.join(', ')}`);
+          console.error(`  Found duplicate group: ${hashFiles.join(', ')}`);
           
           duplicateGroups.push({
             basename,
@@ -612,21 +613,21 @@ function findDuplicateFiles() {
       }
       
       if (!duplicatesFound) {
-        console.log(`  No duplicate content found for ${basename}`);
+        console.error(`  No duplicate content found for ${basename}`);
       }
     } catch (error) {
       console.error(`Error analyzing duplicate files for ${basename}:`, error);
     }
   }
   
-  console.log(`Found ${duplicateGroups.length} groups of duplicate files`);
+  console.error(`Found ${duplicateGroups.length} groups of duplicate files`);
   
   // Print summary of duplicates found
   if (duplicateGroups.length > 0) {
-    console.log('Duplicate file groups:');
+    console.error('Duplicate file groups:');
     duplicateGroups.forEach((group, index) => {
-      console.log(`Group ${index + 1}: ${group.basename} (${group.files.length} files)`);
-      group.files.forEach(file => console.log(`  - ${file}`));
+      console.error(`Group ${index + 1}: ${group.basename} (${group.files.length} files)`);
+      group.files.forEach(file => console.error(`  - ${file}`));
     });
   }
   
@@ -637,7 +638,7 @@ function findDuplicateFiles() {
  * Generate detailed reports of dependency graph and orphaned files
  */
 function generateReports(orphanedFiles) {
-  console.log('Generating dependency analysis reports...');
+  console.error('Generating dependency analysis reports...');
   
   // Ensure output directory exists
   if (!fs.existsSync(config.outputDir)) {
@@ -729,12 +730,12 @@ Generated on: ${new Date().toISOString()}
   });
   
   // Add duplicate file connections to the graph
-  console.log(`Adding ${duplicateGroups.length} duplicate groups to the graph...`);
+  console.error(`Adding ${duplicateGroups.length} duplicate groups to the graph...`);
   duplicateGroups.forEach(group => {
     // Create "duplicate" links between files in the same group
     for (let i = 0; i < group.files.length; i++) {
       for (let j = i + 1; j < group.files.length; j++) {
-        console.log(`Adding duplicate link: ${group.files[i]} <-> ${group.files[j]}`);
+        console.error(`Adding duplicate link: ${group.files[i]} <-> ${group.files[j]}`);
         dependencyGraph.links.push({
           source: group.files[i],
           target: group.files[j],
@@ -1070,7 +1071,7 @@ Generated on: ${new Date().toISOString()}
         data.nodes.forEach(node => {
           nodeMap.set(node.id, node);
         });
-        console.log(\`Created node map with \${nodeMap.size} entries\`);
+        console.error(\`Created node map with \${nodeMap.size} entries\`);
         
         // Find missing nodes in the links
         const missingNodes = new Set();
@@ -1094,7 +1095,7 @@ Generated on: ${new Date().toISOString()}
         
         // Add missing nodes to the visualization with a different style
         if (missingNodes.size > 0) {
-          console.log(\`Found \${missingNodes.size} missing nodes, adding them to visualization\`);
+          console.error(\`Found \${missingNodes.size} missing nodes, adding them to visualization\`);
           
           // Create new nodes for missing files
           missingNodes.forEach(missingId => {
@@ -1406,9 +1407,9 @@ Generated on: ${new Date().toISOString()}
         
         // Debug functionality
         document.getElementById('inspect-data-btn').addEventListener('click', function() {
-          console.log('Original data:', originalData);
-          console.log('Filtered data:', filteredData);
-          console.log('Missing nodes:', missingNodes);
+          console.error('Original data:', originalData);
+          console.error('Filtered data:', filteredData);
+          console.error('Missing nodes:', missingNodes);
           alert('Check the browser console for data inspection');
         });
       })
@@ -1420,7 +1421,8 @@ Generated on: ${new Date().toISOString()}
 </body>
 </html>`;
 
-  fs.writeFileSync(path.join(config.outputDir, 'dependency-visualizer.html'), visualizerHtml);
+  fs.writeFileSync(path.join(config.outputDir, 'enhanced-dependency-visualizer.html'), visualizerHtml);
+  console.error(`[DEBUG] Wrote output file: ${path.join(config.outputDir, 'enhanced-dependency-visualizer.html')}`);
   
   // Generate duplicate files report
   const duplicateFilesReport = `# Duplicate Files Report
@@ -1450,28 +1452,29 @@ Generated on: ${new Date().toISOString()}
 `;
 
   fs.writeFileSync(path.join(config.outputDir, 'duplicate-files.md'), duplicateFilesReport);
+  console.error(`[DEBUG] Wrote output file: ${path.join(config.outputDir, 'duplicate-files.md')}`);
   
-  console.log(`Reports generated in ${config.outputDir}`);
+  console.error(`Reports generated in ${config.outputDir}`);
 }
 
 /**
  * Main function to run the analysis
  */
 async function main() {
-  console.log('Starting enhanced dependency analysis...');
+  console.error('Starting enhanced dependency analysis...');
   
   // Get all files
   const files = getAllFiles();
   
   // Analyze each file
-  console.log('Analyzing file dependencies...');
+  console.error('Analyzing file dependencies...');
   let count = 0;
   for (const file of files) {
     if (!shouldExcludePath(file)) {
       analyzeFile(file);
       count++;
       if (count % 100 === 0) {
-        console.log(`Analyzed ${count} files...`);
+        console.error(`Analyzed ${count} files...`);
       }
     }
   }
@@ -1484,12 +1487,12 @@ async function main() {
   
   // Find orphaned files
   const orphanedFiles = findOrphanedFiles();
-  console.log(`Found ${orphanedFiles.length} potentially orphaned files`);
+  console.error(`Found ${orphanedFiles.length} potentially orphaned files`);
   
   // Generate reports
   generateReports(orphanedFiles);
   
-  console.log('Enhanced dependency analysis complete!');
+  console.error('Enhanced dependency analysis complete!');
 }
 
 // Run the script

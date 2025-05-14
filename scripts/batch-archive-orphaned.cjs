@@ -11,19 +11,28 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+// Parse --output-dir argument
+let outputDir = null;
+for (const arg of process.argv.slice(2)) {
+  if (arg.startsWith('--output-dir=')) {
+    outputDir = path.resolve(arg.split('=')[1]);
+  }
+}
+if (!outputDir) outputDir = path.resolve(__dirname, '..', 'output');
+
 // Configuration
 const config = {
   rootDir: path.resolve(__dirname, '..'),
-  finalAnalysisFile: path.resolve(__dirname, '..', 'output', 'final-orphaned-files.md'),
+  finalAnalysisFile: path.join(outputDir, 'final-orphaned-files.md'),
   archiveScript: path.join(__dirname, 'archive-orphaned-file.cjs'),
-  reportFile: path.resolve(__dirname, '..', 'output', 'FILE_CLEANUP_REPORT.md')
+  reportFile: path.join(outputDir, 'FILE_CLEANUP_REPORT.md')
 };
 
 /**
  * Extract orphaned files from the final analysis
  */
 function extractOrphanedFiles() {
-  console.log(`Reading final analysis from ${config.finalAnalysisFile}...`);
+  console.error(`Reading final analysis from ${config.finalAnalysisFile}...`);
   
   if (!fs.existsSync(config.finalAnalysisFile)) {
     console.error(`Error: Final analysis file not found at ${config.finalAnalysisFile}`);
@@ -80,7 +89,7 @@ function extractOrphanedFiles() {
             orphanedFiles.push(...dirFiles);
           }
         } catch (error) {
-          console.warn(`Warning: Error processing directory pattern ${filePath}:`, error.message);
+          console.error(`Warning: Error processing directory pattern ${filePath}:`, error.message);
         }
       } else {
         orphanedFiles.push(filePath);
@@ -93,7 +102,7 @@ function extractOrphanedFiles() {
     }
   }
   
-  console.log(`Found ${orphanedFiles.length} files to archive.`);
+  console.error(`Found ${orphanedFiles.length} files to archive.`);
   return orphanedFiles;
 }
 
@@ -101,13 +110,13 @@ function extractOrphanedFiles() {
  * Archive a single file
  */
 function archiveFile(filePath) {
-  console.log(`Archiving file: ${filePath}`);
+  console.error(`Archiving file: ${filePath}`);
   
   try {
     // Check if file exists
     const fullPath = path.join(config.rootDir, filePath);
     if (!fs.existsSync(fullPath)) {
-      console.warn(`Warning: File not found: ${filePath}`);
+      console.error(`Warning: File not found: ${filePath}`);
       return {
         success: false,
         filePath,
@@ -139,7 +148,7 @@ function archiveFile(filePath) {
  * Generate a report of the archival process
  */
 function generateReport(results) {
-  console.log('Generating report...');
+  console.error('Generating report...');
   
   const successfulArchivals = results.filter(r => r.success);
   const failedArchivals = results.filter(r => !r.success);
@@ -172,7 +181,7 @@ This archival process is part of the ongoing effort to improve codebase organiza
 `;
 
   fs.writeFileSync(config.reportFile, report);
-  console.log(`Report written to ${config.reportFile}`);
+  console.error(`Report written to ${config.reportFile}`);
 }
 
 /**
@@ -184,9 +193,9 @@ async function main() {
     const orphanedFiles = extractOrphanedFiles();
     
     // Confirm with user
-    console.log('\nThe following files will be archived:');
-    orphanedFiles.forEach(file => console.log(`- ${file}`));
-    console.log('\nProceeding with archival...\n');
+    console.error('\nThe following files will be archived:');
+    orphanedFiles.forEach(file => console.error(`- ${file}`));
+    console.error('\nProceeding with archival...\n');
     
     // Archive each file
     const results = [];
@@ -197,9 +206,9 @@ async function main() {
     // Generate report
     generateReport(results);
     
-    console.log('\nArchival process complete!');
-    console.log(`${results.filter(r => r.success).length} files successfully archived.`);
-    console.log(`${results.filter(r => !r.success).length} files failed to archive.`);
+    console.error('\nArchival process complete!');
+    console.error(`${results.filter(r => r.success).length} files successfully archived.`);
+    console.error(`${results.filter(r => !r.success).length} files failed to archive.`);
     
   } catch (error) {
     console.error('Error in batch archival script:', error);

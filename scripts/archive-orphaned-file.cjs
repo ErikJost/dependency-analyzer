@@ -16,12 +16,21 @@
 const fs = require('fs');
 const path = require('path');
 
+// Parse --output-dir argument
+let outputDir = null;
+for (const arg of process.argv.slice(2)) {
+  if (arg.startsWith('--output-dir=')) {
+    outputDir = path.resolve(arg.split('=')[1]);
+  }
+}
+if (!outputDir) outputDir = path.resolve(__dirname, '..', 'output');
+
 // Get the file path from command line arguments
 const filePath = process.argv[2];
 
 if (!filePath) {
   console.error('Error: File path is required');
-  console.log('Usage: node scripts/archive-orphaned-file.cjs <file-path>');
+  console.error('Usage: node scripts/archive-orphaned-file.cjs <file-path>');
   process.exit(1);
 }
 
@@ -37,13 +46,13 @@ if (!fs.existsSync(resolvedFilePath)) {
 }
 
 // Create the destination path in the archived_orphan directory
-const archiveRoot = path.join(rootDir, 'archived_orphan');
+const archiveRoot = path.join(outputDir, 'archived_orphan');
 const archiveDir = path.dirname(path.join(archiveRoot, relativeFilePath));
 
 // Create the directory structure if it doesn't exist
 if (!fs.existsSync(archiveDir)) {
   fs.mkdirSync(archiveDir, { recursive: true });
-  console.log(`Created directory: ${path.relative(rootDir, archiveDir)}`);
+  console.error(`Created directory: ${path.relative(rootDir, archiveDir)}`);
 }
 
 // Determine the destination file name, handling duplicates
@@ -61,19 +70,19 @@ while (fs.existsSync(destFilePath)) {
 // Move the file to the archived_orphan directory (do not delete, just move)
 try {
   fs.renameSync(resolvedFilePath, destFilePath);
-  console.log(`Successfully archived file:`);
-  console.log(`  - From: ${relativeFilePath}`);
-  console.log(`  - To:   ${path.relative(rootDir, destFilePath)}`);
+  console.error(`Successfully archived file:`);
+  console.error(`  - From: ${relativeFilePath}`);
+  console.error(`  - To:   ${path.relative(rootDir, destFilePath)}`);
 
   // Add an entry to FILE_CLEANUP_CHECKLIST.md
-  const cleanupFilePath = path.join(rootDir, 'docs', 'FILE_CLEANUP_CHECKLIST.md');
+  const cleanupFilePath = path.join(outputDir, 'FILE_CLEANUP_CHECKLIST.md');
   if (fs.existsSync(cleanupFilePath)) {
     const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const entry = `\n## ${date} - Archived ${relativeFilePath}\n\n- **File**: \`${relativeFilePath}\`\n- **Reason**: Identified as orphaned by dependency analysis\n- **Action**: Moved to \`${path.relative(rootDir, destFilePath)}\`\n`;
     fs.appendFileSync(cleanupFilePath, entry);
-    console.log(`Updated FILE_CLEANUP_CHECKLIST.md with the archived file entry`);
+    console.error(`Updated FILE_CLEANUP_CHECKLIST.md with the archived file entry`);
   } else {
-    console.warn(`Warning: FILE_CLEANUP_CHECKLIST.md does not exist, skipping update`);
+    console.error(`Warning: FILE_CLEANUP_CHECKLIST.md does not exist, skipping update`);
   }
 
 } catch (error) {
@@ -81,4 +90,4 @@ try {
   process.exit(1);
 }
 
-console.log('\nRemember to commit these changes with a descriptive message!'); 
+console.error('\nRemember to commit these changes with a descriptive message!'); 

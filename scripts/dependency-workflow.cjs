@@ -15,13 +15,14 @@
  * 6. Optional file archival
  * 
  * Usage:
- *   node scripts/dependency-workflow.cjs [--auto-archive] [--skip-build] [--start-server] [--root-dir=<path>] [--help]
+ *   node scripts/dependency-workflow.cjs [--auto-archive] [--skip-build] [--start-server] [--root-dir=<path>] [--output-dir=<path>] [--help]
  * 
  * Options:
  *   --auto-archive: Automatically archive confirmed orphaned files without prompting
  *   --skip-build: Skip the build analysis step (useful for quick analysis)
  *   --start-server: Start the interactive visualization server after analysis
  *   --root-dir: Specify a custom root directory (default: auto-detect)
+ *   --output-dir: Specify a custom output directory (default: auto-detect)
  *   --help: Display this help message
  */
 
@@ -42,22 +43,39 @@ const colorize = {
   red: (text) => chalk?.red ? chalk.red(text) : text
 };
 
+// Debug: print process.argv to verify received arguments
+console.error('process.argv:', process.argv);
+
 // Parse command line arguments
 const args = process.argv.slice(2);
-const options = {
-  autoArchive: args.includes('--auto-archive'),
-  skipBuild: args.includes('--skip-build'),
-  startServer: args.includes('--start-server'),
-  rootDir: null
+let options = {
+  autoArchive: false,
+  skipBuild: false,
+  startServer: false,
+  rootDir: null,
+  outputDir: null
 };
 
-// Extract rootDir if specified
-for (const arg of args) {
-  if (arg.startsWith('--root-dir=')) {
-    options.rootDir = arg.split('=')[1];
-    break;
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--auto-archive') options.autoArchive = true;
+  if (args[i] === '--skip-build') options.skipBuild = true;
+  if (args[i] === '--start-server') options.startServer = true;
+  if (args[i] === '--root-dir' && args[i + 1]) {
+    options.rootDir = args[i + 1];
+    i++;
+  } else if (args[i].startsWith('--root-dir=')) {
+    options.rootDir = args[i].split('=')[1];
+  }
+  if (args[i] === '--output-dir' && args[i + 1]) {
+    options.outputDir = args[i + 1];
+    i++;
+  } else if (args[i].startsWith('--output-dir=')) {
+    options.outputDir = args[i].split('=')[1];
   }
 }
+
+// Debug: print parsed options
+console.error('Parsed options:', options);
 
 // Show help and exit if requested
 if (args.includes('--help')) {
@@ -81,7 +99,7 @@ function detectProjectRoot(startDir) {
     // Check if any root markers exist in this directory
     for (const marker of rootMarkers) {
       if (fs.existsSync(path.join(currentDir, marker))) {
-        console.log(`Detected project root at: ${currentDir} (found marker: ${marker})`);
+        console.error(`Detected project root at: ${currentDir} (found marker: ${marker})`);
         return currentDir;
       }
     }
@@ -98,38 +116,43 @@ function detectProjectRoot(startDir) {
   }
   
   // If we couldn't detect a root, default to script's parent directory
-  console.log(`Could not detect project root, using default: ${path.resolve(__dirname, '..')}`);
+  console.error(`Could not detect project root, using default: ${path.resolve(__dirname, '..')}`);
   return path.resolve(__dirname, '..');
 }
 
 // Configuration
 const rootDir = options.rootDir ? path.resolve(options.rootDir) : detectProjectRoot(path.resolve(__dirname, '..'));
-console.log(`Using project root: ${rootDir}`);
+const outputDir = options.outputDir ? path.resolve(options.outputDir) : path.join(rootDir, 'output');
+console.error(`Using project root: ${rootDir}`);
+console.error(`[DEBUG] dependency-workflow.cjs options.rootDir: ${options.rootDir}`);
+console.error(`[DEBUG] dependency-workflow.cjs resolved rootDir: ${rootDir}`);
+console.error(`[DEBUG] dependency-workflow.cjs outputDir: ${outputDir}`);
 
+const containerScriptsDir = '/app/scripts';
 const config = {
   rootDir: rootDir,
-  scriptsDir: path.join(rootDir, 'scripts'),
-  docsDir: path.join(rootDir, 'output'),
+  scriptsDir: containerScriptsDir,
+  docsDir: outputDir,
   buildLogFile: path.join(rootDir, 'build_log.txt'),
   reports: {
-    initialOrphaned: path.resolve(rootDir, 'output', 'orphaned-files.md'),
-    enhancedOrphaned: path.resolve(rootDir, 'output', 'enhanced-orphaned-files.md'),
-    buildDependencies: path.resolve(rootDir, 'output', 'build-dependencies.md'),
-    dynamicReferences: path.resolve(rootDir, 'output', 'dynamic-references.md'),
-    routeVerification: path.resolve(rootDir, 'output', 'route-component-verification.md'),
-    confirmedOrphaned: path.resolve(rootDir, 'output', 'confirmed-orphaned-files.md'),
-    refinedAnalysis: path.resolve(rootDir, 'output', 'refined-orphaned-files.md'),
-    finalAnalysis: path.resolve(rootDir, 'output', 'final-orphaned-files.md'),
-    archivalReport: path.resolve(rootDir, 'output', 'FILE_CLEANUP_REPORT.md')
+    initialOrphaned: path.join(outputDir, 'orphaned-files.md'),
+    enhancedOrphaned: path.join(outputDir, 'enhanced-orphaned-files.md'),
+    buildDependencies: path.join(outputDir, 'build-dependencies.md'),
+    dynamicReferences: path.join(outputDir, 'dynamic-references.md'),
+    routeVerification: path.join(outputDir, 'route-component-verification.md'),
+    confirmedOrphaned: path.join(outputDir, 'confirmed-orphaned-files.md'),
+    refinedAnalysis: path.join(outputDir, 'refined-orphaned-files.md'),
+    finalAnalysis: path.join(outputDir, 'final-orphaned-files.md'),
+    archivalReport: path.join(outputDir, 'FILE_CLEANUP_REPORT.md')
   },
   scripts: {
-    basicAnalysis: path.resolve(rootDir, 'scripts', 'analyze-dependencies.cjs'),
-    enhancedAnalysis: path.resolve(rootDir, 'scripts', 'enhanced-dependency-analysis.cjs'),
-    buildAnalysis: path.resolve(rootDir, 'scripts', 'analyze-build-dependencies.cjs'),
-    updateReport: path.resolve(rootDir, 'scripts', 'update-orphaned-files-report.cjs'),
-    dynamicImports: path.resolve(rootDir, 'scripts', 'check-dynamic-imports.cjs'),
-    routeComponents: path.resolve(rootDir, 'scripts', 'verify-route-components.cjs'),
-    batchArchive: path.resolve(rootDir, 'scripts', 'batch-archive-orphaned.cjs')
+    basicAnalysis: path.join(containerScriptsDir, 'analyze-dependencies.cjs'),
+    enhancedAnalysis: path.join(containerScriptsDir, 'enhanced-dependency-analysis.cjs'),
+    buildAnalysis: path.join(containerScriptsDir, 'analyze-build-dependencies.cjs'),
+    updateReport: path.join(containerScriptsDir, 'update-orphaned-files-report.cjs'),
+    dynamicImports: path.join(containerScriptsDir, 'check-dynamic-imports.cjs'),
+    routeComponents: path.join(containerScriptsDir, 'verify-route-components.cjs'),
+    batchArchive: path.join(containerScriptsDir, 'batch-archive-orphaned.cjs')
   }
 };
 
@@ -154,22 +177,29 @@ function prompt(question) {
  * Run a script and return its output
  */
 function runScript(scriptPath, args = []) {
-  console.log(`\n🔄 Running ${path.basename(scriptPath)}...\n`);
-  
-  const result = spawnSync('node', [scriptPath, ...args], {
-    stdio: 'inherit',
-    cwd: config.rootDir
-  });
-  
-  if (result.status !== 0) {
-    console.error(`❌ Script ${path.basename(scriptPath)} failed with status ${result.status}`);
-    if (result.error) {
-      console.error(result.error);
+  const stepStart = Date.now();
+  // Always add --output-dir to sub-scripts
+  const fullArgs = [...args, `--output-dir=${outputDir}`];
+  console.error(`[DEBUG] About to run script: ${scriptPath} with args: ${fullArgs}`);
+  try {
+    const result = spawnSync('node', [scriptPath, ...fullArgs], {
+      stdio: 'inherit',
+      cwd: config.rootDir
+    });
+    const duration = ((Date.now() - stepStart) / 1000).toFixed(2);
+    if (result.status !== 0) {
+      console.error(`[DEBUG] Script ${scriptPath} failed with status ${result.status}`);
+      if (result.error) {
+        console.error(`[DEBUG] Script error: ${result.error.stack || result.error}`);
+      }
+      throw new Error(`Script ${scriptPath} failed`);
     }
-    process.exit(1);
+    console.error(`[DEBUG] Script ${scriptPath} completed in ${duration}s`);
+    return result;
+  } catch (err) {
+    console.error(`[DEBUG] Exception running script ${scriptPath}: ${err.stack || err}`);
+    throw err;
   }
-  
-  console.log(`\n✅ Script ${path.basename(scriptPath)} completed successfully\n`);
 }
 
 /**
@@ -178,7 +208,7 @@ function runScript(scriptPath, args = []) {
 function ensureDirectoryExists(dirPath) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
-    console.log(`📁 Created directory: ${path.relative(config.rootDir, dirPath)}`);
+    console.error(`📁 Created directory: ${path.relative(config.rootDir, dirPath)}`);
   }
 }
 
@@ -187,15 +217,15 @@ function ensureDirectoryExists(dirPath) {
  */
 async function runBuild() {
   if (options.skipBuild) {
-    console.log('⏭️  Skipping build analysis as requested with --skip-build');
+    console.error('⏭️  Skipping build analysis as requested with --skip-build');
     return;
   }
   
-  console.log('\n🏗️  Running Docker build to capture build logs...');
+  console.error('\n🏗️  Running Docker build to capture build logs...');
   
   const runBuild = await prompt('Do you want to run a Docker build to analyze build dependencies? (y/n): ');
   if (runBuild.toLowerCase() !== 'y') {
-    console.log('⏭️  Skipping build analysis');
+    console.error('⏭️  Skipping build analysis');
     return;
   }
   
@@ -204,15 +234,15 @@ async function runBuild() {
     execSync('docker --version', { stdio: 'ignore' });
     
     // Run Docker build with output redirected to build_log.txt
-    console.log('🐳 Running Docker build (this may take a while)...');
+    console.error('🐳 Running Docker build (this may take a while)...');
     execSync(`docker build -t intellipact-dep-test . > ${config.buildLogFile} 2>&1`, {
       cwd: config.rootDir
     });
     
-    console.log(`✅ Build completed, log saved to ${path.relative(config.rootDir, config.buildLogFile)}`);
+    console.error(`✅ Build completed, log saved to ${path.relative(config.rootDir, config.buildLogFile)}`);
   } catch (error) {
     console.error('❌ Error running Docker build:', error.message);
-    console.log('⚠️  Proceeding without build analysis');
+    console.error('⚠️  Proceeding without build analysis');
   }
 }
 
@@ -220,7 +250,7 @@ async function runBuild() {
  * Create refined analysis report
  */
 function createRefinedAnalysis() {
-  console.log('\n📝 Creating refined analysis report...');
+  console.error('\n📝 Creating refined analysis report...');
   
   // Generate a report with confidence levels and impact ratings
   const refinedAnalysisTemplate = `# Refined Orphaned Files Analysis
@@ -268,19 +298,20 @@ This report was automatically generated. It should be reviewed and refined manua
 `;
 
   fs.writeFileSync(config.reports.refinedAnalysis, refinedAnalysisTemplate);
-  console.log(`✅ Refined analysis template created at ${path.relative(config.rootDir, config.reports.refinedAnalysis)}`);
+  console.error(`[DEBUG] Wrote output file: ${config.reports.refinedAnalysis}`);
+  console.error(`✅ Refined analysis template created at ${path.relative(config.rootDir, config.reports.refinedAnalysis)}`);
 }
 
 /**
  * Create final analysis report
  */
 async function createFinalAnalysis() {
-  console.log('\n📋 Creating final analysis report...');
+  console.error('\n📋 Creating final analysis report...');
   // Always generate the final analysis without prompting
   // Read the confirmed orphaned files report
   if (!fs.existsSync(config.reports.confirmedOrphaned)) {
     console.error(`❌ Confirmed orphaned files report not found at ${config.reports.confirmedOrphaned}`);
-    console.log('⚠️  Please run update-orphaned-files-report.cjs first');
+    console.error('⚠️  Please run update-orphaned-files-report.cjs first');
     return false;
   }
   const confirmedContent = fs.readFileSync(config.reports.confirmedOrphaned, 'utf-8');
@@ -357,7 +388,8 @@ Generated on: ${new Date().toISOString()}
 `;
 
   fs.writeFileSync(config.reports.finalAnalysis, finalAnalysisTemplate);
-  console.log(`✅ Final analysis created at ${path.relative(config.rootDir, config.reports.finalAnalysis)}`);
+  console.error(`[DEBUG] Wrote output file: ${config.reports.finalAnalysis}`);
+  console.error(`✅ Final analysis created at ${path.relative(config.rootDir, config.reports.finalAnalysis)}`);
   return true;
 }
 
@@ -373,7 +405,7 @@ function extractFilesByPattern(content, pattern) {
  * Archive orphaned files
  */
 async function archiveOrphanedFiles() {
-  console.log('\n📦 Preparing to archive orphaned files...');
+  console.error('\n📦 Preparing to archive orphaned files...');
   
   if (!fs.existsSync(config.reports.finalAnalysis)) {
     console.error(`❌ Final analysis report not found at ${config.reports.finalAnalysis}`);
@@ -386,7 +418,7 @@ async function archiveOrphanedFiles() {
     );
     
     if (archivePrompt.toLowerCase() !== 'y') {
-      console.log('⏭️  Skipping archive process');
+      console.error('⏭️  Skipping archive process');
       return;
     }
   }
@@ -398,83 +430,18 @@ async function archiveOrphanedFiles() {
 /**
  * Create a workflow summary
  */
-function createWorkflowSummary(visualizationLink) {
-  console.log('\n📊 Creating workflow summary...');
+function createWorkflowSummary() {
+  console.error('\n📊 Creating workflow summary...');
   const summaryPath = path.join(config.docsDir, 'workflow-summary.md');
   const timestamp = new Date().toISOString();
-  const summary = `# Dependency Analysis Workflow Summary
-
-## Overview
-This document summarizes the dependency analysis workflow run on ${timestamp}.
-
-## Visualization
-- [Open Dependency Visualizer](${visualizationLink})
-
-## Steps Completed
-
-1. **Basic Dependency Analysis**
-   - Script: \`analyze-dependencies.cjs\`
-   - Output: [orphaned-files.md](./orphaned-files.md)
-
-2. **Enhanced Dependency Analysis**
-   - Script: \`enhanced-dependency-analysis.cjs\`
-   - Output: [enhanced-orphaned-files.md](./enhanced-orphaned-files.md)
-   - Visualization: 
-     - [dependency-visualizer.html](./dependency-visualizer.html)
-     - [dependency-list-view.html](./dependency-list-view.html)
-
-${options.skipBuild ? '' : `
-3. **Build Analysis**
-   - Script: \`analyze-build-dependencies.cjs\`
-   - Output: [build-dependencies.md](./build-dependencies.md)
-`}
-
-4. **Dynamic Imports Check**
-   - Script: \`check-dynamic-imports.cjs\`
-   - Output: [dynamic-references.md](./dynamic-references.md)
-
-5. **Route Components Verification**
-   - Script: \`verify-route-components.cjs\`
-   - Output: [route-component-verification.md](./route-component-verification.md)
-
-6. **Orphaned Files Report Update**
-   - Script: \`update-orphaned-files-report.cjs\`
-   - Output: [confirmed-orphaned-files.md](./confirmed-orphaned-files.md)
-
-7. **Final Analysis**
-   - Output: [final-orphaned-files.md](./final-orphaned-files.md)
-
-${options.autoArchive ? `
-8. **File Archival**
-   - Script: \`batch-archive-orphaned.cjs\`
-   - Output: [../../FILE_CLEANUP_REPORT.md](../../FILE_CLEANUP_REPORT.md)
-` : ''}
-
-## Next Steps
-
-1. Review the final analysis in [final-orphaned-files.md](./final-orphaned-files.md)
-2. Verify application functionality after any archival
-3. Commit changes to the repository
-
-## Statistics
-
-- Initial orphaned file candidates: ${countFilesInReport(config.reports.initialOrphaned)}
-- Enhanced orphaned file candidates: ${countFilesInReport(config.reports.enhancedOrphaned)}
-- Confirmed orphaned files: ${countFilesInReport(config.reports.confirmedOrphaned)}
-- Archived files: ${fs.existsSync(config.reports.archivalReport) ? countFilesInReport(config.reports.archivalReport, 'archived') : 'N/A'}
-
-## Runtime Information
-
-- Date: ${new Date().toLocaleDateString()}
-- Time: ${new Date().toLocaleTimeString()}
-- Auto-archive: ${options.autoArchive ? 'Enabled' : 'Disabled'}
-- Skip build: ${options.skipBuild ? 'Enabled' : 'Disabled'}
-
-This summary was automatically generated by the dependency-workflow.cjs script.
-`;
-
+  // Dynamically determine the project folder from outputDir
+  const projectFolder = path.basename(outputDir);
+  const visualizationLink = `/${projectFolder}/enhanced-dependency-visualizer.html`;
+  console.error(`[DEBUG] About to write workflow summary to: ${summaryPath}`);
+  console.error(`[DEBUG] Visualization link to be written: ${visualizationLink}`);
+  const summary = `# Dependency Analysis Workflow Summary\n\n## Overview\nThis document summarizes the dependency analysis workflow run on ${timestamp}.\n\n## Visualization\n- [Open Dependency Visualizer](${visualizationLink})\n`;
   fs.writeFileSync(summaryPath, summary);
-  console.log(`✅ Workflow summary created at ${path.relative(config.rootDir, summaryPath)}`);
+  console.error(`[DEBUG] Successfully wrote workflow summary to: ${summaryPath}`);
 }
 
 /**
@@ -507,7 +474,7 @@ function countFilesInReport(reportPath, type = 'orphaned') {
  * Display usage information
  */
 function showUsage() {
-  console.log(`
+  console.error(`
 Usage: node scripts/dependency-workflow.cjs [options]
 
 Options:
@@ -515,6 +482,7 @@ Options:
   --skip-build      Skip the build analysis step (useful for quick analysis)
   --start-server    Start the interactive visualization server after analysis
   --root-dir=<path> Specify a custom root directory path (default: auto-detect)
+  --output-dir=<path> Specify a custom output directory path (default: auto-detect)
   --help            Display this help message
 
 Examples:
@@ -528,138 +496,71 @@ Examples:
  * Main workflow function
  */
 async function runWorkflow() {
+  const workflowStepStart = Date.now();
   try {
-    console.log('\n🚀 Starting Dependency Analysis Workflow\n');
-    
-    // Ensure output directory exists
-    ensureDirectoryExists(config.docsDir);
-    
-    // Step 1: Basic dependency analysis
-    console.log('\n📊 Step 1: Running basic dependency analysis...');
+    console.error('[DEBUG] Workflow: Step 1 (basic analysis) starting');
     runScript(config.scripts.basicAnalysis);
-    
-    // Step 2: Enhanced dependency analysis
-    console.log('\n📊 Step 2: Running enhanced dependency analysis...');
+    console.error('[DEBUG] Workflow: Step 1 (basic analysis) finished');
+
+    console.error('[DEBUG] Workflow: Step 2 (enhanced analysis) starting');
     runScript(config.scripts.enhancedAnalysis);
-    
-    // Step 3: Update orphaned files report (moved up)
-    console.log('\n📊 Step 3: Updating orphaned files report...');
+    console.error('[DEBUG] Workflow: Step 2 (enhanced analysis) finished');
+
+    console.error('[DEBUG] Workflow: Step 3 (update orphaned files report) starting');
     runScript(config.scripts.updateReport);
-    
-    // Step 4: Build analysis (optional)
+    console.error('[DEBUG] Workflow: Step 3 (update orphaned files report) finished');
+
     if (!options.skipBuild) {
-      console.log('\n📊 Step 4: Running build analysis...');
+      console.error('[DEBUG] Workflow: Step 4 (build analysis) starting');
       await runBuild();
-      
       if (fs.existsSync(config.buildLogFile)) {
         runScript(config.scripts.buildAnalysis);
       } else {
-        console.log('⚠️  Build log not found, skipping build analysis');
+        console.error('[DEBUG] Build log not found, skipping build analysis');
       }
+      console.error('[DEBUG] Workflow: Step 4 (build analysis) finished');
     }
-    
-    // Step 5: Check dynamic imports
-    console.log('\n📊 Step 5: Checking for dynamic imports...');
+
+    console.error('[DEBUG] Workflow: Step 5 (dynamic imports) starting');
     runScript(config.scripts.dynamicImports);
-    
-    // Step 6: Verify route components
-    console.log('\n📊 Step 6: Verifying route components...');
+    console.error('[DEBUG] Workflow: Step 5 (dynamic imports) finished');
+
+    console.error('[DEBUG] Workflow: Step 6 (route components) starting');
     runScript(config.scripts.routeComponents);
-    
-    // Step 7: Create refined analysis report
-    console.log('\n📊 Step 7: Creating refined analysis report...');
+    console.error('[DEBUG] Workflow: Step 6 (route components) finished');
+
+    console.error('[DEBUG] Workflow: Step 7 (refined analysis) starting');
     createRefinedAnalysis();
-    
-    // Step 8: Create final analysis
-    console.log('\n📊 Step 8: Creating final analysis...');
+    console.error('[DEBUG] Workflow: Step 7 (refined analysis) finished');
+
+    console.error('[DEBUG] Workflow: Step 8 (final analysis) starting');
     const finalAnalysisCreated = await createFinalAnalysis();
-    
-    // Step 9: Archive orphaned files (if requested)
-    // if (finalAnalysisCreated && (options.autoArchive || await prompt('Do you want to archive orphaned files? (y/n): ') === 'y')) {
-    //   console.log('\n📊 Step 9: Archiving orphaned files...');
-    //   await archiveOrphanedFiles();
-    // } else {
-    //   console.log('\n⏭️  Skipping file archival step');
-    // }
-    console.log('\n⏭️  Skipping file archival step (archival is now a separate function)');
-    
-    // After all analysis steps, start the visualization server automatically
-    console.log(colorize.green('\n✅ Starting interactive visualization server...'));
-    try {
-      const serverScript = path.join(config.scriptsDir, 'start-dependency-server.sh');
-      fs.chmodSync(serverScript, '755');
-      const serverArgs = [];
-      if (options.rootDir) {
-        serverArgs.push(`--root=${options.rootDir}`);
-      }
-      const serverProcess = spawn(serverScript, serverArgs, {
-        stdio: 'inherit',
-        detached: true,
-        shell: true
-      });
-      serverProcess.unref();
-      console.log(colorize.green('\nAccess the visualization at: http://localhost:8000/dependency-visualizer.html'));
-    } catch (error) {
-      console.error(colorize.red(`❌ Error starting visualization server: ${error.message}`));
+    console.error('[DEBUG] Workflow: Step 8 (final analysis) finished');
+
+    // Skipping archival step
+    console.error('[DEBUG] Workflow: Skipping file archival step');
+
+    // At the end, log a summary of output files
+    const outputFiles = fs.readdirSync(config.docsDir);
+    console.error('[DEBUG] Workflow: Output files in output directory:', outputFiles);
+    // Optionally, log a preview of the workflow summary
+    const summaryPath = path.join(config.docsDir, 'workflow-summary.md');
+    if (fs.existsSync(summaryPath)) {
+      const summaryPreview = fs.readFileSync(summaryPath, 'utf-8').slice(0, 500);
+      console.error('[DEBUG] Workflow: workflow-summary.md preview:', summaryPreview);
     }
-
-    // Create workflow summary
-    createWorkflowSummary('http://localhost:8000/dependency-visualizer.html');
-    
-    // Generate visualization
-    // await generateVisualization(results);  // Commenting out undefined function call
-
-    // If requested, start the visualization server
-    if (options.startServer) {
-      console.log(colorize.green('\n✅ Starting interactive visualization server...'));
-      try {
-        const serverScript = path.join(config.scriptsDir, 'start-dependency-server.sh');
-        
-        // Make sure the script is executable
-        fs.chmodSync(serverScript, '755');
-        
-        // Start the server
-        console.log(colorize.yellow('Starting server in a new process. Press Ctrl+C to stop.'));
-        
-        // Add root directory if specified
-        const serverArgs = [];
-        if (options.rootDir) {
-          serverArgs.push(`--root=${options.rootDir}`);
-        }
-        
-        const serverProcess = spawn(serverScript, serverArgs, {
-          stdio: 'inherit',
-          detached: true,
-          shell: true
-        });
-        
-        // Log the URL and features
-        console.log(colorize.green('\nAccess the visualization at: http://localhost:8000/dependency-visualizer.html'));
-        console.log(colorize.cyan('New Features:'));
-        console.log(colorize.cyan('  • Run dependency analysis directly from the UI'));
-        console.log(colorize.cyan('  • Cancel running analysis with the stop button'));
-        console.log(colorize.cyan('  • Real-time status updates'));
-        
-        // Don't wait for the server process
-        serverProcess.unref();
-      } catch (error) {
-        console.error(colorize.red(`❌ Error starting visualization server: ${error.message}`));
-      }
-    } else {
-      console.log(colorize.green('\n✅ To start the interactive visualization server:'));
-      console.log(colorize.yellow('   Run: scripts/start-dependency-server.sh'));
-      console.log(colorize.yellow('   Then visit: http://localhost:8000/dependency-visualizer.html'));
-      console.log(colorize.cyan('   New features include real-time analysis with cancel button!'));
-    }
-
-    console.log('\n✨ Dependency Analysis Workflow Completed Successfully!\n');
-    console.log(`📄 View workflow summary at: ${path.relative(config.rootDir, path.join(config.docsDir, 'workflow-summary.md'))}`);
+    const workflowElapsed = ((Date.now() - workflowStepStart) / 1000).toFixed(2);
+    console.error(`[DEBUG] Workflow completed in ${workflowElapsed}s`);
+    console.error('\n✨ Dependency Analysis Workflow Completed Successfully!\n');
+    console.error(`📄 View workflow summary at: ${path.relative(config.rootDir, path.join(config.docsDir, 'workflow-summary.md'))}`);
     
   } catch (error) {
-    console.error('\n❌ Error running workflow:', error);
+    console.error(`\n[DEBUG] Error running workflow: ${error.stack || error}`);
     process.exit(1);
   } finally {
     rl.close();
+    const totalElapsed = ((Date.now() - workflowStepStart) / 1000).toFixed(2);
+    console.error(`[DEBUG] Workflow script exiting. Total elapsed: ${totalElapsed}s`);
   }
 }
 

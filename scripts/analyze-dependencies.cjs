@@ -11,6 +11,19 @@ const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 
+// Parse --output-dir argument
+let outputDir = null;
+const args = process.argv.slice(2);
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--output-dir' && args[i + 1]) {
+    outputDir = path.resolve(args[i + 1]);
+    i++;
+  } else if (args[i].startsWith('--output-dir=')) {
+    outputDir = path.resolve(args[i].split('=')[1]);
+  }
+}
+if (!outputDir) outputDir = path.resolve(__dirname, '..', 'output');
+
 // Configuration
 const config = {
   rootDir: path.resolve(__dirname, '..'),
@@ -44,7 +57,7 @@ const config = {
     '.env',
     'staticwebapp.config.json'
   ],
-  outputDir: path.resolve(__dirname, '..', 'output')
+  outputDir: outputDir
 };
 
 // Map to store dependency data
@@ -67,7 +80,7 @@ function shouldExcludePath(filePath) {
  * Get all project files that match our criteria
  */
 function getAllFiles() {
-  console.log('Collecting all project files...');
+  console.error('Collecting all project files...');
   
   const pattern = `**/*+(${config.extensions.join('|')})`;
   const files = glob.sync(pattern, { 
@@ -86,7 +99,7 @@ function getAllFiles() {
     });
   });
   
-  console.log(`Found ${allFiles.size} files to analyze`);
+  console.error(`Found ${allFiles.size} files to analyze`);
   return files;
 }
 
@@ -189,7 +202,7 @@ function analyzeFile(filePath) {
  * Find potentially orphaned files
  */
 function findOrphanedFiles() {
-  console.log('Identifying potentially orphaned files...');
+  console.error('Identifying potentially orphaned files...');
   
   const orphanedFiles = [];
   
@@ -217,7 +230,7 @@ function findOrphanedFiles() {
  * Generate HTML report of dependency graph and orphaned files
  */
 function generateReport(orphanedFiles) {
-  console.log('Generating dependency analysis report...');
+  console.error('Generating dependency analysis report...');
   
   // Ensure output directory exists
   if (!fs.existsSync(config.outputDir)) {
@@ -249,6 +262,7 @@ Generated on: ${new Date().toISOString()}
 `;
 
   fs.writeFileSync(path.join(config.outputDir, 'orphaned-files.md'), orphanedReport);
+  console.error(`[DEBUG] Wrote output file: ${path.join(config.outputDir, 'orphaned-files.md')}`);
   
   // Generate a simple dependency list
   const dependencyReport = `# Dependency Analysis Report
@@ -267,40 +281,41 @@ Generated on: ${new Date().toISOString()}
 `;
 
   fs.writeFileSync(path.join(config.outputDir, 'dependency-analysis.md'), dependencyReport);
+  console.error(`[DEBUG] Wrote output file: ${path.join(config.outputDir, 'dependency-analysis.md')}`);
   
-  console.log(`Reports generated in ${config.outputDir}`);
+  console.error(`Reports generated in ${config.outputDir}`);
 }
 
 /**
  * Main function to run the analysis
  */
 async function main() {
-  console.log('Starting dependency analysis...');
+  console.error('Starting dependency analysis...');
   
   // Get all files
   const files = getAllFiles();
   
   // Analyze each file
-  console.log('Analyzing file dependencies...');
+  console.error('Analyzing file dependencies...');
   let count = 0;
   for (const file of files) {
     if (!shouldExcludePath(file)) {
       analyzeFile(file);
       count++;
       if (count % 100 === 0) {
-        console.log(`Analyzed ${count} files...`);
+        console.error(`Analyzed ${count} files...`);
       }
     }
   }
   
   // Find orphaned files
   const orphanedFiles = findOrphanedFiles();
-  console.log(`Found ${orphanedFiles.length} potentially orphaned files`);
+  console.error(`Found ${orphanedFiles.length} potentially orphaned files`);
   
   // Generate report
   generateReport(orphanedFiles);
   
-  console.log('Dependency analysis complete!');
+  console.error('Dependency analysis complete!');
 }
 
 // Run the script

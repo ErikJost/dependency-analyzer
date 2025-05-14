@@ -10,19 +10,28 @@
 const fs = require('fs');
 const path = require('path');
 
+// Parse --output-dir argument
+let outputDir = null;
+for (const arg of process.argv.slice(2)) {
+  if (arg.startsWith('--output-dir=')) {
+    outputDir = path.resolve(arg.split('=')[1]);
+  }
+}
+if (!outputDir) outputDir = path.resolve(__dirname, '..', 'output');
+
 // Configuration
 const config = {
   buildLogFile: path.resolve(__dirname, '..', 'build_log.txt'),
-  orphanedFilesReport: path.resolve(__dirname, '..', 'output', 'orphaned-files.md'),
-  outputFile: path.resolve(__dirname, '..', 'output', 'build-dependencies.md')
+  orphanedFilesReport: path.join(outputDir, 'orphaned-files.md'),
+  outputFile: path.join(outputDir, 'build-dependencies.md')
 };
 
 // Main function to run the analysis
 async function main() {
-  console.log('Starting build dependency analysis...');
+  console.error('Starting build dependency analysis...');
   
   // Read the build log
-  console.log(`Reading build log from ${config.buildLogFile}...`);
+  console.error(`Reading build log from ${config.buildLogFile}...`);
   if (!fs.existsSync(config.buildLogFile)) {
     console.error(`Error: Build log file not found at ${config.buildLogFile}`);
     process.exit(1);
@@ -30,7 +39,7 @@ async function main() {
   const buildLog = fs.readFileSync(config.buildLogFile, 'utf-8');
   
   // Read the orphaned files report
-  console.log(`Reading orphaned files report from ${config.orphanedFilesReport}...`);
+  console.error(`Reading orphaned files report from ${config.orphanedFilesReport}...`);
   if (!fs.existsSync(config.orphanedFilesReport)) {
     console.error(`Error: Orphaned files report not found at ${config.orphanedFilesReport}`);
     process.exit(1);
@@ -45,7 +54,7 @@ async function main() {
     orphanedFiles.push(match[1]);
   }
   
-  console.log(`Found ${orphanedFiles.length} potentially orphaned files in the report.`);
+  console.error(`Found ${orphanedFiles.length} potentially orphaned files in the report.`);
   
   // Check which orphaned files are actually used during build
   const usedFiles = [];
@@ -89,8 +98,8 @@ async function main() {
     }
   }
   
-  console.log(`Found ${usedFiles.length} files used during build.`);
-  console.log(`Found ${notUsedFiles.length} files not used during build.`);
+  console.error(`Found ${usedFiles.length} files used during build.`);
+  console.error(`Found ${notUsedFiles.length} files not used during build.`);
   
   // Generate a report
   const report = `# Build Dependency Analysis
@@ -118,14 +127,15 @@ Generated on: ${new Date().toISOString()}
 `;
 
   // Write the report
-  console.log(`Writing report to ${config.outputFile}...`);
+  console.error(`Writing report to ${config.outputFile}...`);
   const outputDir = path.dirname(config.outputFile);
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
   fs.writeFileSync(config.outputFile, report);
+  console.error(`[DEBUG] Wrote output file: ${config.outputFile}`);
   
-  console.log('Build dependency analysis complete!');
+  console.error('Build dependency analysis complete!');
 }
 
 // Run the script

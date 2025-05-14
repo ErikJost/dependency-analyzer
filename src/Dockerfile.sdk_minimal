@@ -1,0 +1,48 @@
+FROM python:3.13-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install MCP SDK
+RUN pip install --no-cache-dir mcp
+
+# Install Node.js (LTS version)
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install chalk globally for Node.js scripts
+RUN npm install -g chalk
+
+# Install any additional dependencies
+# None currently needed beyond standard library
+
+# Create and configure persistent data directory
+# This is where all project data and logs will be stored
+# When running with Docker, use a named volume: -v mcp_dependency_data:/data
+# Recommended: Run with --name DependencyMCP for easier management
+RUN mkdir -p /data && \
+    chmod 777 /data && \
+    touch /data/.initialized
+
+# Copy server and startup scripts
+COPY src/sdk_minimal_server.py .
+# Copy the scripts directory
+COPY scripts/ scripts/
+# Copy package.json and package-lock.json if present, then install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Verify data directory on startup
+RUN echo "echo 'Data directory:' && ls -la /data" > /app/startup.sh && \
+    chmod +x /app/startup.sh
+
+# Copy start.sh into the image
+COPY src/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+# Run the server
+CMD ["/app/start.sh"]
+# CMD ["python", "sdk_minimal_server.py"] 

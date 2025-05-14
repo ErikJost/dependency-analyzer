@@ -10,19 +10,32 @@
 const fs = require('fs');
 const path = require('path');
 
+// Parse --output-dir argument
+let outputDir = null;
+const args = process.argv.slice(2);
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--output-dir' && args[i + 1]) {
+    outputDir = path.resolve(args[i + 1]);
+    i++;
+  } else if (args[i].startsWith('--output-dir=')) {
+    outputDir = path.resolve(args[i].split('=')[1]);
+  }
+}
+if (!outputDir) outputDir = path.resolve(__dirname, '..', 'output');
+
 // Configuration
 const config = {
-  orphanedFilesReport: path.resolve(__dirname, '..', 'output', 'orphaned-files.md'),
-  buildDependenciesReport: path.resolve(__dirname, '..', 'output', 'build-dependencies.md'),
-  updatedReportFile: path.resolve(__dirname, '..', 'output', 'confirmed-orphaned-files.md')
+  orphanedFilesReport: path.join(outputDir, 'orphaned-files.md'),
+  buildDependenciesReport: path.join(outputDir, 'build-dependencies.md'),
+  updatedReportFile: path.join(outputDir, 'confirmed-orphaned-files.md')
 };
 
 // Main function to run the update
 async function main() {
-  console.log('Updating orphaned files report...');
+  console.error('Updating orphaned files report...');
   
   // Read the original orphaned files report
-  console.log(`Reading orphaned files report from ${config.orphanedFilesReport}...`);
+  console.error(`Reading orphaned files report from ${config.orphanedFilesReport}...`);
   if (!fs.existsSync(config.orphanedFilesReport)) {
     console.error(`Error: Orphaned files report not found at ${config.orphanedFilesReport}`);
     process.exit(1);
@@ -30,13 +43,13 @@ async function main() {
   const orphanedFilesReport = fs.readFileSync(config.orphanedFilesReport, 'utf-8');
   
   // Read the build dependencies report
-  console.log(`Reading build dependencies report from ${config.buildDependenciesReport}...`);
+  console.error(`Reading build dependencies report from ${config.buildDependenciesReport}...`);
   if (!fs.existsSync(config.buildDependenciesReport)) {
     console.warn(`Warning: Build dependencies report not found at ${config.buildDependenciesReport}`);
     console.warn('Proceeding without build analysis. All orphaned files will be considered as confirmed.');
     // Just copy the orphaned files report to the confirmed report
     fs.writeFileSync(config.updatedReportFile, orphanedFilesReport);
-    console.log(`Confirmed orphaned files report written to ${config.updatedReportFile} (no build analysis performed)`);
+    console.error(`Confirmed orphaned files report written to ${config.updatedReportFile} (no build analysis performed)`);
     process.exit(0);
   }
   const buildDependenciesReport = fs.readFileSync(config.buildDependenciesReport, 'utf-8');
@@ -59,7 +72,7 @@ async function main() {
     }
   }
   
-  console.log(`Found ${usedFiles.length} files used during build: ${usedFiles.join(', ')}`);
+  console.error(`Found ${usedFiles.length} files used during build: ${usedFiles.join(', ')}`);
   
   // Split the orphaned files report into sections
   const headerMatch = orphanedFilesReport.match(/([\s\S]+?)(?=## Files that may be orphaned)/);
@@ -91,7 +104,7 @@ async function main() {
     
     if (usedFiles.includes(fileName)) {
       removedFiles++;
-      console.log(`Removing file from report: ${fileName}`);
+      console.error(`Removing file from report: ${fileName}`);
       continue;
     }
     
@@ -106,10 +119,10 @@ async function main() {
   const updatedReport = `${updatedHeader}## Files that may be orphaned\n\n${updatedFilesList.join('\n\n')}\n\n${footer}`;
   
   // Write the updated report
-  console.log(`Writing updated report to ${config.updatedReportFile}...`);
+  console.error(`Writing updated report to ${config.updatedReportFile}...`);
   fs.writeFileSync(config.updatedReportFile, updatedReport);
   
-  console.log(`Update complete! Removed ${removedFiles} files from the orphaned files report.`);
+  console.error(`Update complete! Removed ${removedFiles} files from the orphaned files report.`);
 }
 
 // Run the script

@@ -31,7 +31,7 @@ if command -v lsof &> /dev/null; then
 fi
 
 echo "Starting dependency analysis server with run/cancel capability..."
-echo "Access the visualization at: http://localhost:$PORT/dependency-visualizer.html"
+echo "Access the visualization at: http://localhost:$PORT/enhanced-dependency-visualizer.html"
 echo "Features:"
 echo "  • Run dependency analysis directly from the UI"
 echo "  • Cancel running analysis with the stop button"
@@ -74,7 +74,7 @@ cd "$ROOT_DIR"
 
 # Start the Python server (with Flask if available, otherwise simple HTTP server)
 echo "Serving dependency analysis at http://localhost:$PORT"
-echo "Access the visualization at http://localhost:$PORT/dependency-visualizer.html"
+echo "Access the visualization at http://localhost:$PORT/enhanced-dependency-visualizer.html"
 echo "Use Ctrl+C to stop"
 
 # Check if the project has a Python server script

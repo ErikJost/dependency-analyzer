@@ -9,12 +9,12 @@ This rule documents how to set up and use the dependency analyzer MCP server for
 
 ## Docker Image
 
-The MCP server runs as a Docker container using the image `mcp/simple-dependmap` which provides dependency analysis functionality through stdio communication.
+The MCP server runs as a Docker container using the image `sdk-minimal` which provides dependency analysis functionality through stdio communication.
 
 To build the image:
 
 1. Use the [Dockerfile.simple](mdc:Dockerfile.simple) to create a container
-2. Build with: `docker build -t mcp/simple-dependmap -f Dockerfile.simple .`
+2. Build with: `docker build -t sdk-minimal -f Dockerfile.simple .`
 
 ## Testing STDIO Protocol
 
@@ -22,10 +22,10 @@ Always test the STDIO interface directly:
 
 ```bash
 # Test by sending an initialize request
-echo '{"jsonrpc":"2.0","id":"test123","method":"initialize"}' | docker run -i --rm mcp/simple-dependmap
+echo '{"jsonrpc":"2.0","id":"test123","method":"initialize"}' | docker run -i --rm sdk-minimal
 
 # Test a function call
-echo '{"jsonrpc":"2.0","id":"func123","method":"mcp/invokeFunction","params":{"function":"list_projects","parameters":{}}}' | docker run -i --rm mcp/simple-dependmap
+echo '{"jsonrpc":"2.0","id":"func123","method":"mcp/invokeFunction","params":{"function":"list_projects","parameters":{}}}' | docker run -i --rm sdk-minimal
 ```
 
 You should see properly formatted JSON-RPC 2.0 responses with tool offerings and results.
@@ -42,7 +42,7 @@ Cursor integration is configured in `~/.cursor/mcp.json` with:
         "run",
         "-i",
         "--rm",
-        "mcp/simple-dependmap"
+        "sdk-minimal"
       ],
       "env": {}
     }
@@ -76,7 +76,7 @@ The core implementation is in [simple_mcp_server.py](mdc:simple_mcp_server.py) w
 
 ## Important Notes
 
-1. Always check running containers with `docker ps | grep mcp/simple-dependmap` before starting new ones
+1. Always check running containers with `docker ps | grep sdk-minimal` before starting new ones
 2. The container must provide an immediate JSON-RPC 2.0 response when started
 3. All errors must be formatted as proper JSON-RPC 2.0 error objects
 4. After updating the MCP configuration, restart Cursor for changes to take effect

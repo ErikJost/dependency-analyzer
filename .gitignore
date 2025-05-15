@@ -50,4 +50,7 @@ yarn-error.log*
 *.log
 temp/
 data/
-*.tmp 
+*.tmp
+
+# Cursor MCP config
+.cursor/mcp.json 

@@ -89,10 +89,10 @@ Always test containers before connecting to Cursor:
 
 ```bash
 # Test initialization
-echo '{"jsonrpc":"2.0","id":"test123","method":"initialize"}' | docker run -i --rm mcp/simple-dependmap
+echo '{"jsonrpc":"2.0","id":"test123","method":"initialize"}' | docker run -i --rm sdk-minimal
 
 # Test function invocation
-echo '{"jsonrpc":"2.0","id":"func123","method":"mcp/invokeFunction","params":{"function":"list_projects","parameters":{}}}' | docker run -i --rm mcp/simple-dependmap
+echo '{"jsonrpc":"2.0","id":"func123","method":"mcp/invokeFunction","params":{"function":"list_projects","parameters":{}}}' | docker run -i --rm sdk-minimal
 ```
 
 Compare different Dockerfiles in the project:

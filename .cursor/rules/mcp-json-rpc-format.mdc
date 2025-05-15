@@ -75,7 +75,7 @@ The MCP configuration is handled in Cursor's preferences and should use the mini
         "run",
         "-i",
         "--rm",
-        "mcp/simple-dependmap"
+        "sdk-minimal"
       ],
       "env": {}
     }

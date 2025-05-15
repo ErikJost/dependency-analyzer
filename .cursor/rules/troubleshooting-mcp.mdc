@@ -14,18 +14,18 @@ This rule provides solutions for common issues encountered when using the depend
 This occurs when the MCP server doesn't respond properly to initialization requests.
 
 **Solutions:**
-1. Verify the Docker container is running: `docker ps | grep mcp/simple-dependmap`
-2. Check the MCP server logs: `docker logs $(docker ps -q --filter ancestor=mcp/simple-dependmap)`
+1. Verify the Docker container is running: `docker ps | grep sdk-minimal`
+2. Check the MCP server logs: `docker logs $(docker ps -q --filter ancestor=sdk-minimal)`
 3. Ensure the JSON-RPC format is correct in [simple_mcp_server.py](mdc:simple_mcp_server.py)
 4. Restart Cursor after updating the MCP configuration
 
 ### "Failed to start MCP server" Error
 
 **Solutions:**
-1. Check if the Docker image exists: `docker images | grep mcp/simple-dependmap`
-2. Rebuild the Docker image: `docker build -t mcp/simple-dependmap -f Dockerfile.simple .`
+1. Check if the Docker image exists: `docker images | grep sdk-minimal`
+2. Rebuild the Docker image: `docker build -t sdk-minimal -f Dockerfile.simple .`
 3. Verify port availability: `lsof -i :8000`
-4. Check for permission issues: `docker run --rm -it mcp/simple-dependmap ls -la /app`
+4. Check for permission issues: `docker run --rm -it sdk-minimal ls -la /app`
 
 ## Analysis Issues
 
@@ -60,7 +60,7 @@ When the dependency graph is missing expected connections:
 ### Container Memory Errors
 
 **Solutions:**
-1. Increase Docker memory limit: `docker run --memory=4g -i --rm mcp/simple-dependmap`
+1. Increase Docker memory limit: `docker run --memory=4g -i --rm sdk-minimal`
 2. Split analysis into smaller projects
 3. Use batch processing for large codebases
 4. Enable file caching in the configuration

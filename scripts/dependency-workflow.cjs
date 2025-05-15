@@ -315,6 +315,9 @@ async function createFinalAnalysis() {
     return false;
   }
   const confirmedContent = fs.readFileSync(config.reports.confirmedOrphaned, 'utf-8');
+  // Extract all orphaned files (lines starting with '- ')
+  const allOrphanedFiles = extractFilesByPattern(confirmedContent, /^- (.+)$/gm);
+  console.error('[DEBUG] All orphaned files extracted for final analysis:', allOrphanedFiles);
   
   // Generate the final analysis report
   const finalAnalysisTemplate = `# Final Analysis of Orphaned Files
@@ -322,31 +325,11 @@ async function createFinalAnalysis() {
 ## Overview
 After thorough analysis including static dependency mapping, build process tracking, and verification of dynamic references, this report presents a more accurate picture of truly orphaned files in the codebase.
 
-## Key Findings
-
-1. Many files were falsely flagged as having dynamic references due to unrelated string literals in the code
-2. The codebase shows evidence of a migration from \`src/\` to \`client/src/\` structure, with many duplicated files
-3. Authentication components initially flagged as orphaned are likely used through dynamic imports or routing
-4. Several script files are intended to be run directly and not imported
-
-## Truly Orphaned Files
+## All Orphaned Files
 
 These files have been confirmed as not used in the application and are safe to archive:
 
-### Scripts and Utilities
-These standalone scripts aren't imported by the application code:
-
-${extractFilesByPattern(confirmedContent, /^- (scripts\/.*\.js|client\/scripts\/.*\.js|client\/analyze-deps\.js)/gm)}
-
-### Duplicated Files (Old Structure)
-These files appear to be duplicates from the old src/ structure that have been migrated to client/src/:
-
-${extractFilesByPattern(confirmedContent, /^- (src\/components\/.*|src\/services\/.*|src\/lib\/.*\.ts|src\/auth\/.*)/gm)}
-
-### Test Files
-Files used only for testing and not production:
-
-${extractFilesByPattern(confirmedContent, /^- (.*\.test\.ts|.*TestAuthProvider\.tsx|.*\/testing\/.*)/gm)}
+${allOrphanedFiles || 'No orphaned files found.'}
 
 ## Files That Should Not Be Archived
 
@@ -374,11 +357,10 @@ These files are used in the build/deployment process:
 
 ## Recommended Approach
 
-1. **Start with Scripts**: Archive the standalone scripts first as they're the lowest risk
-2. **Next Address Duplicates**: Archive the old structure files (in src/) as their functionality has been migrated to client/src/
-3. **Carefully Review UI Components**: Some components may be used through dynamic imports or lazy loading
-4. **Leave Type Definitions**: Keep TypeScript type definitions unless absolutely certain they're unused
-5. **Document Each Archived File**: Add a note to the checklist explaining why each file was archived
+1. **Review All Orphaned Files**: Consider archiving files listed above if confirmed unused
+2. **Carefully Review UI Components**: Some components may be used through dynamic imports or lazy loading
+3. **Leave Type Definitions**: Keep TypeScript type definitions unless absolutely certain they're unused
+4. **Document Each Archived File**: Add a note to the checklist explaining why each file was archived
 
 ## Summary
 
@@ -435,7 +417,10 @@ function createWorkflowSummary() {
   const summaryPath = path.join(config.docsDir, 'workflow-summary.md');
   const timestamp = new Date().toISOString();
   // Dynamically determine the project folder from outputDir
-  const projectFolder = path.basename(outputDir);
+  const outputDirParts = outputDir.split(path.sep);
+  const projectFolder = outputDirParts[outputDirParts.length - 1] === 'output'
+    ? outputDirParts[outputDirParts.length - 2]
+    : outputDirParts[outputDirParts.length - 1];
   const visualizationLink = `/${projectFolder}/enhanced-dependency-visualizer.html`;
   console.error(`[DEBUG] About to write workflow summary to: ${summaryPath}`);
   console.error(`[DEBUG] Visualization link to be written: ${visualizationLink}`);
@@ -549,6 +534,8 @@ async function runWorkflow() {
       const summaryPreview = fs.readFileSync(summaryPath, 'utf-8').slice(0, 500);
       console.error('[DEBUG] Workflow: workflow-summary.md preview:', summaryPreview);
     }
+    // Ensure the workflow summary is always generated
+    createWorkflowSummary();
     const workflowElapsed = ((Date.now() - workflowStepStart) / 1000).toFixed(2);
     console.error(`[DEBUG] Workflow completed in ${workflowElapsed}s`);
     console.error('\n✨ Dependency Analysis Workflow Completed Successfully!\n');

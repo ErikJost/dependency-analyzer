@@ -131,7 +131,7 @@ The server implements the following tools:
 To build the MCP server Docker image:
 
 ```bash
-docker build --no-cache -t mcp/sdk-minimal -f Dockerfile.sdk_minimal .
+docker build --no-cache -t mcp/simple-sdk -f Dockerfile.sdk_minimal .
 ```
 
 ### 2. Cursor Configuration
@@ -146,7 +146,7 @@ Create or update `~/.cursor/mcp.json` with:
         "run",
         "-i",
         "--rm",
-        "mcp/sdk-minimal"
+        "mcp/simple-sdk"
       ],
       "env": {}
     }
@@ -159,7 +159,7 @@ Create or update `~/.cursor/mcp.json` with:
 For testing independently, use:
 
 ```bash
-echo '{"jsonrpc":"2.0","id":"test","method":"initialize"}' | docker run -i --rm mcp/sdk-minimal
+echo '{"jsonrpc":"2.0","id":"test","method":"initialize"}' | docker run -i --rm mcp/simple-sdk
 ```
 
 ## Error Handling
@@ -187,7 +187,7 @@ If Cursor doesn't display the tools:
 
 1. Check Docker container is running properly
 2. Verify the server is sending correct JSON-RPC 2.0 responses
-3. Look for errors in stderr output: `docker logs $(docker ps -q --filter ancestor=mcp/sdk-minimal)`
+3. Look for errors in stderr output: `docker logs $(docker ps -q --filter ancestor=mcp/simple-sdk)`
 4. Ensure the Docker image has the correct permissions
 5. Make sure the server is responding properly to the initialize request
 

@@ -7,16 +7,6 @@
         "@mzxrai/mcp-webresearch@latest"
       ]
     },
-    "github": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "ghcr.io/cursor-ai/github-mcp:latest"
-      ],
-      "env": {}
-    },
     "gordon": {
       "command": "docker",
       "args": [

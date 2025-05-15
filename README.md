@@ -1,300 +1,196 @@
 # Dependency Analyzer MCP Server
 
-A Model Context Protocol (MCP) server for analyzing and visualizing code dependencies in JavaScript and TypeScript projects. Designed for AI agents and Cursor to gain deeper understanding of codebases.
+## Overview
+This project provides a Dockerized MCP server for dependency analysis, designed for integration with Cursor and other tools. It analyzes project dependencies, generates reports and visualizations, and serves them via a static web server.
 
-## Features
+## Key Features
+- Analyzes code dependencies, orphaned files, and circular dependencies
+- Generates detailed reports and interactive visualizations
+- All outputs are written to `/data/{project_id}/output`
+- Static server serves the `/data` directory at the web root (e.g., `http://localhost:8000/`)
+- All report and visualization URLs are of the form `http://{host_ip}:{port}/{project_id}/output/{filename}`
+- Fully compatible with Cursor MCP integration and JSON-RPC 2.0
 
-- **MCP API**: Standardized API for AI agents to access dependency information
-- **Dependency Analysis**: Static code analysis to identify imports and exports
-- **Multi-Project Support**: Analyze multiple projects simultaneously
-- **Interactive Visualization**: Force-directed graph visualization of dependencies
-- **Orphaned File Detection**: Identify unused files in the codebase
-- **Docker Integration**: Easy deployment in containerized environments
+## Directory Structure
+- **/data**: Persistent volume for all project outputs and reports
+  - **/data/{project_id}/output**: All analysis outputs for a given project
+- **scripts/**: All analysis and workflow scripts (Node.js, accept `--output-dir`)
+- **sdk_minimal_server.py**: Main MCP server implementation
+- **start.sh**: Entrypoint script; starts the static server and MCP server
 
-## Installation
-
-### Prerequisites
-
-- Docker & Docker Compose (recommended)
-- Alternatively: Node.js (v14+) and Python 3.6+
-
-### Quick Start with Docker (Recommended)
-
-```bash
-# Clone the repository
-git clone https://github.com/ErikJost/dependency-analyzer.git
-cd dependency-analyzer
-
-# Build and start with Docker Compose
-docker-compose up -d
-```
-
-The MCP server will be available at http://localhost:8000
-
-### Local Installation
-
-If you prefer a local installation without Docker:
-
-```bash
-# Clone the repository
-git clone https://github.com/ErikJost/dependency-analyzer.git
-cd dependency-analyzer
-
-# Install dependencies
-pip install -r requirements.txt
-npm install
-
-# Start the server
-python server.py
-```
-
-## MCP API Reference
-
-The Dependency Analyzer MCP server provides a set of tools and resources for AI agents and Cursor to analyze code dependencies.
-
-### MCP Tools
-
-#### Dependency Analysis
-
-- **analyze_dependencies**: Analyze dependencies for a project
-  ```json
-  {
-    "project_id": "my-project",
-    "options": {
-      "exclude": ["node_modules", "dist"]
-    }
-  }
+## Static Server
+- The static server is started with:
+  ```sh
+  python3 -m http.server ${PORT:-8000} --directory /data &
   ```
+- This serves all files in `/data` at the web root. For example:
+  - `/data/project1/output/enhanced-dependency-visualizer.html` → `http://localhost:8000/project1/output/enhanced-dependency-visualizer.html`
 
-- **get_dependency_graph**: Retrieve the dependency graph
-  ```json
-  {
-    "project_id": "my-project",
-    "format": "json"
-  }
-  ```
+## Output Directory Handling
+- **All scripts** accept a `--output-dir=<path>` argument. This controls where all reports and outputs are written.
+- The MCP server always passes `/data/{project_id}/output` as the output directory to all scripts.
+- All cross-script file references and report links use the resolved output directory.
 
-- **find_orphaned_files**: Find files not imported anywhere
-  ```json
-  {
-    "project_id": "my-project",
-    "exclude_patterns": ["*.test.ts", "*.spec.ts"]
-  }
-  ```
+## MCP Server URL Generation
+- The MCP server's `get_web_url_for_output(file_path)` function generates URLs as follows:
+  - Computes the relative path from `/data`
+  - Uses the current host IP and port (from the `PORT` env var, default 8000)
+  - Returns: `http://{host_ip}:{port}/{project_id}/output/{filename}`
+- All MCP tool responses and links use this function, ensuring URLs match the static server's structure.
 
-#### Project Management
+## Example Usage
 
-- **list_projects**: List all available projects
-- **add_project**: Add a new project for analysis
-  ```json
-  {
-    "name": "my-new-project",
-    "source": "https://github.com/username/repo.git",
-    "branch": "main"
-  }
-  ```
-
-### MCP Resources
-
-- **Project Structure**: `project://{project_id}/structure`
-- **Dependency Graph**: `project://{project_id}/dependencies`
-- **File Dependencies**: `project://{project_id}/file/{path}/dependencies`
-- **Component Dependencies**: `project://{project_id}/component/{component_name}/dependencies`
-
-## Usage with AI Agents
-
-The Dependency Analyzer MCP server is designed to work with AI agents like GPT and Claude. AI agents can:
-
-1. Query the dependency structure of your code
-2. Find unused files or circular dependencies
-3. Understand the relationships between components
-4. Analyze the impact of potential code changes
-
-Example prompts for AI agents:
-
-- "Analyze the dependencies of the authentication module in my-project"
-- "Find unused files in the components directory"
-- "Show me the dependencies of the UserProfile component"
-- "Identify circular dependencies in the utils directory"
-
-## Docker Configuration
-
-The Docker container can be configured through environment variables:
-
-```yaml
-environment:
-  - PORT=8000
-  - PROJECTS_DIR=/app/projects
-  - ANALYSIS_DIR=/app/analysis
+### Running the MCP Server (Docker)
+```sh
+docker run -it --rm \
+  -v /absolute/path/to/your/projects:/projects \
+  -v /absolute/path/to/data:/data \
+  -e PORT=8000 \
+  -p 8000:8000 \
+  mcp/sdk-minimal:latest
 ```
 
-You can mount projects directly into the container:
-
-```yaml
-volumes:
-  - ./my-project:/app/projects/my-project
+### Running the Workflow Script
+```sh
+node scripts/dependency-workflow.cjs --root-dir=/projects/myproject --output-dir=/data/myproject/output
 ```
 
-## Analysis Tools
+### Accessing Results
+- Open the visualizer in your browser:
+  - `http://localhost:8000/myproject/output/enhanced-dependency-visualizer.html`
+- All other reports are available at similar URLs under `/myproject/output/`.
 
-The Dependency Analyzer MCP server includes these core analysis scripts:
+## Integration with Cursor
+- The MCP server is configured in Cursor to use Docker and the official image.
+- All communication uses JSON-RPC 2.0 and strict request/response patterns.
+- The MCP server never sends unsolicited messages and always responds with the correct ID.
 
-- **enhanced-dependency-analysis.cjs**: Main dependency analysis
-- **check-dynamic-imports.cjs**: Detect dynamically imported modules
-- **verify-route-components.cjs**: Verify route components
-- **batch-archive-orphaned.cjs**: Manage orphaned files
+## Troubleshooting
+- Ensure `/data` is mounted as a Docker volume and is writable.
+- All output and report files should appear under `/data/{project_id}/output`.
+- If URLs do not work, verify the static server is running and serving `/data` at the correct port.
 
-## Visualizations
+## Changelog
+- All outputs now written to `/data/{project_id}/output`
+- Static server serves `/data` at web root
+- All URLs generated by MCP are based on the file's relative path from `/data`
+- All scripts accept `--output-dir` and propagate it to sub-scripts
+- Documentation updated to reflect these changes 
 
-The server provides several visualization options:
+## Output Conventions and Web URLs (May 2024)
 
-- Interactive force-directed graph visualization
-- Tabular dependency views
-- Orphaned file reports
-- Build dependency analysis
+- **All output and report files are written to** `/data/<project_id>/` (no `/output/` subfolder).
+- **The workflow summary is always** `/data/<project_id>/workflow-summary.md`.
+- **The main visualizer is** `/data/<project_id>/enhanced-dependency-visualizer.html`.
+- **All web URLs are constructed to match these locations** (e.g., `/project1/enhanced-dependency-visualizer.html`).
+- **The server exposes these files via a static web server** on the configured port (default 8000).
 
-## Development
+### Example JSON Response
 
-### Running Tests
-
-```bash
-npm test
 ```
-
-### Building Docker Image
-
-```bash
-docker build -t dependency-analyzer-mcp .
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Inspired by [GitHub's MCP Server](https://github.com/github/github-mcp-server) for AI agent integration
-- Built to enhance AI understanding of code structure
-
-## MCP SDK Server (Working Implementation)
-
-This project now includes a fully working Model Context Protocol (MCP) server using the official Python SDK. The server exposes all required tools for dependency analysis and is compatible with Cursor and other MCP clients.
-
-### How to Build and Run
-
-1. **Build the Docker image:**
-   ```bash
-   docker build -t mcp/sdk-minimal -f archive/Dockerfile.sdk_minimal .
-   ```
-2. **Run the server (for testing):**
-   ```bash
-   echo '{"jsonrpc":"2.0","id":"test","method":"initialize"}' | docker run -i --rm mcp/sdk-minimal
-   ```
-3. **Configure Cursor:**
-   In your `~/.cursor/mcp.json`:
-   ```json
-   {
-     "mcpServers": {
-       "dependencyAnalyzer": {
-         "command": "docker",
-         "args": [
-           "run",
-           "-i",
-           "--rm",
-           "mcp/sdk-minimal"
-         ]
-       }
-     }
-   }
-   ```
-
-### Exposed Tools
-- `list_projects`
-- `add_project`
-- `analyze_dependencies`
-- `get_dependency_graph`
-- `find_orphaned_files`
-- `check_circular_dependencies`
-
-All tools are implemented in `sdk_minimal_server.py` and return mock data by default. You can extend them to provide real analysis logic as needed.
-
----
-
-## Next Steps
-
-- **Replace mock logic** in each tool with real dependency analysis code.
-- **Persist project and analysis data** (currently in-memory only).
-- **Add error handling and validation** for tool arguments.
-- **Expand test coverage** for all MCP tools.
-- **Document API and tool usage** for other developers.
-- **Integrate with CI/CD** to run dependency analysis automatically.
-- **Contribute improvements** back to the MCP SDK or this repo as needed.
-
-For questions or contributions, please open an issue or pull request.
-
-## Running the MCP Server with Docker
-
-1. **Build the Docker image (no data volumes attached at build time):**
-   ```bash
-   docker build --no-cache -t mcp/sdk-minimal -f Dockerfile.sdk_minimal .
-   ```
-   > **Note:** Do NOT attach any data volumes during the build step. The build step is for image creation only.
-
-2. **Start the container with persistent data and project directories mounted (attach volumes at runtime):**
-   ```bash
-   docker run -d --name DependencyMCP -v /Users/erikjost/data:/data -v /Users/erikjost:/Users/erikjost -p 8000:8000 mcp/sdk-minimal
-   ```
-   > This ensures persistent data is available to the running container, but not baked into the image.
-
-## Persistent Data and Project Access with Docker
-
-To ensure your analysis data persists and your projects are accessible for validation, use multiple host path volume mappings when running the container:
-
-```bash
-# Example: Run the container with persistent data and full project access
-# Replace /Users/erikjost/data and /Users/erikjost with your actual directories
-
-docker run -d --name DependencyMCP \
-  -v /Users/erikjost/data:/data \
-  -v /Users/erikjost:/Users/erikjost \
-  mcp/sdk-minimal
-```
-
-- `/Users/erikjost/data` is a directory on your host machine for persistent analysis data.
-- `/Users/erikjost` is your user/project directory, making all your projects accessible inside the container.
-- `/data` and `/Users/erikjost` are the corresponding paths inside the container.
-
-## Cursor MCP Configuration (with multiple mounts)
-
-For Cursor integration, configure your `mcp.json` as follows:
-
-```json
-"dependencyAnalyzer": {
-  "command": "docker",
-  "args": [
-    "run",
-    "-i",
-    "--rm",
-    "-v",
-    "/Users/erikjost/data:/data",
-    "-v",
-    "/Users/erikjost:/Users/erikjost",
-    "mcp/sdk-minimal"
-  ]
+{
+  "success": true,
+  "project_id": "project1",
+  "output": "...",
+  "analysis_path": "/data/project1/analysis_results.json",
+  "summary": { ... },
+  "summary_url": "http://localhost:8000/project1/workflow-summary.md",
+  "visualizer_url": "http://localhost:8000/project1/enhanced-dependency-visualizer.html"
 }
 ```
 
-- This will start a new container for each request, with both persistent data and project directories mounted.
-- Adjust the paths as needed for your environment.
+- The MCP server and all scripts are now **fully commented for maintainability**.
 
-## Release Notes
+For more details, see comments in `src/sdk_minimal_server.py` and the workflow scripts. 
 
-See `RELEASE_NOTES.md` for a summary of recent changes and upgrade instructions.
+## Scripts Overview
 
-## Orphaned File Archival
+This project includes a set of Node.js scripts in the `scripts/` directory that together provide a comprehensive dependency and orphaned file analysis workflow. All scripts accept a `--output-dir=<path>` argument to control where reports and outputs are written.
 
-When archiving orphaned files, they are now moved to the `archived_orphan` folder in the project root. If a file with the same name already exists, a dash and the next available number is appended (e.g., `file.md`, `file-1.md`, `file-2.md`). No files are deleted. 
+| Script | Description |
+|--------|-------------|
+| **analyze-dependencies.cjs** | Analyzes the project's dependency graph by scanning import statements. Identifies potentially orphaned files (not imported by any other file) and generates a report. |
+| **enhanced-dependency-analysis.cjs** | Performs a deeper analysis, handling barrel files (index.ts/js), re-exports, and route-based component references. Generates enhanced orphaned file and dependency graph reports. |
+| **analyze-build-dependencies.cjs** | Analyzes the build log to determine which potentially orphaned files are actually used during the build process. Updates the orphaned files list accordingly. |
+| **update-orphaned-files-report.cjs** | Updates the orphaned files report by removing files that are confirmed as used during the build. Produces a 'confirmed orphaned files' report. |
+| **check-dynamic-imports.cjs** | Scans for dynamic imports, React.lazy, and other patterns that may reference files not detected by static analysis. Helps identify false positives in the orphaned files list. |
+| **verify-route-components.cjs** | Analyzes React route definitions to find components that may be referenced dynamically in routes, further refining the orphaned files list. |
+| **dependency-workflow.cjs** | Orchestrates the full workflow: runs all analysis scripts in sequence, generates all reports, and (optionally) archives confirmed orphaned files. Produces a workflow summary and links to visualizations. |
+| **batch-archive-orphaned.cjs** | Reads the final orphaned files report and archives each file using the archive script. Generates a report of the archival process. |
+| **archive-orphaned-file.cjs** | Moves a specified orphaned file to the archive directory (never deletes). Updates the cleanup checklist. |
+
+**Special Notes:**
+- The refined analysis and confidence/impact ratings in some reports are for human review only and do not affect which files are archived or reported as orphaned.
+- All scripts are fully commented for maintainability and clarity.
+- The workflow is designed to be safe: no files are deleted, only moved to an archive directory.
+
+For more details, see comments in each script in the `scripts/` directory. 
+
+## Docker Image Usage (Updated)
+
+This project uses a single, official Docker image for all MCP server deployments:
+
+- **Image name:** `mcp/sdk-minimal:latest`
+- **Dockerfile:** `src/Dockerfile.sdk_minimal`
+
+### Building the Image
+
+To build the image, always use:
+
+```bash
+docker build -t mcp/sdk-minimal:latest -f src/Dockerfile.sdk_minimal .
+```
+
+- Do **not** attach any data volumes during the build step.
+- The build step is for image creation only.
+
+### Running the Container
+
+To run the MCP server with persistent data and project access:
+
+```bash
+docker run -d --name DependencyMCP \
+  -v /Users/erikjost/data:/data \
+  -v /Users/erikjost:/Users/erikjost \
+  -p 8000:8000 \
+  mcp/sdk-minimal:latest
+```
+
+- `/Users/erikjost/data` is a host directory for persistent analysis data.
+- `/Users/erikjost` is your user/project directory, making all projects accessible inside the container.
+- Adjust paths as needed for your environment.
+
+### Cursor Integration
+
+For Cursor, use this configuration in `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "dependencyAnalyzer": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "/Users/erikjost/data:/data",
+        "-v",
+        "/Users/erikjost:/Users/erikjost",
+        "mcp/sdk-minimal:latest"
+      ]
+    }
+  }
+}
+```
+
+### Best Practices
+
+- Always stop and remove old containers before starting a new one:
+  ```bash
+  docker stop DependencyMCP || true
+  docker rm DependencyMCP || true
+  ```
+- Never attach data volumes during the build step.
+- Only use `mcp/sdk-minimal:latest` for all MCP server deployments.
+- See the README and `docker-image-hygiene.md` for more details and troubleshooting. 

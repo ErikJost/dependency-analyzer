@@ -47,8 +47,8 @@ The MCP server provides AI agents with powerful capabilities:
 
 2. Build and start the Docker container:
    ```bash
-   docker build --no-cache -t mcp/sdk-minimal -f Dockerfile.sdk_minimal .
-   docker run -d --name DependencyMCP -v /Users/erikjost/data:/data mcp/sdk-minimal
+   docker build --no-cache -t mcp/simple-sdk -f Dockerfile.sdk_minimal .
+   docker run -d --name DependencyMCP -v /Users/erikjost/data:/data mcp/simple-sdk
    ```
 
 3. Access the MCP server at http://localhost:8000
@@ -83,11 +83,11 @@ We welcome your feedback and bug reports! Please submit issues on our [GitHub re
 ### Upgrade Instructions
 - Rebuild your Docker image:
   ```bash
-  docker build --no-cache -t mcp/sdk-minimal -f Dockerfile.sdk_minimal .
+  docker build --no-cache -t mcp/simple-sdk -f Dockerfile.sdk_minimal .
   ```
 - When running the container manually, use:
   ```bash
-  docker run -d --name DependencyMCP -v /Users/erikjost/data:/data mcp/sdk-minimal
+  docker run -d --name DependencyMCP -v /Users/erikjost/data:/data mcp/simple-sdk
   ```
 - For Cursor integration, update your `mcp.json`:
   ```json
@@ -99,7 +99,7 @@ We welcome your feedback and bug reports! Please submit issues on our [GitHub re
       "--rm",
       "-v",
       "/Users/erikjost/data:/data",
-      "mcp/sdk-minimal"
+      "mcp/simple-sdk"
     ]
   }
   ```

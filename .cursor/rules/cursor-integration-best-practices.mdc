@@ -22,7 +22,7 @@ Always use the simplified configuration approach in `~/.cursor/mcp.json`:
         "run",
         "-i",
         "--rm",
-        "mcp/simple-dependmap"
+        "sdk-minimal"
       ],
       "env": {}
     }
@@ -86,8 +86,8 @@ Error codes should follow the JSON-RPC 2.0 specification as implemented in [simp
 
 If Cursor crashes:
 
-1. Check Docker container logs: `docker logs $(docker ps -q --filter ancestor=mcp/simple-dependmap)`
-2. Stop all running MCP containers: `docker stop $(docker ps -q --filter ancestor=mcp/simple-dependmap)`
+1. Check Docker container logs: `docker logs $(docker ps -q --filter ancestor=sdk-minimal)`
+2. Stop all running MCP containers: `docker stop $(docker ps -q --filter ancestor=sdk-minimal)`
 3. Clear the `~/.cursor/mcp_cache` directory if it exists
 4. Restart Cursor with a clean state
 
@@ -96,7 +96,7 @@ If Cursor crashes:
 Always test any changes to the MCP server using the stdio interface before connecting to Cursor:
 
 ```bash
-echo '{"jsonrpc":"2.0","id":"test","method":"initialize"}' | docker run -i --rm mcp/simple-dependmap
+echo '{"jsonrpc":"2.0","id":"test","method":"initialize"}' | docker run -i --rm sdk-minimal
 ```
 
 This helps identify issues before they can affect Cursor's stability.

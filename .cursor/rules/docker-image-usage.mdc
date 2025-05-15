@@ -1,0 +1,73 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Official Docker Image Usage for Dependency Analyzer MCP
+
+This project uses a single, official Docker image for all MCP server deployments:
+
+- **Image name:** `mcp/simple-sdk`
+- **Dockerfile:** [Dockerfile.sdk_minimal](mdc:Dockerfile.sdk_minimal)
+
+## Building the Image
+
+To build the image, always use:
+
+```bash
+docker build -t mcp/simple-sdk -f Dockerfile.sdk_minimal .
+```
+
+- Do **not** attach any data volumes during the build step.
+- The build step is for image creation only.
+
+## Running the Container
+
+To run the MCP server with persistent data and project access:
+
+```bash
+docker run -d --name DependencyMCP \
+  -v /Users/erikjost/data:/data \
+  -v /Users/erikjost:/Users/erikjost \
+  -p 8000:8000 \
+  mcp/simple-sdk
+```
+
+- `/Users/erikjost/data` is a host directory for persistent analysis data.
+- `/Users/erikjost` is your user/project directory, making all projects accessible inside the container.
+- Adjust paths as needed for your environment.
+
+## Cursor Integration
+
+For Cursor, use this configuration in `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "dependencyAnalyzer": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "/Users/erikjost/data:/data",
+        "-v",
+        "/Users/erikjost:/Users/erikjost",
+        "mcp/simple-sdk"
+      ]
+    }
+  }
+}
+```
+
+## Best Practices
+
+- Always stop and remove old containers before starting a new one:
+  ```bash
+  docker stop DependencyMCP || true
+  docker rm DependencyMCP || true
+  ```
+- Never attach data volumes during the build step.
+- Only use `mcp/simple-sdk` for all MCP server deployments.
+- See [README.md](mdc:README.md) and [docker-image-hygiene.md](mdc:docker-image-hygiene.md) for more details and troubleshooting.

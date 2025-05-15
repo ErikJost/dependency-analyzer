@@ -429,17 +429,20 @@ def get_dependency_graph(project_id: str) -> dict:
         logging.error(f"Project not found: {project_id}")
         return {"graph": {"nodes": [], "edges": []}}
     
-    # Check if analysis results exist
-    analysis_path = os.path.join(DATA_DIR, project_id, "analysis_results.json")
-    if os.path.exists(analysis_path):
+    # Read from dependency-graph.json (visualizer file)
+    graph_path = os.path.join(DATA_DIR, project_id, "dependency-graph.json")
+    if os.path.exists(graph_path):
         try:
-            with open(analysis_path, "r") as f:
-                analysis = json.load(f)
-            return {"graph": analysis.get("graph", {"nodes": [], "edges": []})}
+            with open(graph_path, "r") as f:
+                graph = json.load(f)
+            # Return as nodes/edges for compatibility
+            return {"graph": {
+                "nodes": graph.get("nodes", []),
+                "edges": graph.get("links", [])
+            }}
         except Exception as e:
-            logging.error(f"Error loading analysis results: {str(e)}")
-    
-    # Return empty graph if no analysis exists
+            logging.error(f"Error loading dependency-graph.json: {str(e)}")
+    # Return empty graph if no dependency-graph.json exists
     return {"graph": {"nodes": [], "edges": []}}
 
 @mcp.tool()
@@ -478,35 +481,74 @@ def find_orphaned_files(project_id: str) -> dict:
 def check_circular_dependencies(project_id: str) -> dict:
     logging.debug(f"check_circular_dependencies called for project_id={project_id}")
     print(f"check_circular_dependencies called for project_id={project_id}", file=sys.stderr)
-    
+
     # Check if project exists
     project = next((p for p in projects if p["id"] == project_id), None)
     if not project:
         logging.error(f"Project not found: {project_id}")
         return {"circular_dependencies": []}
-    
-    # Return mock circular dependencies
-    circular_deps = [
-        {
-            "cycle": ["moduleA.js", "moduleB.js", "moduleC.js", "moduleA.js"],
-            "severity": "high"
-        }
-    ]
-    
-    # Save circular dependencies to project folder
+
+    # Load dependency graph
     project_dir = os.path.join(DATA_DIR, project_id)
-    circular_path = os.path.join(project_dir, "circular_dependencies.json")
-    
+    graph_path = os.path.join(project_dir, "dependency-graph.json")
+    if not os.path.exists(graph_path):
+        logging.error(f"Dependency graph not found: {graph_path}")
+        return {"circular_dependencies": []}
+
     try:
+        with open(graph_path, "r") as f:
+            graph = json.load(f)
+        nodes = [n["id"] for n in graph.get("nodes", [])]
+        edges = graph.get("links", [])
+        # Build adjacency list
+        adj = {node: [] for node in nodes}
+        for link in edges:
+            src = link.get("source")
+            tgt = link.get("target")
+            if src in adj and tgt in adj:
+                adj[src].append(tgt)
+
+        # DFS to find all cycles
+        def dfs(node, visited, stack, all_cycles):
+            visited.add(node)
+            stack.append(node)
+            for neighbor in adj.get(node, []):
+                if neighbor in stack:
+                    # Found a cycle
+                    cycle = stack[stack.index(neighbor):] + [neighbor]
+                    # Normalize cycle to avoid duplicates
+                    min_idx = min(range(len(cycle)), key=lambda i: cycle[i])
+                    norm_cycle = cycle[min_idx:] + cycle[:min_idx]
+                    if norm_cycle not in all_cycles:
+                        all_cycles.append(norm_cycle)
+                elif neighbor not in visited:
+                    dfs(neighbor, visited, stack, all_cycles)
+            stack.pop()
+            visited.remove(node)
+
+        all_cycles = []
+        for node in nodes:
+            dfs(node, set(), [], all_cycles)
+
+        # Format cycles for output
+        circular_deps = []
+        for cycle in all_cycles:
+            circular_deps.append({
+                "cycle": cycle,
+                "severity": "high" if len(cycle) > 2 else "medium"
+            })
+
+        # Save to circular_dependencies.json
+        circular_path = os.path.join(project_dir, "circular_dependencies.json")
         with open(circular_path, "w") as f:
             json.dump({"circular_dependencies": circular_deps}, f)
         logging.debug(f"Saved circular dependencies to {circular_path}")
         print(f"Saved circular dependencies to {circular_path}", file=sys.stderr)
+        return {"circular_dependencies": circular_deps}
     except Exception as e:
-        logging.error(f"Failed to save circular dependencies: {str(e)}")
-        print(f"Failed to save circular dependencies: {str(e)}", file=sys.stderr)
-    
-    return {"circular_dependencies": circular_deps}
+        logging.error(f"Failed to analyze circular dependencies: {str(e)}")
+        print(f"Failed to analyze circular dependencies: {str(e)}", file=sys.stderr)
+        return {"circular_dependencies": []}
 
 @mcp.tool()
 def archive_orphaned_files(project_id: str) -> dict:

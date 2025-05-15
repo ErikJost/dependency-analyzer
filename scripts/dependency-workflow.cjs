@@ -83,45 +83,12 @@ if (args.includes('--help')) {
   return;
 }
 
-// Detect repository root (look for .git, package.json, etc.)
-function detectProjectRoot(startDir) {
-  // Start from the current directory and go up
-  let currentDir = startDir || process.cwd();
-  
-  // Define root markers (files/folders that indicate a project root)
-  const rootMarkers = ['.git', 'package.json', 'package-lock.json', 'yarn.lock', '.gitignore'];
-  
-  // Maximum levels to go up
-  const maxLevels = 5;
-  let levelsUp = 0;
-  
-  while (levelsUp < maxLevels) {
-    // Check if any root markers exist in this directory
-    for (const marker of rootMarkers) {
-      if (fs.existsSync(path.join(currentDir, marker))) {
-        console.error(`Detected project root at: ${currentDir} (found marker: ${marker})`);
-        return currentDir;
-      }
-    }
-    
-    // Go up one level
-    const parentDir = path.dirname(currentDir);
-    if (parentDir === currentDir) {
-      // We've reached the filesystem root
-      break;
-    }
-    
-    currentDir = parentDir;
-    levelsUp++;
-  }
-  
-  // If we couldn't detect a root, default to script's parent directory
-  console.error(`Could not detect project root, using default: ${path.resolve(__dirname, '..')}`);
-  return path.resolve(__dirname, '..');
-}
-
 // Configuration
-const rootDir = options.rootDir ? path.resolve(options.rootDir) : detectProjectRoot(path.resolve(__dirname, '..'));
+if (!options.rootDir || !fs.existsSync(options.rootDir)) {
+  console.error('❌ You must specify --root-dir with an existing directory.');
+  process.exit(1);
+}
+const rootDir = path.resolve(options.rootDir);
 const outputDir = options.outputDir ? path.resolve(options.outputDir) : path.join(rootDir, 'output');
 console.error(`Using project root: ${rootDir}`);
 console.error(`[DEBUG] dependency-workflow.cjs options.rootDir: ${options.rootDir}`);
@@ -178,8 +145,8 @@ function prompt(question) {
  */
 function runScript(scriptPath, args = []) {
   const stepStart = Date.now();
-  // Always add --output-dir to sub-scripts
-  const fullArgs = [...args, `--output-dir=${outputDir}`];
+  // Always add --root-dir and --output-dir to sub-scripts
+  const fullArgs = [...args, `--root-dir=${rootDir}`, `--output-dir=${outputDir}`];
   console.error(`[DEBUG] About to run script: ${scriptPath} with args: ${fullArgs}`);
   try {
     const result = spawnSync('node', [scriptPath, ...fullArgs], {
@@ -318,8 +285,8 @@ async function createFinalAnalysis() {
   // Extract all orphaned files (lines starting with '- ')
   const allOrphanedFiles = extractFilesByPattern(confirmedContent, /^- (.+)$/gm);
   console.error('[DEBUG] All orphaned files extracted for final analysis:', allOrphanedFiles);
-  
-  // Generate the final analysis report
+
+  // Generate the final analysis report (no static section)
   const finalAnalysisTemplate = `# Final Analysis of Orphaned Files
 
 ## Overview
@@ -327,51 +294,22 @@ After thorough analysis including static dependency mapping, build process track
 
 ## All Orphaned Files
 
-These files have been confirmed as not used in the application and are safe to archive:
-
-${allOrphanedFiles || 'No orphaned files found.'}
-
-## Files That Should Not Be Archived
-
-The following files may appear orphaned but serve important functions:
-
-### Type Definition Files
-These files provide TypeScript type definitions that may be used implicitly:
-
-- shared/models/MetricModels.ts
-- client/src/auth/types.ts
-
-### Dynamically Loaded Components
-These files might be loaded through React.lazy() or dynamic imports:
-
-- client/src/components/auth/AuthCallback.tsx
-- client/src/auth/routes/AuthRoutes.tsx
-- client/src/components/ui/* (UI component library)
-
-### Configuration and Infrastructure Files
-These files are used in the build/deployment process:
-
-- public/module-loader.js
-- functions/src/functions/api-clients.ts
-- secure_credentials/app_connection_example.js
+${allOrphanedFiles.length ? allOrphanedFiles.map(f => `- ${f}`).join('\n') : 'No orphaned files found.'}
 
 ## Recommended Approach
 
 1. **Review All Orphaned Files**: Consider archiving files listed above if confirmed unused
-2. **Carefully Review UI Components**: Some components may be used through dynamic imports or lazy loading
-3. **Leave Type Definitions**: Keep TypeScript type definitions unless absolutely certain they're unused
-4. **Document Each Archived File**: Add a note to the checklist explaining why each file was archived
+2. **Document Each Archived File**: Add a note to the checklist explaining why each file was archived
 
 ## Summary
 
-This analysis has significantly refined our understanding of which files are truly unused in the codebase. The migration from src/ to client/src/ structure explains many of the apparent duplications, and special care has been taken to identify files that might be loaded dynamically.
+This analysis has significantly refined our understanding of which files are truly unused in the codebase.
 
 Generated on: ${new Date().toISOString()}
 `;
 
   fs.writeFileSync(config.reports.finalAnalysis, finalAnalysisTemplate);
   console.error(`[DEBUG] Wrote output file: ${config.reports.finalAnalysis}`);
-  console.error(`✅ Final analysis created at ${path.relative(config.rootDir, config.reports.finalAnalysis)}`);
   return true;
 }
 
@@ -379,8 +317,12 @@ Generated on: ${new Date().toISOString()}
  * Extract files matching pattern from content
  */
 function extractFilesByPattern(content, pattern) {
-  const matches = content.match(pattern) || [];
-  return matches.join('\n');
+  const matches = [];
+  let match;
+  while ((match = pattern.exec(content)) !== null) {
+    matches.push(match[1]);
+  }
+  return matches;
 }
 
 /**

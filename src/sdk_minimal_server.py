@@ -115,7 +115,7 @@ projects = load_projects()
 @mcp.tool()
 def list_projects() -> list:
     logging.debug(f"list_projects called, returning {len(projects)} projects")
-    print(f"list_projects called, returning {len(projects)} projects")
+    print(f"list_projects called, returning {len(projects)} projects", file=sys.stderr)
     return projects
 
 @mcp.tool()
@@ -141,14 +141,14 @@ def add_project(name: str, path: str) -> dict:
         # Add to projects list
         projects.append(project)
         logging.debug(f"Current projects: {projects}")
-        print(f"Current projects after adding: {len(projects)} projects")
+        print(f"Current projects after adding: {len(projects)} projects", file=sys.stderr)
         # Save updated projects index
         try:
             save_projects(projects)
             logging.debug(f"Saved projects index")
         except Exception as e:
             logging.error(f"Failed to save projects index: {str(e)}")
-            print(f"Failed to save projects index: {str(e)}")
+            print(f"Failed to save projects index: {str(e)}", file=sys.stderr)
     else:
         logging.error(f"Failed to create project folder for {new_id}")
 
@@ -171,7 +171,7 @@ def add_project(name: str, path: str) -> dict:
 @mcp.tool()
 def forget_project(project_id: str) -> dict:
     logging.debug(f"forget_project called for project_id={project_id}")
-    print(f"forget_project called for project_id={project_id}")
+    print(f"forget_project called for project_id={project_id}", file=sys.stderr)
     
     # Find the project in the list
     project = next((p for p in projects if p["id"] == project_id), None)
@@ -187,7 +187,7 @@ def forget_project(project_id: str) -> dict:
     # Remove from projects list
     projects[:] = [p for p in projects if p["id"] != project_id]
     logging.debug(f"Removed project {project_id} from projects list")
-    print(f"Removed project {project_id} from projects list")
+    print(f"Removed project {project_id} from projects list", file=sys.stderr)
     
     # Save updated projects index
     try:
@@ -196,7 +196,7 @@ def forget_project(project_id: str) -> dict:
     except Exception as e:
         error_msg = f"Failed to save projects index: {str(e)}"
         logging.error(error_msg)
-        print(error_msg)
+        print(error_msg, file=sys.stderr)
         # Continue anyway to try to remove the folder
     
     # Remove project folder and metadata
@@ -207,15 +207,15 @@ def forget_project(project_id: str) -> dict:
         if os.path.exists(project_dir):
             shutil.rmtree(project_dir)
             folder_removed = True
-            print(f"Project folder {project_dir} removed successfully")
+            print(f"Project folder {project_dir} removed successfully", file=sys.stderr)
         else:
-            print(f"Project folder {project_dir} not found")
+            print(f"Project folder {project_dir} not found", file=sys.stderr)
         # Remove metadata file if it exists (should be in the folder, but just in case)
         if os.path.exists(metadata_path):
             os.remove(metadata_path)
-            print(f"Metadata file {metadata_path} removed")
+            print(f"Metadata file {metadata_path} removed", file=sys.stderr)
     except Exception as e:
-        print(f"Error removing project folder or metadata: {str(e)}")
+        print(f"Error removing project folder or metadata: {str(e)}", file=sys.stderr)
         traceback.print_exc(file=sys.stderr)
     
     return {
@@ -275,7 +275,7 @@ def analyze_dependencies(project_id: str) -> dict:
     project = next((p for p in projects if p["id"] == project_id), None)
     if not project:
         logging.error(f"[analyze_dependencies] Project not found: {project_id}")
-        print(f"[analyze_dependencies] Project not found: {project_id}")
+        print(f"[analyze_dependencies] Project not found: {project_id}", file=sys.stderr)
         return {"error": f"Project not found: {project_id}"}
 
     # Set up paths for the workflow script and output directory
@@ -295,17 +295,17 @@ def analyze_dependencies(project_id: str) -> dict:
 
     try:
         # Run the workflow script as a subprocess
-        print(f"[analyze_dependencies] Launching subprocess: {cmd}")
+        print(f"[analyze_dependencies] Launching subprocess: {cmd}", file=sys.stderr)
         result = subprocess.run(cmd, capture_output=True, text=True, env=env)
-        print(f"[analyze_dependencies] Subprocess finished with return code: {result.returncode}")
-        print(f"[analyze_dependencies] Subprocess stdout (full):\n{result.stdout}")
-        print(f"[analyze_dependencies] Subprocess stderr (full):\n{result.stderr}")
+        print(f"[analyze_dependencies] Subprocess finished with return code: {result.returncode}", file=sys.stderr)
+        print(f"[analyze_dependencies] Subprocess stdout (full):\n{result.stdout}", file=sys.stderr)
+        print(f"[analyze_dependencies] Subprocess stderr (full):\n{result.stderr}", file=sys.stderr)
         logging.debug(f"[analyze_dependencies] Subprocess return code: {result.returncode}")
         logging.debug(f"[analyze_dependencies] Subprocess stdout: {result.stdout}")
         logging.debug(f"[analyze_dependencies] Subprocess stderr: {result.stderr}")
         if result.returncode != 0:
             logging.error(f"[analyze_dependencies] Subprocess failed with return code {result.returncode}")
-            print(f"[analyze_dependencies] Subprocess failed with return code {result.returncode}")
+            print(f"[analyze_dependencies] Subprocess failed with return code {result.returncode}", file=sys.stderr)
             return {
                 "success": False,
                 "error": f"Dependency analysis failed (return code {result.returncode})",
@@ -315,19 +315,19 @@ def analyze_dependencies(project_id: str) -> dict:
         err_output = result.stderr
         logging.debug(f"[analyze_dependencies] Subprocess stdout: {output[:1000]}")
         logging.debug(f"[analyze_dependencies] Subprocess stderr: {err_output[:1000]}")
-        print(f"[analyze_dependencies] Subprocess stdout (first 1000 chars):\n{output[:1000]}")
-        print(f"[analyze_dependencies] Subprocess stderr (first 1000 chars):\n{err_output[:1000]}")
+        print(f"[analyze_dependencies] Subprocess stdout (first 1000 chars):\n{output[:1000]}", file=sys.stderr)
+        print(f"[analyze_dependencies] Subprocess stderr (first 1000 chars):\n{err_output[:1000]}", file=sys.stderr)
         # Save output to analysis_results.json in the project output directory
         analysis_path = os.path.join(DATA_DIR, project_id, "analysis_results.json")
         with open(analysis_path, "w") as f:
             f.write(output)
         logging.debug(f"[analyze_dependencies] Saved analysis results to {analysis_path}")
-        print(f"[analyze_dependencies] Saved analysis results to {analysis_path}")
+        print(f"[analyze_dependencies] Saved analysis results to {analysis_path}", file=sys.stderr)
         try:
             with open(analysis_path, "r") as f:
                 preview = f.read(1000)
             logging.debug(f"[analyze_dependencies] analysis_results.json preview: {preview}")
-            print(f"[analyze_dependencies] analysis_results.json preview: {preview}")
+            print(f"[analyze_dependencies] analysis_results.json preview: {preview}", file=sys.stderr)
         except Exception as e:
             logging.error(f"[analyze_dependencies] Could not preview analysis_results.json: {e}")
         # Attempt to extract summary from workflow output or report files
@@ -376,7 +376,7 @@ def analyze_dependencies(project_id: str) -> dict:
                 report_urls[report] = url
         elapsed = time.time() - start_time
         logging.debug(f"[analyze_dependencies] Completed in {elapsed:.2f} seconds")
-        print(f"[analyze_dependencies] Completed in {elapsed:.2f} seconds")
+        print(f"[analyze_dependencies] Completed in {elapsed:.2f} seconds", file=sys.stderr)
         port = os.environ.get('PORT', '8000')
         # Visualizer URL now always points to the correct location (no /output/)
         visualizer_url = f"http://localhost:{port}/{project_id}/enhanced-dependency-visualizer.html"
@@ -409,9 +409,9 @@ def analyze_dependencies(project_id: str) -> dict:
         }
     except Exception as e:
         logging.error(f"[analyze_dependencies] Exception during subprocess: {e}")
-        print(f"[analyze_dependencies] Exception during subprocess: {e}")
+        print(f"[analyze_dependencies] Exception during subprocess: {e}", file=sys.stderr)
         logging.error(f"[analyze_dependencies] Exception: {traceback.format_exc()}")
-        print(f"[analyze_dependencies] Exception: {traceback.format_exc()}")
+        print(f"[analyze_dependencies] Exception: {traceback.format_exc()}", file=sys.stderr)
         return {
             "success": False,
             "error": f"Unexpected error: {e}",
@@ -421,7 +421,7 @@ def analyze_dependencies(project_id: str) -> dict:
 @mcp.tool()
 def get_dependency_graph(project_id: str) -> dict:
     logging.debug(f"get_dependency_graph called for project_id={project_id}")
-    print(f"get_dependency_graph called for project_id={project_id}")
+    print(f"get_dependency_graph called for project_id={project_id}", file=sys.stderr)
     
     # Check if project exists
     project = next((p for p in projects if p["id"] == project_id), None)
@@ -445,7 +445,7 @@ def get_dependency_graph(project_id: str) -> dict:
 @mcp.tool()
 def find_orphaned_files(project_id: str) -> dict:
     logging.debug(f"find_orphaned_files called for project_id={project_id}")
-    print(f"find_orphaned_files called for project_id={project_id}")
+    print(f"find_orphaned_files called for project_id={project_id}", file=sys.stderr)
     
     # Check if project exists
     project = next((p for p in projects if p["id"] == project_id), None)
@@ -467,17 +467,17 @@ def find_orphaned_files(project_id: str) -> dict:
         with open(orphaned_path, "w") as f:
             json.dump({"orphaned_files": orphaned_files}, f)
         logging.debug(f"Saved orphaned files to {orphaned_path}")
-        print(f"Saved orphaned files to {orphaned_path}")
+        print(f"Saved orphaned files to {orphaned_path}", file=sys.stderr)
     except Exception as e:
         logging.error(f"Failed to save orphaned files: {str(e)}")
-        print(f"Failed to save orphaned files: {str(e)}")
+        print(f"Failed to save orphaned files: {str(e)}", file=sys.stderr)
     
     return {"orphaned_files": orphaned_files}
 
 @mcp.tool()
 def check_circular_dependencies(project_id: str) -> dict:
     logging.debug(f"check_circular_dependencies called for project_id={project_id}")
-    print(f"check_circular_dependencies called for project_id={project_id}")
+    print(f"check_circular_dependencies called for project_id={project_id}", file=sys.stderr)
     
     # Check if project exists
     project = next((p for p in projects if p["id"] == project_id), None)
@@ -501,17 +501,17 @@ def check_circular_dependencies(project_id: str) -> dict:
         with open(circular_path, "w") as f:
             json.dump({"circular_dependencies": circular_deps}, f)
         logging.debug(f"Saved circular dependencies to {circular_path}")
-        print(f"Saved circular dependencies to {circular_path}")
+        print(f"Saved circular dependencies to {circular_path}", file=sys.stderr)
     except Exception as e:
         logging.error(f"Failed to save circular dependencies: {str(e)}")
-        print(f"Failed to save circular dependencies: {str(e)}")
+        print(f"Failed to save circular dependencies: {str(e)}", file=sys.stderr)
     
     return {"circular_dependencies": circular_deps}
 
 @mcp.tool()
 def archive_orphaned_files(project_id: str) -> dict:
     logging.debug(f"archive_orphaned_files called for project_id={project_id}")
-    print(f"archive_orphaned_files called for project_id={project_id}")
+    print(f"archive_orphaned_files called for project_id={project_id}", file=sys.stderr)
 
     # Check if project exists
     project = next((p for p in projects if p["id"] == project_id), None)
@@ -545,11 +545,11 @@ def archive_orphaned_files(project_id: str) -> dict:
         }
 
 # Check /data volume is accessible
-print(f"Starting server...")
-print(f"Checking /data directory:")
-print(f"  Exists: {os.path.exists(DATA_DIR)}")
-print(f"  Writable: {os.access(DATA_DIR, os.W_OK)}")
-print(f"  Contents: {os.listdir(DATA_DIR)}")
+print(f"Starting server...", file=sys.stderr)
+print(f"Checking /data directory:", file=sys.stderr)
+print(f"  Exists: {os.path.exists(DATA_DIR)}", file=sys.stderr)
+print(f"  Writable: {os.access(DATA_DIR, os.W_OK)}", file=sys.stderr)
+print(f"  Contents: {os.listdir(DATA_DIR)}", file=sys.stderr)
 
 # Create default project folders for existing projects
 for project in projects:

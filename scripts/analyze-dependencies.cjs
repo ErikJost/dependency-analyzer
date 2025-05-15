@@ -11,10 +11,17 @@ const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 
-// Parse --output-dir argument
-let outputDir = null;
+// Parse command line arguments
 const args = process.argv.slice(2);
+let customRootDir = null;
+let outputDir = null;
 for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--root-dir' && args[i + 1]) {
+    customRootDir = args[i + 1];
+    i++;
+  } else if (args[i].startsWith('--root-dir=')) {
+    customRootDir = args[i].split('=')[1];
+  }
   if (args[i] === '--output-dir' && args[i + 1]) {
     outputDir = path.resolve(args[i + 1]);
     i++;
@@ -22,11 +29,15 @@ for (let i = 0; i < args.length; i++) {
     outputDir = path.resolve(args[i].split('=')[1]);
   }
 }
-if (!outputDir) outputDir = path.resolve(__dirname, '..', 'output');
+if (!customRootDir || !fs.existsSync(customRootDir)) {
+  console.error('❌ You must specify --root-dir with an existing directory.');
+  process.exit(1);
+}
+const rootDir = path.resolve(customRootDir);
 
 // Configuration
 const config = {
-  rootDir: path.resolve(__dirname, '..'),
+  rootDir: rootDir,
   // Extensions to analyze
   extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.css', '.scss'],
   // Directories to exclude from analysis
@@ -81,15 +92,13 @@ function shouldExcludePath(filePath) {
  */
 function getAllFiles() {
   console.error('Collecting all project files...');
-  
-  const pattern = `**/*+(${config.extensions.join('|')})`;
+  const pattern = `**/*`;
   const files = glob.sync(pattern, { 
     cwd: config.rootDir,
     ignore: config.excludeDirs.map(dir => `**/${dir}/**`),
     absolute: true,
     nodir: true
   });
-  
   files.forEach(file => {
     const relativePath = path.relative(config.rootDir, file);
     allFiles.add(relativePath);
@@ -98,7 +107,7 @@ function getAllFiles() {
       importedBy: new Set()
     });
   });
-  
+  console.error(`[DEBUG] First 20 files found:`, files.slice(0, 20).map(f => path.relative(config.rootDir, f)));
   console.error(`Found ${allFiles.size} files to analyze`);
   return files;
 }

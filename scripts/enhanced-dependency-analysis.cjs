@@ -56,47 +56,15 @@ for (let i = 0; i < args.length; i++) {
     outputDir = path.resolve(args[i].split('=')[1]);
   }
 }
-
-// Detect repository root (look for .git, package.json, etc.)
-function detectProjectRoot(startDir) {
-  // Start from the current directory and go up
-  let currentDir = startDir || process.cwd();
-  
-  // Define root markers (files/folders that indicate a project root)
-  const rootMarkers = ['.git', 'package.json', 'package-lock.json', 'yarn.lock', '.gitignore'];
-  
-  // Maximum levels to go up
-  const maxLevels = 5;
-  let levelsUp = 0;
-  
-  while (levelsUp < maxLevels) {
-    // Check if any root markers exist in this directory
-    for (const marker of rootMarkers) {
-      if (fs.existsSync(path.join(currentDir, marker))) {
-        console.error(`Detected project root at: ${currentDir} (found marker: ${marker})`);
-        return currentDir;
-      }
-    }
-    
-    // Go up one level
-    const parentDir = path.dirname(currentDir);
-    if (parentDir === currentDir) {
-      // We've reached the filesystem root
-      break;
-    }
-    
-    currentDir = parentDir;
-    levelsUp++;
-  }
-  
-  // If we couldn't detect a root, default to script's parent directory
-  console.error(`Could not detect project root, using default: ${path.resolve(__dirname, '..')}`);
-  return path.resolve(__dirname, '..');
+if (!customRootDir || !fs.existsSync(customRootDir)) {
+  console.error('❌ You must specify --root-dir with an existing directory.');
+  process.exit(1);
 }
+const rootDir = path.resolve(customRootDir);
 
 // Configuration
 const config = {
-  rootDir: customRootDir ? path.resolve(customRootDir) : detectProjectRoot(path.resolve(__dirname, '..')),
+  rootDir: rootDir,
   // Extensions to analyze
   extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.css', '.scss'],
   // Directories to exclude from analysis
@@ -134,7 +102,7 @@ const config = {
     'render={[^}]*=>\\s*<([^>]+)' // render props with component
   ],
   // Output directory
-  outputDir: outputDir ? outputDir : path.resolve(customRootDir ? path.resolve(customRootDir) : detectProjectRoot(path.resolve(__dirname, '..')), 'output')
+  outputDir: outputDir ? outputDir : path.resolve(rootDir, 'output')
 };
 
 console.error(`Using project root: ${config.rootDir}`);
@@ -165,15 +133,13 @@ function shouldExcludePath(filePath) {
  */
 function getAllFiles() {
   console.error('Collecting all project files...');
-  
-  const pattern = `**/*+(${config.extensions.join('|')})`;
+  const pattern = `**/*`;
   const files = glob.sync(pattern, { 
     cwd: config.rootDir,
     ignore: config.excludeDirs.map(dir => `**/${dir}/**`),
     absolute: true,
     nodir: true
   });
-  
   files.forEach(file => {
     const relativePath = path.relative(config.rootDir, file);
     allFiles.add(relativePath);
@@ -184,7 +150,7 @@ function getAllFiles() {
       reExportedBy: new Set() // Track which files re-export this
     });
   });
-  
+  console.error(`[DEBUG] First 20 files found:`, files.slice(0, 20).map(f => path.relative(config.rootDir, f)));
   console.error(`Found ${allFiles.size} files to analyze`);
   return files;
 }
@@ -648,6 +614,39 @@ function generateReports(orphanedFiles) {
   // Find duplicate files first
   const duplicateGroups = findDuplicateFiles();
   
+  // --- Dynamic Legend Generation ---
+  // Compute top-level folders and their file/folder counts
+  const folderStats = {};
+  Array.from(allFiles).forEach(file => {
+    const parts = file.split(path.sep);
+    const top = parts[0];
+    if (!folderStats[top]) folderStats[top] = { files: 0, folders: new Set() };
+    folderStats[top].files++;
+    if (parts.length > 1) folderStats[top].folders.add(parts[1]);
+  });
+  // Convert to array and sort by file count descending
+  const folderStatsArr = Object.entries(folderStats)
+    .map(([name, stat]) => ({ name, files: stat.files, folders: stat.folders.size }))
+    .sort((a, b) => b.files - a.files);
+  // Build legend HTML
+  const dynamicLegend = `
+    <div class="widget-header">
+      <h3 class="widget-title">Legend</h3>
+      <div class="widget-controls">
+        <span class="widget-control minimize-btn" title="Minimize">−</span>
+      </div>
+    </div>
+    <div class="widget-content">
+      <div><b>Folders (file count, subfolder count):</b></div>
+      ${folderStatsArr.map(f => `<div><span style='color:#1f77b4;'>●</span> ${f.name} (${f.files} files, ${f.folders} subfolders)</div>`).join('')}
+      <div><span style="color: #d62728;">✕</span> missing files</div>
+      <div><span style="color: #999;">—</span> imports</div>
+      <div><span style="color: #ff0000;">—</span> re-exports</div>
+      <div><span style="color: #9932cc;">—</span> duplicates (${duplicateGroups.length} groups)</div>
+      <div><span style="color: #d62728; stroke-dasharray: 5,5;">- -</span> missing dependency</div>
+    </div>
+  `;
+  
   // Generate orphaned files report
   const orphanedReport = `# Potentially Orphaned Files
   
@@ -911,22 +910,7 @@ Generated on: ${new Date().toISOString()}
 <body>
   <!-- Legend Widget -->
   <div class="widget legend" id="legend-widget">
-    <div class="widget-header">
-      <h3 class="widget-title">Legend</h3>
-      <div class="widget-controls">
-        <span class="widget-control minimize-btn" title="Minimize">−</span>
-      </div>
-    </div>
-    <div class="widget-content">
-      <div><span style="color: #1f77b4;">●</span> client/src</div>
-      <div><span style="color: #ff7f0e;">●</span> src</div>
-      <div><span style="color: #2ca02c;">●</span> other</div>
-      <div><span style="color: #d62728;">✕</span> missing files</div>
-      <div><span style="color: #999;">—</span> imports</div>
-      <div><span style="color: #ff0000;">—</span> re-exports</div>
-      <div><span style="color: #9932cc;">—</span> duplicates (${duplicateGroups.length} groups)</div>
-      <div><span style="color: #d62728; stroke-dasharray: 5,5;">- -</span> missing dependency</div>
-    </div>
+    ${dynamicLegend}
   </div>
   
   <!-- Tools Widget -->
